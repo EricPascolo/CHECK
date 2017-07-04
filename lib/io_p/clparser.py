@@ -1,7 +1,8 @@
+
 #
 # CHECKS v 0.1
 #
-# @authors : Eric Pascolo,
+# @authors : Eric Pascolo
 #
 # Copyright (C) 2017 B.U HPC - CINECA
 #
@@ -21,36 +22,35 @@
 
 import argparse
 
-def argument():
+def cl_parser():
     parser = argparse.ArgumentParser(description = '''
     Python check suite to HPC Cluster
     ''',
     formatter_class=argparse.RawTextHelpFormatter
     )
 
-    parser.add_argument(   '--input', '-i',
+    parser.add_argument(   '--master', '-m',
                             type = str,
-                            required = True,
+                            required = False,
                             default = "./conf.json",
-                            help = 'Configuration Input File')
+                            help = 'Master/slave flag')
 
-    parser.add_argument(   '--hpc_cluster', '-hpc',
+    parser.add_argument(   '--hpc', '-h',
                                 type = str,
                                 required =False,
-                                help = ''' Cluster Name'''
+                                help = ''' Cluster hostfile'''
                                 )
   
-    parser.add_argument(   '--operation', '-op',
+    parser.add_argument(   '--check', '-c',
                                 type = int,
                                 required = False,
                                 default = 0,
-                                help = 'Number of operation')
+                                help = 'List of check')
+
+    parser.add_argument(   '--configuration', '-c',
+                                type = int,
+                                required = False,
+                                default = 0,
+                                help = 'Input file')
   
     return parser.parse_args()
-
-
-
-args = argument()
-
-
-
