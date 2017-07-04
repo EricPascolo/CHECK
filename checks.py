@@ -1,5 +1,8 @@
 #
 # CHECKS v 0.1
+#
+# @authors : Eric Pascolo,
+#
 # Copyright (C) 2017 B.U HPC - CINECA
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,32 +19,38 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
-
-
-
+import argparse
 
 def argument():
     parser = argparse.ArgumentParser(description = '''
-    Python check suite to HPC C
+    Python check suite to HPC Cluster
     ''',
     formatter_class=argparse.RawTextHelpFormatter
     )
+
+    parser.add_argument(   '--input', '-i',
+                            type = str,
+                            required = True,
+                            default = "./conf.json",
+                            help = 'Configuration Input File')
+
     parser.add_argument(   '--hpc_cluster', '-hpc',
                                 type = str,
                                 required =False,
-                                help = ''' Input image'''
+                                help = ''' Cluster Name'''
                                 )
   
     parser.add_argument(   '--operation', '-op',
                                 type = int,
                                 required = False,
                                 default = 0,
-                                choices=[-1,0,1,2,3],
                                 help = 'Number of operation')
   
     return parser.parse_args()
 
+
+
+args = argument()
 
 
 
