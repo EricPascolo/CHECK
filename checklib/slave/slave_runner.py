@@ -19,15 +19,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class sanity_check:
 
-    def __init__(self,conf_file):
-        sanity_check_input = conf_file
-        sc_array = {}
-
+def main(setting):
     
-
-
-    def 
-
-    
+    print("Slave mode")
+        

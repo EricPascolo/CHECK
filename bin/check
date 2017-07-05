@@ -22,10 +22,11 @@
 #
 
 from __future__ import print_function
-
-import os
+from checklib.inout import commandline
+from checklib.setting import checkobj
 import sys
-import checklib.io_p.clparser
+import os
+import logging
 
 if sys.version_info[:2] < (2,7):
     v_info = sys.version_info[:3]
@@ -33,12 +34,25 @@ if sys.version_info[:2] < (2,7):
              "This is Python %d.%d.%d." % v_info)
 
 
+##read commandline flag
+cl_args = commandline.cl_parser()
 
+##log
+numeric_level = getattr(logging, cl_args.log.upper(), None)
+if not isinstance(numeric_level, int):
+    raise ValueError('Invalid log level: %s' % cl_args.log)
 
+logging.basicConfig(level=numeric_level)
 
+##init check setting object
+setting = checkobj.check_setting(cl_args)
 
+## master
+if cl_args.master:
+    from checklib.master import master_runner
+    master_runner.main(setting)
 
-cl_args = clparser.cl_parser()
-
-print("pippo")
-
+## slave
+else:
+    from checklib.slave import slave_runner
+    slave_runner.main(setting)
