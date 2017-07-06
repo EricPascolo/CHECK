@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 #
 # CHECKS v 0.1
 #
@@ -21,31 +19,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import print_function
-from checklib.inout import commandline
-from checklib.setting import checkobj
 import sys
+import json
 import os
-import logging
 
-if sys.version_info[:2] < (2,7):
-    v_info = sys.version_info[:3]
-    sys.exit("CHECK requires Python 2.7 or higher."
-             "This is Python %d.%d.%d." % v_info)
+"""
+Python module that contain read file methods
+"""
 
+def json_reader(filepath):
+    """
+    Checking existence of json file and read it
+    """
+    filecontained = "-999"
+    try:
+        if os.path.isfile(filepath) :
+            filecontained = json.loads(open(filepath).read())
+        else :
+            sys.exit()
 
-##read commandline flag
-cl_args = commandline.cl_parser()
+    except:
+        sys.exit("ERROR JSON file not readable "+filepath)
 
-##init check setting object
-setting = checkobj.check_setting(cl_args)
-
-## master
-if cl_args.master:
-    from checklib.master import master_runner
-    master_runner.main(setting)
-
-## slave
-else:
-    from checklib.slave import slave_runner
-    slave_runner.main(setting)
+    return filecontained

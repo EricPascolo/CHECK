@@ -1,0 +1,4 @@
+{
+    "loglevel":"DEBUG",
+    "logfile":"$HOME/checklog.txt"
+}

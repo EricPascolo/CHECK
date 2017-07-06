@@ -45,7 +45,6 @@ def cl_parser():
                                 required =False,
                                 default = "-999",
                                 help = 'Cluster hostfile')                               
-  
 
     parser.add_argument(   '--configuration', 
                                 type = str,
@@ -58,14 +57,15 @@ def cl_parser():
                                 required = False,
                                 default = "-999",
                                 help = 'Input file')
+   
     parser.add_argument(   '--log', 
                                 type = str,
                                 required = False,
-                                default = "DEBUG",
                                 help = 'Input file')
+    
     parser.add_argument(   '--logfile', 
                                 type = str,
                                 required = False,
-                                default = "-999",
                                 help = 'Input file')
+    
     return parser.parse_args()

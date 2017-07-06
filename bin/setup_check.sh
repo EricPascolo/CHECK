@@ -19,6 +19,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
+
 # extract path of bin directory and after cut it to obtain CHECK package path
 BINDIR=$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)
 CHECK_PATH=${BINDIR%%bin}
