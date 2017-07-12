@@ -1,4 +1,6 @@
 {
     "loglevel":"DEBUG",
-    "logfile":"$HOME/checklog.txt"
+    "logfile":"$HOME/checklog.txt",
+    "logtype":"cl"
+    
 }

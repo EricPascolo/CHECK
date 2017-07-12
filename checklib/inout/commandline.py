@@ -69,3 +69,10 @@ def cl_parser():
                                 help = 'Input file')
     
     return parser.parse_args()
+
+
+def cl_convert_to_dict(args):
+    """
+    Convert args object in dictionary
+    """
+    return vars(args)

@@ -35,13 +35,13 @@ if sys.version_info[:2] < (2,7):
 
 
 ##read commandline flag
-cl_args = commandline.cl_parser()
+cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
 
 ##init check setting object
 setting = checkobj.check_setting(cl_args)
 
 ## master
-if cl_args.master:
+if cl_args["master"]:
     from checklib.master import master_runner
     master_runner.main(setting)
 
