@@ -19,8 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import logging
 
 def main(setting):
     
-    print("Slave mode")
+    logger = logging.getLogger(setting.loggername)
+    logger.debug("Star slave")
         

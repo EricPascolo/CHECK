@@ -19,6 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
+import logging
+
 def main(setting):
-    print("MASTER")
+    logger = logging.getLogger(setting.loggername)
+    logger.debug("Start Master")
     pass
