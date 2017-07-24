@@ -1,3 +1,12 @@
+#
+# CHECK
+#
+# @authors : Eric Pascolo
+#
+# Copyright (C) 2017 B.U HPC - CINECA
+#
+#
+
 import os
 import regex
 
