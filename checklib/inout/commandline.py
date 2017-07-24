@@ -33,6 +33,11 @@ def cl_parser():
                             required = False,
                             help = 'Master/slave flag')
 
+    parser.add_argument(   '--daemon', 
+                                type = str,
+                                required = False,
+                                help = 'Daemon command')
+                                
     parser.add_argument(   '--check', '-c',
                                 type = list,
                                 nargs='+',
@@ -67,6 +72,8 @@ def cl_parser():
                                 type = str,
                                 required = False,
                                 help = 'Input file')
+
+    
     
     return parser.parse_args()
 

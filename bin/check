@@ -45,6 +45,12 @@ if cl_args["master"]:
     from checklib.master import master_runner
     master_runner.main(setting)
 
+## daemon
+elif cl_args["daemon"]:
+    from checklib.daemon import daemon_manager
+    daemon_manager.deamon_manager(setting)
+
+
 ## slave
 else:
     from checklib.slave import slave_runner
