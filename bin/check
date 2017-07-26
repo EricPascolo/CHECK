@@ -11,7 +11,7 @@
 
 from __future__ import print_function
 from checklib.inout import commandline
-from checklib.setting import checkobj
+from checklib.core import checkobj_core
 import sys
 import os
 import logging
@@ -28,22 +28,20 @@ if sys.version_info[:2] < (2,7):
 cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
 
 ##init check setting object
-setting = checkobj.check_setting(cl_args)
-
-
+checkcore = checkobj_core.check_core(cl_args)
 
 ## master
 if cl_args["master"]:
     from checklib.master import master_runner
-    master_runner.main(setting)
+    master_runner.main(checkcore)
 
 ## daemon 
 elif cl_args["daemon"]:
     from checklib.daemon import daemon_manager
-    Dcheck = daemon_manager.deamon_manager(setting)
+    Dcheck = daemon_manager.deamon_manager(checkcore)
     Dcheck.command(cl_args)
 
 ## slave
 else:
     from checklib.slave import slave_runner
-    slave_runner.main(setting)
+    slave_runner.main(checkcore)

@@ -1,6 +1,8 @@
 {
     "loglevel":"DEBUG",
     "logfile":"$HOME/checklog.txt",
-    "logtype":"cl"
+    "logtype":"cl",
+    
+    "checktest_directory":"/home/epascolo/checktest/"
     
 }

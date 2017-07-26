@@ -7,6 +7,10 @@
 import argparse
 
 def cl_parser():
+    """
+    Parsing command line pars with argparse module
+    """
+    
     parser = argparse.ArgumentParser(description = '''
     Python check suite to HPC Cluster''',
     formatter_class=argparse.RawTextHelpFormatter
@@ -39,14 +43,14 @@ def cl_parser():
     parser.add_argument(   '--configuration', 
                                 type = str,
                                 required = False,
-                                default = "-999",
+                                
                                 help = 'Input file')
 
-    parser.add_argument(   '--result', 
+    parser.add_argument(   '--analysis', 
                                 type = str,
                                 required = False,
                                 default = "-999",
-                                help = 'Input file')
+                                help = 'kind of analysis')
    
     parser.add_argument(   '--log', 
                                 type = str,

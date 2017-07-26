@@ -9,8 +9,8 @@ import logging
 
 class deamon_manager:
 
-    def __init__(self,setting):
-        self.logger = logging.getLogger(setting.loggername)
+    def __init__(self,checkcore):
+        self.logger = logging.getLogger(checkcore.loggername)
         self.logger.debug("init deamon")
         
 

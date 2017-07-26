@@ -8,7 +8,7 @@
 
 import logging
 
-def main(setting):
-    logger = logging.getLogger(setting.loggername)
+def main(checkcore):
+    logger = logging.getLogger(checkcore.loggername)
     logger.debug("Start Master")
     pass
