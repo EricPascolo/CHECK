@@ -13,4 +13,4 @@ export CHECK_HOME=$CHECK_PATH
 #set bin path to system path and package path to python path
 export PATH=$BINDIR:$PATH
 export PYTHONPATH=$CHECK_PATH:$PWD
-alias checkcleandir='cd $CHECK_HOME ; find . -name '*.pyc' -delete'
+alias checkcleandir='cd $CHECK_HOME ; find . -name '*.pyc' -delete; cd $OLDPWD'
