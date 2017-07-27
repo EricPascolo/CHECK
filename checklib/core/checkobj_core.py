@@ -7,11 +7,11 @@
 import logging
 import os
 import sys
+import imp
 from checklib.inout import file_reader
 from checklib.inout import checklog
 from checklib.common import utils
 from operator import concat
-
 class check_core:
     '''
     This object contain all setting that the software 
@@ -21,10 +21,12 @@ class check_core:
     loglevel = " "
     logtype = " "
 
+    check_test_directory = " "
     check_tests_list = " "
     execution = " "
     hpc_cluster_list = " "
 
+####--------------------------------------------------------------------------------------------------------------
 
     def __init__(self,cl_arg):
         
@@ -65,14 +67,16 @@ class check_core:
         logger = logging.getLogger(self.loggername)
         logger.debug(self.loggername)
 
+        ## extract check setting and put it in core object
+        self.extract_to_file(json_setting)
+
         ## extract cl setting and put it in core object
         self.extract_to_cl(cl_arg)
 
-        ## extract check setting and put it in core object
-        self.extract_to_file(json_setting)
                 
         #load checktest list module
-    
+
+####--------------------------------------------------------------------------------------------------------------    
 
     def extract_to_cl(self,cl):
         
@@ -92,13 +96,62 @@ class check_core:
             except:
                 logger.critical("wrong merge cl with conf file")
 
-        # !!!problem cl set list of list, conf file only a list 
+        # load name of check test in list
         names_of_check_test = "".join(cl["check"]).split(",")
         logger.debug(names_of_check_test)
+        
+        self.checktests = self.load_checktest(names_of_check_test)
+
+####--------------------------------------------------------------------------------------------------------------
 
     def extract_to_file(self,setting):
+        
+        logger = logging.getLogger(self.loggername)
+        
+        #check test repo path
+        self.check_test_directory = setting["checktest_directory"]
+        logger.debug("CHECKTEST DIR : "+self.check_test_directory)
         pass
 
-    def load_checktest(self):
+####--------------------------------------------------------------------------------------------------------------
+
+    def load_checktest(self,cklist):
         """ Given check list import matching checktest module """
-        pass
+        
+        logger = logging.getLogger(self.loggername)
+
+        ctarray = []
+        
+        for ct in cklist:
+
+            #build check test directory path
+            path_test_dir = self.check_test_directory+"/"+ct+"/checktest.py"
+
+            #check if path exiist
+            if os.path.exists(path_test_dir):
+
+                logger.debug("CHECK TEST FOUND IN:"+path_test_dir)
+                
+                #build check test module name
+                module_name = "checktest."+ct
+
+                #load dynamicaly check test class
+                dynamic_class = imp.load_source(module_name,path_test_dir)
+                
+                #get name of class to call
+                method_to_call = getattr(dynamic_class, ct)
+                
+                #init check test dynamically 
+                obj = method_to_call(self.loggername)
+                
+                #append obj test to list
+                ctarray.append(obj)
+            else:
+                logger.critical("CHECK TEST NOT FOUND : "+ct)
+
+        for ckt in ctarray:
+            ckt.get_name()
+
+        return ctarray
+
+####--------------------------------------------------------------------------------------------------------------

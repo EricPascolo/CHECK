@@ -1,54 +1,45 @@
-#
-# CHECK
-#
-# @authors : Eric Pascolo
-#
-
 import logging
 
+class checktest():
 
-class deamon_manager:
+    """ Checktest template class """
 
-####--------------------------------------------------------------------------------------------------------------
-
-    def __init__(self,checkcore):
-        self.logger = logging.getLogger(checkcore.loggername)
-        self.logger.debug("init deamon")
-        
-####--------------------------------------------------------------------------------------------------------------
-
-    def command(self,cl_args):
-        if cl_args["daemon"] == "start":
-            self.start()
-        elif cl_args["daemon"] == "submit":
-            self.submit()
-        elif cl_args["daemon"] == "status":
-            self.status()
-        elif cl_args["daemon"] == "kill":
-            self.kill()
+    checklog = None
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def start(self):
-        self.logger.debug("deamon star")
-        pass
+    def __init__(self,logger_name):
+        self.checklog = logging.getLogger(logger_name)
+        self.checklog.debug("CHECK TEST INIT : "+self.__class__.__name__)
 
 ####--------------------------------------------------------------------------------------------------------------
-    
-    def submit(self):
-        self.logger.debug("deamon submit")
+
+    def get_name(self):
+        self.checklog.info("CHECK TEST NAME : "+self.__class__.__name__)
+
+####--------------------------------------------------------------------------------------------------------------
+
+    def preproc(self):
         pass
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def status(self):
-        self.logger.debug("deamon status")
+    def run(self):
         pass
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def kill(self):
-        self.logger.debug("deamon kill")
+    def postproc(self):
+        pass
+
+####--------------------------------------------------------------------------------------------------------------
+
+    def comparison(self):
+        pass
+
+####--------------------------------------------------------------------------------------------------------------
+
+    def install(self):
         pass
 
 ####--------------------------------------------------------------------------------------------------------------

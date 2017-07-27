@@ -6,6 +6,8 @@
 
 import argparse
 
+####--------------------------------------------------------------------------------------------------------------
+
 def cl_parser():
     """
     Parsing command line pars with argparse module
@@ -28,7 +30,7 @@ def cl_parser():
                                 help = 'Daemon command')
                                 
     parser.add_argument(   '--check', '-c',
-                                type = list,
+                                type = str,
                                 nargs='+',
                                 required = False,
                                 default = 0,
@@ -66,9 +68,12 @@ def cl_parser():
     
     return parser.parse_args()
 
+####--------------------------------------------------------------------------------------------------------------
 
 def cl_convert_to_dict(args):
     """
     Convert args object in dictionary
     """
     return vars(args)
+
+####--------------------------------------------------------------------------------------------------------------

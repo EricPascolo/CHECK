@@ -8,6 +8,7 @@
 import os
 import regex
 
+####--------------------------------------------------------------------------------------------------------------
 
 def resolve_env_path(dictionary):
     '''Given dictionary substitute into path env var'''
@@ -20,6 +21,7 @@ def resolve_env_path(dictionary):
         except:
             pass
 
+####--------------------------------------------------------------------------------------------------------------
 
 def is_valid(path):
     '''Check if path is linux path'''
@@ -32,5 +34,6 @@ def is_valid(path):
     else:
         return True
 
+####--------------------------------------------------------------------------------------------------------------
              
 

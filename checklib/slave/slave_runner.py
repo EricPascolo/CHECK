@@ -8,6 +8,8 @@ import logging
 from checklib.core import checkobj_result
 check_results = []
 
+####--------------------------------------------------------------------------------------------------------------
+
 def main(checkcore):
     
     logger = logging.getLogger(checkcore.loggername)
@@ -20,5 +22,5 @@ def main(checkcore):
         cs.postproc()
         cs.result = cs.comparison()
 
-
+####--------------------------------------------------------------------------------------------------------------
     

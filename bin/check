@@ -16,7 +16,7 @@ import sys
 import os
 import logging
 
-
+####--------------------------------------------------------------------------------------------------------------
 
 if sys.version_info[:2] < (2,7):
     v_info = sys.version_info[:3]
@@ -45,3 +45,6 @@ elif cl_args["daemon"]:
 else:
     from checklib.slave import slave_runner
     slave_runner.main(checkcore)
+
+
+####--------------------------------------------------------------------------------------------------------------
