@@ -16,11 +16,14 @@ def main(checkcore):
     logger.debug("Star slave")
     
     for cs in checkcore.checktests:
-        logger.debug("CheckTest : "+checkcore.checktest.name)
+        logger.debug("--------------- CheckTest : "+cs.get_name())
         cs.preproc()
         cs.run()
         cs.postproc()
-        cs.result = cs.comparison()
+        check_results.append(cs.comparison())
+
+    for cr in check_results:
+        logger.info( str(cr.measure)+" "+cr.udm+" "+cr.check_status_dictionary[cr.status] )
 
 ####--------------------------------------------------------------------------------------------------------------
     

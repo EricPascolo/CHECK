@@ -23,6 +23,7 @@ class check_core:
     loglevel = " "
     logtype = " "
 
+    checktests = []
     check_test_directory = " "
     check_tests_list = " "
     execution = " "
@@ -75,9 +76,6 @@ class check_core:
         ## extract cl setting and put it in core object
         self.extract_to_cl(cl_arg)
 
-                
-        #load checktest list module
-
 ####--------------------------------------------------------------------------------------------------------------    
 
     def extract_to_cl(self,cl):
@@ -102,6 +100,7 @@ class check_core:
         names_of_check_test = "".join(cl["check"]).split(",")
         logger.debug(names_of_check_test)
         
+        # load checktest object list
         self.checktests = self.load_checktest(names_of_check_test)
 
 ####--------------------------------------------------------------------------------------------------------------
