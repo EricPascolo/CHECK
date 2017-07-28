@@ -14,3 +14,4 @@ export CHECK_HOME=$CHECK_PATH
 export PATH=$BINDIR:$PATH
 export PYTHONPATH=$CHECK_PATH:$PYTHONPATH
 alias checkcleandir='cd $CHECK_HOME ; find . -name '*.pyc' -delete; cd $OLDPWD'
+alias pyccleandir='find . -name '*.pyc' -delete'
