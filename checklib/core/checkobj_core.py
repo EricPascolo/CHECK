@@ -7,11 +7,13 @@
 import logging
 import os
 import sys
-import imp
+import importlib
 from checklib.inout import file_reader
 from checklib.inout import checklog
 from checklib.common import utils
 from operator import concat
+from checklib.test.check_test_template import checktest
+
 class check_core:
     '''
     This object contain all setting that the software 
@@ -117,26 +119,27 @@ class check_core:
 
     def load_checktest(self,cklist):
         """ Given check list import matching checktest module """
-        
+
         logger = logging.getLogger(self.loggername)
 
         ctarray = []
-        
+        sys.path.append(self.check_test_directory)
+
         for ct in cklist:
 
             #build check test directory path
-            path_test_dir = self.check_test_directory+"/"+ct+"/checktest.py"
+            path_test_dir = self.check_test_directory+"/"+ct
+
+            #build check test module init
+            path_test_init = path_test_dir+"/__init__.py"
 
             #check if path exiist
-            if os.path.exists(path_test_dir):
-
-                logger.debug("CHECK TEST FOUND IN:"+path_test_dir)
+            if os.path.exists(path_test_init):
                 
-                #build check test module name
-                module_name = "checktest."+ct
+                logger.debug("CHECK TEST FOUND IN:"+path_test_dir)
 
                 #load dynamicaly check test class
-                dynamic_class = imp.load_source(module_name,path_test_dir)
+                dynamic_class = importlib.import_module(ct)
                 
                 #get name of class to call
                 method_to_call = getattr(dynamic_class, ct)
@@ -148,9 +151,6 @@ class check_core:
                 ctarray.append(obj)
             else:
                 logger.critical("CHECK TEST NOT FOUND : "+ct)
-
-        for ckt in ctarray:
-            ckt.get_name()
 
         return ctarray
 

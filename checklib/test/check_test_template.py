@@ -1,9 +1,20 @@
+#
+# CHECK
+#
+# @authors : Eric Pascolo
+#
+
 import logging
+
 
 class checktest():
 
     """ Checktest template class """
 
+    name = ""
+    version = ""
+    url = ""
+    
     checklog = None
 
 ####--------------------------------------------------------------------------------------------------------------
