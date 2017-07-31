@@ -14,25 +14,31 @@ from checklib.common import utils
 from operator import concat
 from checklib.test.check_test_template import checktest
 
+
+#################################################################################################### SETTING CLASS
+
+class check_core_setting:
+    '''
+    Setting parameter of core
+    '''
+
+    logger_name = " "
+    check_test_directory = " "
+
+####################################################################################################### CORE CLASS
+
 class check_core:
     '''
     This object contain all setting that the software 
     '''
-
-    loggername = " "
-    loglevel = " "
-    logtype = " "
-
-    checktests = []
-    check_test_directory = " "
-    check_tests_list = " "
-    execution = " "
-    hpc_cluster_list = " "
+    setting = None  # check core setting object 
+    checktests = [] # list of checktest object
 
 ####--------------------------------------------------------------------------------------------------------------
 
     def __init__(self,cl_arg):
         
+        self.setting = check_core_setting()
         check_file = os.path.realpath(os.path.expanduser(__file__))
         check_prefix = os.path.dirname(os.path.dirname(os.path.dirname(check_file)))
        
@@ -62,13 +68,13 @@ class check_core:
 
         ## enable log with cl or file setting
         try:
-            self.loggername = checklog.checkloggin(json_setting["loglevel"],json_setting["logfile"],cl_arg["log"],cl_arg["logfile"],json_setting["logtype"])
+            self.setting.logger_name = checklog.checkloggin(json_setting["loglevel"],json_setting["logfile"],cl_arg["log"],cl_arg["logfile"],json_setting["logtype"])
         except KeyError:
-            self.loggername = checklog.checkloggin(json_setting["loglevel"],json_setting["logfile"],cl_arg["log"],cl_arg["logfile"])
+            self.setting.logger_name = checklog.checkloggin(json_setting["loglevel"],json_setting["logfile"],cl_arg["log"],cl_arg["logfile"])
         
         
-        logger = logging.getLogger(self.loggername)
-        logger.debug(self.loggername)
+        logger = logging.getLogger(self.setting.logger_name)
+        logger.debug(self.setting.logger_name)
 
         ## extract check setting and put it in core object
         self.extract_to_file(json_setting)
@@ -82,7 +88,7 @@ class check_core:
         
         """ Extract all information from command line and put it in check core object """
 
-        logger = logging.getLogger(self.loggername)
+        logger = logging.getLogger(self.setting.logger_name)
 
         # update cl setting with conf file setting if exist
         # the conf file setting override cl setting
@@ -107,11 +113,11 @@ class check_core:
 
     def extract_to_file(self,setting):
         
-        logger = logging.getLogger(self.loggername)
+        logger = logging.getLogger(self.setting.logger_name)
         
         #check test repo path
-        self.check_test_directory = setting["checktest_directory"]
-        logger.debug("CHECKTEST DIR : "+self.check_test_directory)
+        self.setting.check_test_directory = setting["checktest_directory"]
+        logger.debug("CHECKTEST DIR : "+self.setting.check_test_directory)
         pass
 
 ####--------------------------------------------------------------------------------------------------------------
@@ -119,15 +125,15 @@ class check_core:
     def load_checktest(self,cklist):
         """ Given check list import matching checktest module """
 
-        logger = logging.getLogger(self.loggername)
+        logger = logging.getLogger(self.setting.logger_name)
 
         ctarray = []
-        sys.path.append(self.check_test_directory)
+        sys.path.append(self.setting.check_test_directory)
 
         for ct in cklist:
 
             #build check test directory path
-            path_test_dir = self.check_test_directory+"/"+ct
+            path_test_dir = self.setting.check_test_directory+"/"+ct
 
             #build check test module init
             path_test_init = path_test_dir+"/__init__.py"
@@ -144,7 +150,7 @@ class check_core:
                 method_to_call = getattr(dynamic_class, ct)
                 
                 #init check test dynamically 
-                obj = method_to_call(self.loggername)
+                obj = method_to_call(self.setting)
                 
                 #append obj test to list
                 ctarray.append(obj)

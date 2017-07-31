@@ -22,8 +22,8 @@ def checkloggin(set_log,set_logfile,cl_log,cl_logfile,logtype="both"):
         logfile = cl_logfile
 
     # create logger with 'spam_application'
-    loggername = 'check_file_stream_log'
-    logger = logging.getLogger(loggername)
+    logger_name = 'check_file_stream_log'
+    logger = logging.getLogger(logger_name)
     logger.setLevel( loglevel  )
     # create file handler which logs even debug messages
     fh = logging.FileHandler(logfile)
@@ -46,7 +46,7 @@ def checkloggin(set_log,set_logfile,cl_log,cl_logfile,logtype="both"):
     if logtype == "file":
         logger.addHandler(fh)
     
-    logger.info("Enable logger name:"+loggername+" type:"+logtype)
+    logger.info("Enable logger name:"+logger_name+" type:"+logtype)
 
-    return loggername
+    return logger_name
     

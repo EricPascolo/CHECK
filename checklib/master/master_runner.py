@@ -9,6 +9,6 @@
 import logging
 
 def main(checkcore):
-    logger = logging.getLogger(checkcore.loggername)
+    logger = logging.getLogger(checkcore.logger_name)
     logger.debug("Start Master")
     pass

@@ -10,12 +10,12 @@ check_results = []
 
 ####--------------------------------------------------------------------------------------------------------------
 
-def main(checkcore):
+def main(check_core):
     
-    logger = logging.getLogger(checkcore.loggername)
+    logger = logging.getLogger(check_core.setting.logger_name)
     logger.debug("Star slave")
     
-    for cs in checkcore.checktests:
+    for cs in check_core.checktests:
         logger.debug("--------------- CheckTest : "+cs.get_name())
         cs.preproc()
         cs.run()
@@ -23,7 +23,7 @@ def main(checkcore):
         check_results.append(cs.comparison())
 
     for cr in check_results:
-        logger.info( str(cr.measure)+" "+cr.udm+" "+cr.check_status_dictionary[cr.status] )
+        logger.critical( str(cr.measure)+" "+cr.udm+" "+cr.check_status_dictionary[cr.status] )
 
 ####--------------------------------------------------------------------------------------------------------------
     

@@ -12,7 +12,7 @@ class deamon_manager:
 ####--------------------------------------------------------------------------------------------------------------
 
     def __init__(self,checkcore):
-        self.logger = logging.getLogger(checkcore.loggername)
+        self.logger = logging.getLogger(checkcore.logger_name)
         self.logger.debug("init deamon")
         
 ####--------------------------------------------------------------------------------------------------------------
