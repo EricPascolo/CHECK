@@ -5,6 +5,7 @@
 #
 
 import logging
+import os
 from checklib.core.checkobj_result import check_result 
 
 class checktest():
@@ -22,11 +23,10 @@ class checktest():
     
     # test parameter
     exucutable = ""
-    test_dir =   ""
-    bin_dir =    ""
-    in_dir =     ""
-    out_dir =    ""
-    tmp_dir =    ""
+    bin_dir  =   "bin"
+    in_dir   =   "in"
+    out_dir  =   "out"
+    tmp_dir  =   "tmp"
 
 
 ################################################################################################ CHECK TETS METHOD
@@ -36,6 +36,7 @@ class checktest():
 
         self.check_core = core 
         self.set_test_logger()
+        self.check_path_builder()
         self.check_log.debug("CHECK TEST INIT : "+self.get_name())
 
 ####--------------------------------------------------------------------------------------------------------------
@@ -85,7 +86,19 @@ class checktest():
 ####--------------------------------------------------------------------------------------------------------------
 
     def check_path_builder(self):
-        self.check_log =  logging.getLogger(self.check_core.logger_name)
-        if 
+         
+        pathlist = [self.bin_dir ,self.in_dir,self.out_dir, self.tmp_dir]
+
+        for np,p in enumerate(pathlist):
+            if not os.path.isabs(p):
+                    pathlist[np] = self.check_core.check_test_directory+"/"+self.get_name()+"/"+p
+                    self.check_log.debug(pathlist[np])
+
+
+        if self.exucutable is not None:
+            self.exucutable = self.bin_dir + self.exucutable
+            self.check_log.debug(self.exucutable)
+
+
 
 ####--------------------------------------------------------------------------------------------------------------
