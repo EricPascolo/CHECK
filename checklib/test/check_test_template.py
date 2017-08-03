@@ -4,10 +4,12 @@
 # @authors : Eric Pascolo
 #
 
+import subprocess
 import logging
 import os
+import regex
 from checklib.core.checkobj_result import check_result 
-
+from checklib.common.archive import *
 class checktest():
 
     """ Checktest template class """
@@ -18,16 +20,16 @@ class checktest():
     url = ""
     
     # check object
+    result = None
     check_log = None
     check_core = None
-    
-    # test parameter
-    exucutable = ""
-    bin_dir  =   "bin"
-    in_dir   =   "in"
-    out_dir  =   "out"
-    tmp_dir  =   "tmp"
+    std_out = None
+    std_err = None
 
+    # test parameter
+    exe = ""
+    exe_argument = ""
+    test_dir = {'bin_dir': 'bin', 'in_dir': 'in', 'out_dir': 'out','tmp_dir': 'tmp',}
 
 ################################################################################################ CHECK TETS METHOD
 
@@ -49,6 +51,7 @@ class checktest():
 
     def run(self):
         self.check_log.debug("call empty run")
+        self.run_check_xx()
         pass
 
 ####--------------------------------------------------------------------------------------------------------------
@@ -71,7 +74,6 @@ class checktest():
         pass
 
 
-
 ################################################################################################## PROVIDED METHOD
 
 
@@ -87,18 +89,27 @@ class checktest():
 
     def check_path_builder(self):
          
-        pathlist = [self.bin_dir ,self.in_dir,self.out_dir, self.tmp_dir]
 
-        for np,p in enumerate(pathlist):
-            if not os.path.isabs(p):
-                    pathlist[np] = self.check_core.check_test_directory+"/"+self.get_name()+"/"+p
-                    self.check_log.debug(pathlist[np])
-
-
-        if self.exucutable is not None:
-            self.exucutable = self.bin_dir + self.exucutable
-            self.check_log.debug(self.exucutable)
+        for k in self.test_dir:
+            if not os.path.isabs(self.test_dir[k]):
+                    self.test_dir[k] = self.check_core.check_test_directory+"/"+self.get_name()+"/"+self.test_dir[k]
+                    self.check_log.debug(self.test_dir[k])
 
 
+        if self.exe is not None:
+            self.exe = self.test_dir['bin_dir'] +"/"+ self.exe
+            self.check_log.debug(self.exe)
+
+
+
+####--------------------------------------------------------------------------------------------------------------
+
+
+    def run_check_xx(self):
+
+      self.check_log.debug(self.exe)
+      string_to_execute = self.exe + self.exe_argument
+      process = subprocess.Popen( self.exe, shell=False,cwd=self.test_dir["bin_dir"],stdout=subprocess.PIPE)
+      self.std_out, self.std_err = process.communicate()
 
 ####--------------------------------------------------------------------------------------------------------------

@@ -17,11 +17,13 @@ def main(check_core):
     
     for cs in check_core.checktests:
         logger.debug("--------------- CheckTest : "+cs.get_name())
-        cs.preproc()
-        cs.run()
-        cs.postproc()
-        check_results.append(cs.comparison())
-
+        try: 
+            cs.preproc()
+            cs.run()
+            cs.postproc()
+            check_results.append(cs.comparison())
+        except:
+            check_results.append(checkobj_result.check_result())
     for cr in check_results:
         logger.critical( str(cr.measure)+" "+cr.udm+" "+cr.check_status_dictionary[cr.status] )
 

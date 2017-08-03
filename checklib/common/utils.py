@@ -7,6 +7,7 @@
 
 import os
 import regex
+from checklib.common.archive import *
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -27,37 +28,11 @@ def is_valid(path):
     '''Check if path is linux path'''
 
     #regex to check path
-    prog = regex.compile(r"^(/)([^/\0]+(/)?)+$")
+    prog = regex.compile(regex_path)#(r"^(/)([^/\0]+(/)?)+$")
     valid = prog.match(path)
     if valid is None:
         return False
     else:
         return True
-
-####--------------------------------------------------------------------------------------------------------------
-
-# def is_abs_dir_path(path):
-#     '''Check if path is linux path'''
-
-#     #regex to check path
-#     prog = regex.compile(r"^(/)([^/\0]+(/)?)+$")
-#     valid = prog.match(path)
-#     if valid is None:
-#         return False
-#     else:
-#         return True
-
-# ####--------------------------------------------------------------------------------------------------------------
-
-# def is_abs_file_path(path):
-#     '''Check if path is linux path'''
-
-#     #regex to check path
-#     prog = regex.compile(r"^(/)([^/\0]+(/)?)+$")
-#     valid = prog.match(path)
-#     if valid is None:
-#         return False
-#     else:
-#         return True
 
 ####--------------------------------------------------------------------------------------------------------------
