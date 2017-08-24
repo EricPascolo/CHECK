@@ -132,8 +132,18 @@ class check_core:
 
         for ct in cklist:
 
-            #build check test directory path
-            path_test_dir = self.setting.check_test_directory+"/"+ct
+            #split check test name in name,version,architecture and build correct path
+            ct_sfw,ct_arch,ct_vers,ct_num_par = utils.split_name_version(ct)
+            logger.debug("CT split : "+ct+" name "+ct_sfw+" arch "+ct_arch+" version "+ct_vers)
+
+            if ct_arch != None:
+                path_test_dir = self.setting.check_test_directory+"/"+ct_sfw+"/"+ct_arch
+                module_name = ct_sfw+"."+ct_arch
+            else:
+                path_test_dir = self.setting.check_test_directory+"/"+ct_sfw
+                module_name = ct_sfw
+
+            logger.debug(path_test_dir + "---" + module_name)
 
             #build check test module init
             path_test_init = path_test_dir+"/__init__.py"
@@ -142,15 +152,14 @@ class check_core:
             if os.path.exists(path_test_init):
                 
                 logger.debug("CHECK TEST FOUND IN:"+path_test_dir)
-
                 #load dynamicaly check test class
-                dynamic_class = importlib.import_module(ct)
+                dynamic_class = importlib.import_module(module_name)
                 
                 #get name of class to call
-                method_to_call = getattr(dynamic_class, ct)
+                method_to_call = getattr(dynamic_class, ct_sfw)
                 
                 #init check test dynamically 
-                obj = method_to_call(self.setting)
+                obj = method_to_call(self.setting,ct_arch,ct_vers)
                 
                 #append obj test to list
                 ctarray.append(obj)

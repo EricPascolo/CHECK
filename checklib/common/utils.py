@@ -36,3 +36,23 @@ def is_valid(path):
         return True
 
 ####--------------------------------------------------------------------------------------------------------------
+
+def split_name_version(software_string):
+    '''
+    Given the software split name version and architecture
+    Use @ symbol to architecture and # symbol for the version   
+    '''
+    prog = regex.compile(regex_splitsoftware)
+    software_list = regex.split(regex_splitsoftware,software_string)
+
+    software_hardware = ""
+    software_version  = ""
+    software_name = software_list[0]
+    num_parameter = len(software_list)
+    
+    if num_parameter >= 2:
+        software_hardware = software_list[1]
+    if num_parameter == 3:
+        software_version  = software_list[2]
+    
+    return software_name,software_hardware,software_version,num_parameter

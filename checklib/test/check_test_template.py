@@ -18,7 +18,9 @@ class checktest():
     name = ""
     version = ""
     url = ""
-    
+    target_arch = ""
+    test_vers = ""
+
     # check object
     result = None
     check_log = None
@@ -34,9 +36,11 @@ class checktest():
 ################################################################################################ CHECK TETS METHOD
 
 
-    def __init__(self,core):
+    def __init__(self,core,arch,vers):
 
         self.check_core = core 
+        self.target_arch = arch
+        self.test_vers = vers
         self.set_test_logger()
         self.check_path_builder()
         self.check_log.debug("CHECK TEST INIT : "+self.get_name())
@@ -92,7 +96,7 @@ class checktest():
 
         for k in self.test_dir:
             if not os.path.isabs(self.test_dir[k]):
-                    self.test_dir[k] = self.check_core.check_test_directory+"/"+self.get_name()+"/"+self.test_dir[k]
+                    self.test_dir[k] = self.check_core.check_test_directory+"/"+self.get_name()+"/"+self.target_arch+"/"+self.test_dir[k]
                     self.check_log.debug(self.test_dir[k])
 
 

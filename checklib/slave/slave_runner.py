@@ -23,7 +23,7 @@ def main(check_core):
             cs.postproc()
             check_results.append(cs.comparison())
         except:
-            check_results.append(checkobj_result.check_result())
+            check_results.append(checkobj_result.check_result(cs.get_name(),"FAIL"))
     for cr in check_results:
         logger.critical( str(cr.measure)+" "+cr.udm+" "+cr.check_status_dictionary[cr.status] )
 
