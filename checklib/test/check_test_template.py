@@ -99,8 +99,9 @@ class checktest():
                     self.test_dir[k] = self.check_core.check_test_directory+"/"+self.get_name()+"/"+self.target_arch+"/"+self.test_dir[k]
                     self.check_log.debug(self.test_dir[k])
 
+        #self.check_log.debug(self.exe)
 
-        if self.exe is not None:
+        if not os.path.isabs(self.exe):
             self.exe = self.test_dir['bin_dir'] +"/"+ self.exe
             self.check_log.debug(self.exe)
 
