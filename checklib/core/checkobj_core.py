@@ -102,13 +102,15 @@ class check_core:
             except:
                 logger.critical("wrong merge cl with conf file")
 
-        # load name of check test in list
-        names_of_check_test = "".join(cl["check"]).split(",")
-        logger.debug(names_of_check_test)
-        
-        # load checktest object list
-        self.checktests = self.load_checktest(names_of_check_test)
-
+        if not cl["check"] == "-999":
+            # load name of check test in list
+            names_of_check_test = "".join(cl["check"]).split(",")
+            logger.debug(names_of_check_test)
+            
+            # load checktest object list
+            self.checktests = self.load_checktest(names_of_check_test)
+        else:
+            logger.critical("Checktest list is empty")
 ####--------------------------------------------------------------------------------------------------------------
 
     def extract_to_file(self,setting):

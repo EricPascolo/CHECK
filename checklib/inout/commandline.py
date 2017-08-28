@@ -33,7 +33,7 @@ def cl_parser():
                                 type = str,
                                 nargs='+',
                                 required = False,
-                                default = 0,
+                                default = "-999",
                                 help = 'List of check')
     
     parser.add_argument(   '--hpc', 
