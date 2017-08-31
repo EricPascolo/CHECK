@@ -40,6 +40,9 @@ cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
 ##init check setting object
 checkcore = checkobj_core.check_core(cl_args)
 
+logger = logging.getLogger(checkcore.setting.logger_name)
+logger.critical("CHECK "+__version__+" START ")
+
 ## master
 if cl_args["master"]:
     from checklib.master import master_runner
