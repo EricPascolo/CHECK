@@ -7,7 +7,7 @@
 import logging
 import os
 from checklib.core import checkobj_result
-check_results = []
+
 
 ####--------------------------------------------------------------------------------------------------------------
 
