@@ -15,5 +15,7 @@ class check_result:
         if status is "FAIL":
             self._benchmark = name
             self.status = 3
-        pass
+            self.measure = -999.0
+            self.udm = "empty"
+        
 

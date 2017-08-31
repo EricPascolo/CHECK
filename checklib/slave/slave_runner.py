@@ -15,7 +15,7 @@ def main(check_core):
     
     logger = logging.getLogger(check_core.setting.logger_name)
     logger.debug("Star slave")
-    
+    check_results = []
     for cs in check_core.checktests:
         logger.debug("--------------- CheckTest : "+cs.get_name())
         try: 
@@ -25,9 +25,12 @@ def main(check_core):
             check_results.append(cs.comparison())
         except:
             check_results.append(checkobj_result.check_result(cs.get_name(),"FAIL"))
+           
 
+
+   
     for cr in check_results:
-        logger.critical(os.getenv("HOSTNAME") +" -->"+ str(cr.measure)+" "+cr.udm+" "+cr.check_status_dictionary[cr.status] )
+        logger.critical(str(os.getenv("HOSTNAME")) +" --> "+str(cr.measure)+" "+cr.udm+" "+cr.check_status_dictionary[cr.status] )
 
 ####--------------------------------------------------------------------------------------------------------------
     
