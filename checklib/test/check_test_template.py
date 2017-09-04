@@ -14,29 +14,33 @@ class checktest():
 
     """ Checktest template class """
 
-    #test description
-    name = ""
-    version = ""
-    url = ""
-    target_arch = ""
-    test_vers = ""
-
-    # check object
-    result = None
-    check_log = None
-    check_core = None
-    std_out = None
-    std_err = None
-
-    # test parameter
-    exe = ""
-    exe_argument = ""
-    test_dir = {'bin_dir': 'bin', 'in_dir': 'in', 'out_dir': 'out','tmp_dir': 'tmp',}
-
+ 
 ################################################################################################ CHECK TETS METHOD
 
 
     def __init__(self,core,arch,vers):
+
+        
+        self.test_dir = {'bin_dir': 'bin', 'in_dir': 'in', 'out_dir': 'out','tmp_dir': 'tmp',}
+        #test description
+        self.name = ""
+        self.version = ""
+        self.url = ""
+        self.target_arch = ""
+        self.test_vers = ""
+
+        # check object
+        self.result = None
+        self.check_log = None
+        self.check_core = None
+        self.std_out = None
+        self.std_err = None
+
+        # test parameter
+        
+        self.exe_argument = ""
+
+
 
         self.check_core = core 
         self.target_arch = arch
@@ -93,8 +97,8 @@ class checktest():
 
     def check_path_builder(self):
          
-
         for k in self.test_dir:
+           
             if not os.path.isabs(self.test_dir[k]):
                     self.test_dir[k] = self.check_core.check_test_directory+"/"+self.get_name()+"/"+self.target_arch+"/"+self.test_dir[k]
                     self.check_log.debug(self.test_dir[k])
