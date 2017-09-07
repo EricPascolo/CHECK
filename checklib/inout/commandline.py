@@ -23,6 +23,11 @@ def cl_parser():
                             required = False,
                             help = 'Master/slave flag')
 
+    parser.add_argument(   '--install', 
+                            action = 'store_true' ,
+                            required = False,
+                            help = 'Install checktest')
+
     parser.add_argument(   '--daemon', 
                                 type = str,
                                 required = False,

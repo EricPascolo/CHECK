@@ -1,5 +1,13 @@
+#
+# CHECK
+#
+# @authors : Eric Pascolo
+#
+
 
 from checklib.core.checkobj_result import check_result
+
+####--------------------------------------------------------------------------------------------------------------
 
 def simple_mb_analisys(result_array):
     """
@@ -12,6 +20,7 @@ def simple_mb_analisys(result_array):
     - FAIL : if some benchmatk was not executed
 
     """
+    
     final_mark = 1
 
     for m in result_array:
@@ -31,4 +40,20 @@ def simple_mb_analisys(result_array):
             mark = "DEEP WARNING"
 
 
-    return mark,final_mark
+    return mark
+
+####--------------------------------------------------------------------------------------------------------------
+
+def  analisys(check_core,check_result_array):
+
+    mark = "empty"
+
+    if "analysis" not in check_core.setting:
+        mark = simple_mb_analisys(check_result_array)
+
+    elif  check_core.setting["analysis"] == "simple":
+        mark = simple_mb_analisys(check_result_array)
+
+    return mark
+
+####--------------------------------------------------------------------------------------------------------------
