@@ -54,7 +54,7 @@ def cl_parser():
                                 default = "-999",
                                 help = 'kind of analysis')
    
-    parser.add_argument(   '--log', 
+    parser.add_argument(   '--loglevel', 
                                 type = str,
                                 required = False,
                                 help = 'Input file')
@@ -74,6 +74,10 @@ def cl_convert_to_dict(args):
     """
     Convert args object in dictionary
     """
-    return vars(args)
+
+    convdict = vars(args)
+    newdict =   dict([(vkey, vdata) for vkey, vdata in convdict.iteritems() if(vdata) ])
+  
+    return newdict
 
 ####--------------------------------------------------------------------------------------------------------------

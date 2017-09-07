@@ -56,3 +56,18 @@ def split_name_version(software_string):
         software_version  = software_list[2]
     
     return software_name,software_hardware,software_version,num_parameter
+
+
+
+####--------------------------------------------------------------------------------------------------------------
+
+def remove_newline_in(stringline):
+    '''
+    remove newline at the end of the string
+    '''
+    if stringline.endswith("\r\n"): 
+        return stringline[:-2]
+    if stringline.endswith("\n"): 
+        return stringline[:-1]
+    else :
+        return stringline

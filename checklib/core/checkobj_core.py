@@ -33,6 +33,7 @@ class check_core:
     '''
     setting = None  # check core setting object 
     checktests = [] # list of checktest object
+    global_setting = None
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -62,65 +63,68 @@ class check_core:
         ## extract setting information from json file
         json_setting = file_reader.json_reader(check_setting_path)
         
-        ## substitute in path ENV variable
-        utils.resolve_env_path(json_setting)
-        utils.resolve_env_path(cl_arg)
+        ## extract check setting and put it in core object
+        self.extract_merge_setting(cl_arg,json_setting)
 
-        ## enable log with cl or file setting
+        ## enable log with user setting
         try:
-            self.setting.logger_name = checklog.checkloggin(json_setting["loglevel"],json_setting["logfile"],cl_arg["log"],cl_arg["logfile"],json_setting["logtype"])
+            self.setting.logger_name = checklog.checkloggin(self.global_setting["loglevel"],self.global_setting["logfile"],self.global_setting["logtype"])
         except KeyError:
-            self.setting.logger_name = checklog.checkloggin(json_setting["loglevel"],json_setting["logfile"],cl_arg["log"],cl_arg["logfile"])
+            pass
         
-        
+        #set logger for this subroutine
         logger = logging.getLogger(self.setting.logger_name)
         logger.debug(self.setting.logger_name)
 
-        ## extract check setting and put it in core object
-        self.extract_to_file(json_setting)
-
-        ## extract cl setting and put it in core object
-        self.extract_to_cl(cl_arg)
-
-####--------------------------------------------------------------------------------------------------------------    
-
-    def extract_to_cl(self,cl):
-        
-        """ Extract all information from command line and put it in check core object """
-
-        logger = logging.getLogger(self.setting.logger_name)
-
-        # update cl setting with conf file setting if exist
-        # the conf file setting override cl setting
-        if cl["configuration"] is not None:
-
-            try: 
-                json_config_setting = {}
-                json_config_setting = file_reader.json_reader(cl["configuration"])
-                cl.update(json_config_setting)
-                logger.info("merge cl with conf file")
-            except:
-                logger.critical("wrong merge cl with conf file")
-
-        if not cl["check"] == "-999":
+        if not self.global_setting["check"] == "-999":
             # load name of check test in list
-            names_of_check_test = "".join(cl["check"]).split(",")
+            names_of_check_test = "".join(self.global_setting["check"]).split(",")
             logger.debug(names_of_check_test)
             
             # load checktest object list
             self.checktests = self.load_checktest(names_of_check_test)
         else:
             logger.critical("Checktest list is empty")
-####--------------------------------------------------------------------------------------------------------------
 
-    def extract_to_file(self,setting):
+####--------------------------------------------------------------------------------------------------------------    
+
+    def extract_merge_setting(self,cl,json_basic):
         
-        logger = logging.getLogger(self.setting.logger_name)
+        """ Extract and merge  all setting information from command line, json conf file and json
+        basic conf file. The priority order is cl, conf file, basic conf file """
+
+        logger = logging.getLogger("basic")
         
-        #check test repo path
-        self.setting.check_test_directory = setting["checktest_directory"]
-        logger.debug("CHECKTEST DIR : "+self.setting.check_test_directory)
-        pass
+        ## substitute in path ENV variable
+        utils.resolve_env_path(cl)
+        utils.resolve_env_path(json_basic)
+
+        if "configuration" in cl:
+
+            try: 
+                json_config_setting = {}
+                json_config_setting = file_reader.json_reader(cl["configuration"])
+                utils.resolve_env_path(json_config_setting)
+                json_config_setting.update(cl)
+                json_basic.update(json_config_setting)
+                logger.debug("merge cl with conf file and basic setting file")
+            except:
+                logger.critical("wrong merge amog cl,json conf and json basic")
+
+        else :
+
+            try: 
+                json_basic.update(cl)
+                logger.debug("merge cl with basic setting file")
+            except:
+                logger.critical("wrong merge between cl and json basic")
+
+
+        self.global_setting = json_basic.copy()
+        self.setting.check_test_directory =  self.global_setting["checktest_directory"]
+        logger.info("CHECKTEST DIR : "+self.setting.check_test_directory)
+       
+
 
 ####--------------------------------------------------------------------------------------------------------------
 

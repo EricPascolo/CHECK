@@ -11,6 +11,7 @@
 
 from __future__ import print_function
 from checklib.inout import commandline
+from checklib.inout import checklog
 from checklib.core import checkobj_core
 import sys
 import os
@@ -22,7 +23,7 @@ __author__ = "Eric Pascolo"
 __copyright__ = "Copyright 2017, B.U HPC - CINECA"
 __credits__ = [""]
 __license__ = "GNU Affero GPL v.3"
-__version__ = "0.1.001"
+__version__ = "0.1.002"
 __email__ = "eric.pascolo@cineca.it"
 __status__ = "Development"
 
@@ -33,6 +34,9 @@ if sys.version_info[:2] < (2,7):
              "This is Python %d.%d.%d." % v_info)
 
 
+#set basic logger
+logger = logging.getLogger("basic")
+logger.critical("CHECK "+__version__+" START ")
 
 ##read commandline flag
 cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
@@ -40,16 +44,13 @@ cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
 ##init check setting object
 checkcore = checkobj_core.check_core(cl_args)
 
-logger = logging.getLogger(checkcore.setting.logger_name)
-logger.critical("CHECK "+__version__+" START ")
-
 ## master
-if cl_args["master"]:
+if "master" in checkcore.global_setting :
     from checklib.master import master_runner
     master_runner.main(checkcore)
 
 ## daemon 
-elif cl_args["daemon"]:
+elif "daemon" in checkcore.global_setting:
     from checklib.daemon import daemon_manager
     Dcheck = daemon_manager.deamon_manager(checkcore)
     Dcheck.command(cl_args)

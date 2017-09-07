@@ -2,6 +2,16 @@
 from checklib.core.checkobj_result import check_result
 
 def simple_mb_analisys(result_array):
+    """
+    Simpler multibenchmark analyssis, the node result is computed using this schema:
+
+    - OK : if all result are OK
+    - WARNING : if some results are warning
+    - DEEP WARNING : if all results are warning
+    - DOWN : if some results are DOWN
+    - FAIL : if some benchmatk was not executed
+
+    """
     final_mark = 1
 
     for m in result_array:

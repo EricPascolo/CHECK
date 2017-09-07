@@ -7,19 +7,14 @@
 
 import logging
 
-def checkloggin(set_log,set_logfile,cl_log,cl_logfile,logtype="both"):
+logger_name = 'basic'
+logger = logging.getLogger(logger_name)
+logger.setLevel( "INFO"  )
+ch = logging.StreamHandler()
+logger.addHandler(ch)
+
+def checkloggin(loglevel,logfile,logtype="both"):
     
-    ## set logleve, command line set have priority
-    if cl_log is None:
-        loglevel = logging.getLevelName(set_log)
-    else:
-        loglevel = logging.getLevelName(cl_log)
-    
-    ## set logfile, command line set have priority
-    if cl_logfile is None:
-        logfile = set_logfile
-    else:
-        logfile = cl_logfile
 
     # create logger with 'spam_application'
     logger_name = 'check_file_stream_log'
