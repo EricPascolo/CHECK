@@ -39,9 +39,6 @@ class checktest():
         # test parameter
         
         self.exe_argument = ""
-
-
-
         self.check_core = core 
         self.target_arch = arch
         self.test_vers = vers
@@ -91,7 +88,7 @@ class checktest():
 ####--------------------------------------------------------------------------------------------------------------
 
     def set_test_logger(self):
-        self.check_log =  logging.getLogger(self.check_core.logger_name)
+        self.check_log =  logging.getLogger(self.check_core["logger_name"])
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -100,11 +97,10 @@ class checktest():
         for k in self.test_dir:
            
             if not os.path.isabs(self.test_dir[k]):
-                    self.test_dir[k] = self.check_core.check_test_directory+"/"+self.get_name()+"/"+self.target_arch+"/"+self.test_dir[k]
+                    self.test_dir[k] = self.check_core["check_test_directory"]+"/"+self.get_name()+"/"+self.target_arch+"/"+self.test_dir[k]
                     self.check_log.debug(self.test_dir[k])
 
-        #self.check_log.debug(self.exe)
-
+        
         if not os.path.isabs(self.exe):
             self.exe = self.test_dir['bin_dir'] +"/"+ self.exe
             self.check_log.debug(self.exe)

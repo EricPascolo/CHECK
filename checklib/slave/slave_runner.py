@@ -22,7 +22,7 @@ def main(check_core):
     """
     
     # define logger
-    logger = logging.getLogger(check_core.setting.logger_name)
+    logger = logging.getLogger(check_core.setting["logger_name"])
     logger.debug("Star slave")
 
     # checktest result collection list

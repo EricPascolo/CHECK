@@ -14,17 +14,6 @@ from checklib.common import utils
 from operator import concat
 from checklib.test.check_test_template import checktest
 
-
-#################################################################################################### SETTING CLASS
-
-class check_core_setting:
-    '''
-    Setting parameter of core
-    '''
-
-    logger_name = " "
-    check_test_directory = " "
-
 ####################################################################################################### CORE CLASS
 
 class check_core:
@@ -33,13 +22,13 @@ class check_core:
     '''
     setting = None  # check core setting object 
     checktests = [] # list of checktest object
-    global_setting = None
+   
 
 ####--------------------------------------------------------------------------------------------------------------
 
     def __init__(self,cl_arg):
         
-        self.setting = check_core_setting()
+       
         check_file = os.path.realpath(os.path.expanduser(__file__))
         check_prefix = os.path.dirname(os.path.dirname(os.path.dirname(check_file)))
        
@@ -68,17 +57,19 @@ class check_core:
 
         ## enable log with user setting
         try:
-            self.setting.logger_name = checklog.checkloggin(self.global_setting["loglevel"],self.global_setting["logfile"],self.global_setting["logtype"])
+            lgnm = checklog.checkloggin(self.setting["loglevel"],self.setting["logfile"],self.setting["logtype"])
+            print lgnm
+            self.setting.update({"logger_name":lgnm})
         except KeyError:
             pass
         
         #set logger for this subroutine
-        logger = logging.getLogger(self.setting.logger_name)
-        logger.debug(self.setting.logger_name)
+        logger = logging.getLogger(self.setting["logger_name"])
+        logger.debug(self.setting["logger_name"])
 
-        if not self.global_setting["check"] == "-999":
+        if not self.setting["check"] == "-999":
             # load name of check test in list
-            names_of_check_test = "".join(self.global_setting["check"]).split(",")
+            names_of_check_test = "".join(self.setting["check"]).split(",")
             logger.debug(names_of_check_test)
             
             # load checktest object list
@@ -120,9 +111,9 @@ class check_core:
                 logger.critical("wrong merge between cl and json basic")
 
 
-        self.global_setting = json_basic.copy()
-        self.setting.check_test_directory =  self.global_setting["checktest_directory"]
-        logger.info("CHECKTEST DIR : "+self.setting.check_test_directory)
+        self.setting = json_basic.copy()
+        self.setting.update({"check_test_directory" :self.setting["checktest_directory"]})
+        logger.info("CHECKTEST DIR : "+self.setting["check_test_directory"])
        
 
 
@@ -131,10 +122,10 @@ class check_core:
     def load_checktest(self,cklist):
         """ Given check list import matching checktest module """
 
-        logger = logging.getLogger(self.setting.logger_name)
+        logger = logging.getLogger(self.setting["logger_name"])
 
         ctarray = []
-        sys.path.append(self.setting.check_test_directory)
+        sys.path.append(self.setting["check_test_directory"])
 
         for ct in cklist:
 
@@ -143,10 +134,10 @@ class check_core:
             logger.debug("CT split : "+ct+" name "+ct_sfw+" arch "+ct_arch+" version "+ct_vers)
 
             if ct_arch != None:
-                path_test_dir = self.setting.check_test_directory+"/"+ct_sfw+"/"+ct_arch
+                path_test_dir = self.setting["check_test_directory"]+"/"+ct_sfw+"/"+ct_arch
                 module_name = ct_sfw+"."+ct_arch
             else:
-                path_test_dir = self.setting.check_test_directory+"/"+ct_sfw
+                path_test_dir = self.setting["check_test_directory"]+"/"+ct_sfw
                 module_name = ct_sfw
 
             logger.debug(path_test_dir + "---" + module_name)

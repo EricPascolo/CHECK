@@ -33,7 +33,6 @@ if sys.version_info[:2] < (2,7):
     sys.exit("CHECK requires Python 2.7 or higher."
              "This is Python %d.%d.%d." % v_info)
 
-
 #set basic logger
 logger = logging.getLogger("basic")
 logger.critical("CHECK "+__version__+" START ")
@@ -45,12 +44,12 @@ cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
 checkcore = checkobj_core.check_core(cl_args)
 
 ## master
-if "master" in checkcore.global_setting :
+if "master" in checkcore.setting:
     from checklib.master import master_runner
     master_runner.main(checkcore)
 
 ## daemon 
-elif "daemon" in checkcore.global_setting:
+elif "daemon" in checkcore.setting:
     from checklib.daemon import daemon_manager
     Dcheck = daemon_manager.deamon_manager(checkcore)
     Dcheck.command(cl_args)
