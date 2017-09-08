@@ -56,7 +56,6 @@ def cl_parser():
     parser.add_argument(   '--analysis', 
                                 type = str,
                                 required = False,
-                                default = "-999",
                                 help = 'kind of analysis')
    
     parser.add_argument(   '--loglevel', 

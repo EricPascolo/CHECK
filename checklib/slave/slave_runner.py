@@ -64,14 +64,14 @@ def worker(check_core):
         nameofnode = "NOTDEFINED"
         logger.critical("WARNING : impossible to get hostname")
 
+    # multibenchmark analyis call
+    nodemark = multibenchmark.analisys(check_core,check_results)
+    
     # log partial result of single benchmark
     for cr in check_results:
         logger.info(str(nameofnode) +" --> "+str(cr.measure)+" "+cr.udm+" "+cr.status )
     
-    # multibenchmark analyis call
-    nodemark = multibenchmark.analisys(check_core,check_results)
-    
-    # call multibenchmark analysis and log the result
+    # log multibenchmark analysis result
     logger.critical(str(nameofnode) +"  "+ nodemark)
 
 ####--------------------------------------------------------------------------------------------------------------

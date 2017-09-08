@@ -9,7 +9,7 @@ class check_result:
     measure = 0.0
     udm = " "
     status = "ToBOrNotToBe"
-    check_status_dictionary = {"DOWN":3.14,"WARNING":5,"OK":6,"FAIL":0}
+    
     
     def __init__(self,name=None,status=None):
         
