@@ -68,7 +68,10 @@ def cl_parser():
                                 required = False,
                                 help = 'Input file')
 
-    
+    parser.add_argument(   '--checktest_directory', '-checkTD', 
+                                type = str,
+                                required = False,
+                                help = 'check test directory')    
     
     return parser.parse_args()
 
