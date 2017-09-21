@@ -67,12 +67,21 @@ def worker(check_core):
     # multibenchmark analyis call
     nodemark = multibenchmark.analisys(check_core,check_results)
     
+    #open last result in checkresult file 
+    out_file = open(check_core.setting["resultfile"],"w")
+
     # log partial result of single benchmark
     for cr in check_results:
         logger.info(str(nameofnode) +" --> "+str(cr.measure)+" "+cr.udm+" "+cr.status )
+        out_file.write("[PARTIAL] "+str(nameofnode) +" --> "+str(cr.measure)+" "+cr.udm+" "+cr.status+"\n")
     
     # log multibenchmark analysis result
     logger.critical(str(nameofnode) +"  "+ nodemark)
+    out_file.write("[RESULT] "+str(nameofnode) +"  "+ nodemark+"\n")
+
+    
+    #close last result in checkresult file
+    out_file.close()
 
 ####--------------------------------------------------------------------------------------------------------------
 
