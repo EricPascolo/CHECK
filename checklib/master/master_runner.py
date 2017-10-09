@@ -4,7 +4,10 @@
 # @authors : Eric Pascolo
 #
 
+import os
 import logging
+import subprocess
+import traceback
 from checklib.inout import file_reader
 from checklib.common import utils
 from checklib.scheduler import whatscheduler
@@ -13,8 +16,8 @@ def select_checktest_on_architercture(arch,checkcore):
     
     string = ""
     for ct in checkcore.checktests:
-        if ct["arch"]== arch:
-            string =string+ ct["name"]+""+ct["arch"]+","
+        if ct["arch"]== arch or ct["arch"]== "__all__":
+            string =string+ ct["name"]+"@"+ct["arch"]+","
     
     if string.endswith(","): 
         return string[:-1]
@@ -54,22 +57,28 @@ def main(checkcore):
         arch_set = a["setting"]
         host_array = a["nodes"]
         
-        #load descriptor class
+        #load descriptor of architecture
         arch_jsonfile = checkcore.setting["check_test_directory"]+"/architecture/"+arch+".json"
         arch_setting = file_reader.json_reader(arch_jsonfile)[arch_set]
         
         for h in host_array:
             
             arch_setting["hostname"]=h
-            scheduler_string = scheduler.scheduler_string_generator(arch_setting)
-            
             #get scheduler string
+            scheduler_string = scheduler.scheduler_string_generator(arch_setting)
 
             #get slave string
             slave_string = create_slave_cmd_string(arch,checkcore)
 
             #create submit string
             slave_submit_string = scheduler_string + "\"" + slave_string + "\""
-            logger.debug(slave_submit_string)
+            logger.info(slave_submit_string)
 
             #submit via scheduler
+            try:
+                process = subprocess.call( slave_submit_string, shell=True,executable='/bin/bash',env=os.environ)
+         
+            except:
+                logger.critical("SUBMISSION ERROR")
+                traceback.print_exc()
+                

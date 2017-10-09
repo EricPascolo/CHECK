@@ -60,14 +60,31 @@ def split_name_version(software_string):
 ####--------------------------------------------------------------------------------------------------------------
 
 def split_hostline(line):
+    '''
+    Split hostline with this two syntax:
 
+        - arch#recipes:nodelist/
+        - arch:nodelist/
+    
+    The pattern can be repeated with / as separator
+
+    '''
+
+    # find the pattern that mathc with regex
     reg_compiled = regex.compile(regex_parser_hostlist)
     result = reg_compiled.findall(line)
 
     architecture = []
 
     for r in result:
+
+        #check if node is env var and substitute it
+        if "$" in r[5]:
+            r[5] = os.path.expandvars(r[5])
+        #split nodelist 
         nodes_splitted = "".join(r[5]).split(",")
+        
+        #check if submission recipes is default or other
         if r[3] is not '':
             architecture.append({"arch":r[2],"setting":r[3],"nodes":nodes_splitted})
         else:
