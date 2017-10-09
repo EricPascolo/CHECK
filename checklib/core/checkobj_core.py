@@ -72,8 +72,13 @@ class check_core:
             names_of_check_test = "".join(self.setting["check"]).split(",")
             logger.debug(names_of_check_test)
             
-            # load checktest object list
-            self.checktests = self.load_checktest(names_of_check_test)
+            if self.setting["master"]:
+                #check existence of checktest
+                self.checktests = self.checktests_existence(names_of_check_test)
+            else:
+                # load checktest object list
+                self.checktests = self.load_checktest(names_of_check_test)
+
         else:
             logger.critical("Checktest list is empty")
 
@@ -116,6 +121,45 @@ class check_core:
         logger.info("CHECKTEST DIR : "+self.setting["check_test_directory"])
        
 
+
+####--------------------------------------------------------------------------------------------------------------
+
+    def checktests_existence(self,cklist):
+        """ Given check list check if checktest exist or not """
+
+        logger = logging.getLogger(self.setting["logger_name"])
+
+        ctarray = []
+        sys.path.append(self.setting["check_test_directory"])
+
+        for ct in cklist:
+
+            #split check test name in name,version,architecture and build correct path
+            ct_sfw,ct_arch,ct_vers,ct_num_par = utils.split_name_version(ct)
+            logger.debug("CT split : "+ct+" name "+ct_sfw+" arch "+ct_arch+" version "+ct_vers)
+
+            if ct_arch != None:
+                path_test_dir = self.setting["check_test_directory"]+"/"+ct_sfw+"/"+ct_arch
+                module_name = ct_sfw+"."+ct_arch
+            else:
+                path_test_dir = self.setting["check_test_directory"]+"/"+ct_sfw
+                module_name = ct_sfw
+                ct_arch = "__all__"
+
+            logger.debug(path_test_dir + "---" + module_name)
+
+            #build check test module init
+            path_test_init = path_test_dir+"/__init__.py"
+
+            #check if path exiist
+            if os.path.exists(path_test_init):
+                
+                ctarray.append({"name":ct_sfw,"arch":ct_arch})
+                
+            else:
+                logger.critical("CHECK TEST NOT FOUND : "+ct)
+
+        return ctarray
 
 ####--------------------------------------------------------------------------------------------------------------
 

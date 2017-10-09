@@ -71,7 +71,12 @@ def cl_parser():
     parser.add_argument(   '--checktest_directory', '-checkTD', 
                                 type = str,
                                 required = False,
-                                help = 'check test directory')    
+                                help = 'check test directory')
+    
+    parser.add_argument(   '--hostlist', '-hl', 
+                                type = str,
+                                required = False,
+                                help = 'List of Hostname to Master submission')
     
     return parser.parse_args()
 

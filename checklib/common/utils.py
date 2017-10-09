@@ -57,7 +57,25 @@ def split_name_version(software_string):
     
     return software_name,software_hardware,software_version,num_parameter
 
+####--------------------------------------------------------------------------------------------------------------
 
+def split_hostline(line):
+
+    reg_compiled = regex.compile(regex_parser_hostlist)
+    result = reg_compiled.findall(line)
+
+    architecture = []
+
+    for r in result:
+        nodes_splitted = "".join(r[5]).split(",")
+        if r[3] is not '':
+            architecture.append({"arch":r[2],"setting":r[3],"nodes":nodes_splitted})
+        else:
+            architecture.append({"arch":r[4],"setting":"default","nodes":nodes_splitted})
+   
+    return architecture
+    
+    
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -71,3 +89,6 @@ def remove_newline_in(stringline):
         return stringline[:-1]
     else :
         return stringline
+
+
+####--------------------------------------------------------------------------------------------------------------

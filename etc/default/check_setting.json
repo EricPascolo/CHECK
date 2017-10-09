@@ -4,6 +4,6 @@
     "resultfile":"$HOME/checkresult.txt",
     "logtype":"cl",
     
-    "checktest_directory":"/home/epascolo/checktest/"
-    
+    "checktest_directory":"/home/epascolo/checktest/",
+    "check_remote_source_path":"/cinecalocal/usprod/"
 }
