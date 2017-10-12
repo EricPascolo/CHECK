@@ -12,6 +12,25 @@ from checklib.inout import file_reader
 from checklib.common import utils
 from checklib.scheduler import whatscheduler
 
+
+
+def check_collectiong_master_directory(checkcore,logger):
+    ''' Check if master collection result directory exist, if not create it.
+    if return FS error, the function set $HOME ad collect dir    '''
+
+    if not os.path.exists(checkcore.setting["check_master_collecting_path"]):       
+        logger.critical("CHECK MASTER COLLECTING PATH NOT EXIST")
+        try:
+            os.mkdir(checkcore.setting["check_master_collecting_path"])
+            logger.critical("CHECK MASTER COLLECTING PATH CREATE")
+        except:
+            logger.critical("FS ERROR: check permission on check_master_collecting_path")
+            checkcore.setting["check_master_collecting_path"]=os.environ['HOME']
+
+
+    logger.debug("check_master_collecting_path : "+checkcore.setting["check_master_collecting_path"])
+    
+
 def select_checktest_on_architercture(arch,checkcore):
     
     string = ""
@@ -43,6 +62,8 @@ def main(checkcore):
     logger = logging.getLogger(checkcore.setting["logger_name"])
     logger.debug("Start Master")
     
+    #check collecting path and create subdir
+    check_collectiong_master_directory(checkcore,logger)
 
     # load scheduler object
     scheduler = whatscheduler.check_installed_scheduler()
@@ -64,6 +85,8 @@ def main(checkcore):
         for h in host_array:
             
             arch_setting["hostname"]=h
+            arch_setting["jobname"]= "check_"+h
+            arch_setting["jobcollectiongpath"] = checkcore.setting["check_master_collecting_path"]
             #get scheduler string
             scheduler_string = scheduler.scheduler_string_generator(arch_setting)
 
@@ -76,7 +99,7 @@ def main(checkcore):
 
             #submit via scheduler
             try:
-                process = subprocess.call( slave_submit_string, shell=True,executable='/bin/bash',env=os.environ)
+                process = subprocess.call( slave_submit_string, shell=True,cwd=checkcore.setting["check_master_collecting_path"],executable='/bin/bash',env=os.environ)
          
             except:
                 logger.critical("SUBMISSION ERROR")
