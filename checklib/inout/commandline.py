@@ -14,7 +14,7 @@ def cl_parser():
     """
     
     parser = argparse.ArgumentParser(description = '''
-    Python check suite to HPC Cluster''',
+    CHECK : Cluster Health and Environment ChecKing system''',
     formatter_class=argparse.RawTextHelpFormatter
     )
 
@@ -28,24 +28,18 @@ def cl_parser():
                             required = False,
                             help = 'Install checktest')
 
-    parser.add_argument(   '--daemon', 
-                                type = str,
-                                required = False,
-                                choices=['start', 'submit', 'status','kill'],
-                                help = 'Daemon command')
+    # parser.add_argument(   '--daemon', 
+    #                             type = str,
+    #                             required = False,
+    #                             choices=['start', 'submit', 'status','kill'],
+    #                             help = 'Daemon command')
                                 
-    parser.add_argument(   '--check', '-c',
+    parser.add_argument(   '--check', '-ct',
                                 type = str,
                                 nargs='+',
                                 required = False,
                                 default = "-999",
-                                help = 'List of check')
-    
-    parser.add_argument(   '--hpc', 
-                                type = str,
-                                required =False,
-                                default = "-999",
-                                help = 'Cluster hostfile')                               
+                                help = 'List of check')                            
 
     parser.add_argument(   '--configuration', 
                                 type = str,
@@ -73,7 +67,7 @@ def cl_parser():
                                 required = False,
                                 help = 'check test directory')
     
-    parser.add_argument(   '--hostlist', '-hl', 
+    parser.add_argument(   '--hostlist', '-hpc', 
                                 type = str,
                                 required = False,
                                 help = 'List of Hostname to Master submission')
