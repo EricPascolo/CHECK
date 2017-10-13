@@ -2,7 +2,7 @@
 
 
 
- Check is a flexible and easy to use software to have a faster snapshot of Performance and Status of HPC Cluster. The software is compososed by two directory/repository, this one **check** that contain the executable and all infrastructure python library and **checktest** that contain the description of architectures and  test recipes. Check can be used via shell,parallel shell and via scheduler, if a parallel shared file system is not installed, CHECK can be distrubute on all cluster node and call from the Master node. A CheckTest is a little python class based on checktest template, so extend the code is very easy, it be enough add a python class in checktest directiory using CHECK plugin policy and at runtime your new test it will be available. The software is callable to command line and through lunch string you can redefine on the fly almost all paramenter conteined in etc conf file.
+ Check is a flexible and easy to use software to have a faster snapshot of Performance and Status of HPC Cluster. The software is compososed by two directory/repository, this one **CHECK** that contain the executable and all infrastructure python library and **CHECKTEST** that contain the description of architectures and  test recipes. Check can be used via shell,parallel shell and via scheduler, if a parallel shared file system is not installed, CHECK can be distrubute on all cluster node and call from the Master node. A CheckTest is a little python class based on checktest template, so extend the code is very easy, it be enough add a python class in checktest directiory using CHECK plugin policy and at runtime your new test it will be available. The software is callable to command line and through lunch string you can redefine on the fly almost all paramenter conteined in etc conf file.
 
 ***
 
@@ -22,29 +22,30 @@ Check is calleble only from commandline(CL), before launch remind to edit config
 To see all CL flags use **--help** flag:
 
 
-    CHECK 0.1.002 START 
-    usage: check [-h] [--master] [--install] [--check CHECK [CHECK ...]]
-                [--configuration CONFIGURATION] [--analysis ANALYSIS]
-                [--loglevel LOGLEVEL] [--logfile LOGFILE]
-                [--checktest_directory CHECKTEST_DIRECTORY] [--hostlist HOSTLIST]
+CHECK 0.1.003 START 
+usage: check [-h] [--master] [--install] [--check CHECK [CHECK ...]]
+             [--configuration CONFIGURATION] [--analysis ANALYSIS]
+             [--loglevel LOGLEVEL] [--logfile LOGFILE]
+             [--checktest_directory CHECKTEST_DIRECTORY] [--hostlist HOSTLIST]
 
-        CHECK : Cluster Health and Environment ChecKing system
+    CHECK : Cluster Health and Environment ChecKing system
 
-    optional arguments:
-    -h, --help            show this help message and exit
-    --master              Master/slave flag
-    --install             Install checktest
-    --check CHECK [CHECK ...], -ct CHECK [CHECK ...]
-                            List of check
-    --configuration CONFIGURATION
-                            Input file
-    --analysis ANALYSIS   kind of analysis
-    --loglevel LOGLEVEL   Input file
-    --logfile LOGFILE     Input file
-    --checktest_directory CHECKTEST_DIRECTORY, -checkTD CHECKTEST_DIRECTORY
-                            check test directory
-    --hostlist HOSTLIST, -hpc HOSTLIST
-                            List of Hostname to Master submission
+optional arguments:
+  -h, --help            show this help message and exit
+  --master              Master/slave flag
+  --install             Install checktest
+  --check CHECK [CHECK ...], -ct CHECK [CHECK ...]
+                        List of check
+  --configuration CONFIGURATION
+                        Input file
+  --analysis ANALYSIS   kind of analysis
+  --loglevel LOGLEVEL   Input file
+  --logfile LOGFILE     Input file
+  --checktest_directory CHECKTEST_DIRECTORY, -checkTD CHECKTEST_DIRECTORY
+                        check test directory
+  --hostlist HOSTLIST, -hpc HOSTLIST
+                        List of Hostname to Master submission
+
 
 
 With no argument CHECK start and warn you that ***CHECKtest list is empty***. To specifies what checktest you want to run you must use **--check** flag:
@@ -139,10 +140,30 @@ Is not necessary to specify a name of setting for each architecture, as in the s
 
 ### 1. Structure of directory
 
+The CHECKTEST directory must have this structure:
+
+                     checktest
+                         |
+         ----------------------------------------
+         |               |                      | 
+    architecture       test1                  test2
+    - x86.json           |                      |
+    - knl.json           |                 -----------------------
+    - GPU.json           |                 |            |        |
+                         |             __init__.py     bin       in 
+                   -------------- 
+                   |      |     |
+                  x86    knl   GPU
+                   |
+                   |
+            -----------------------
+            |            |        |
+        __init__.py     bin       in 
+
 ### 2. Architecture
 
 ### 3. Write a CHECKTEST
 
-----
+***
 
 ## Developper guide
