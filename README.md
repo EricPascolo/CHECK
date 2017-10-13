@@ -210,4 +210,24 @@ The symbol  **_ noqueue _** indicate that the scheduler have an automatic select
 
 ### 3. Write a CHECKTEST
 
+CHECK provides a *template* to simplify a write of CHECKTEST file, for write a compatible test with CHECK you must follow this rules:
+
+ 0) Import from CHECK the template to checktest class:
+
+        from checklib.test.check_test_template import *
+
+ 1) Your test must be a python class, named as test directory and son **checktest**, and specifies as global variable *exe* and *version*
+
+        class linpack(checktest):
+
+            """ Linpack class """
+            exe = "xlinpack_xeon64"
+            __version__ = "0.1.001"
+ 2) test class can be have 5 polymorphic methods, if have less his father methods will be called:
+   - **preproc** : action to execute before run
+   - **run** : call with Popen exe and run the true benchmark
+   - **postproc** : action to execute to extract results from output
+   - **comparison** : given software outup assign a **mark** of the benchmark
+   - **install** : recipes to compile or install the benchmark
+
 ***
