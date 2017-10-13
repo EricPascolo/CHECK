@@ -8,7 +8,7 @@
 
 ## CHECK
 
-### 0. Environment setup
+### 0. *Environment setup*
 CHECK not require a formal installation. You can download wherever you want and use *source command* to load environment from setup_check.sh.
 You find setup file in **check/bin** :
 
@@ -17,7 +17,7 @@ You find setup file in **check/bin** :
 After the environment was loaded, you find **check** command in your $PATH and the in the $CHECK_HOME variable you find the check directory path. 
 Check setup moreover add CHECK_HOME path to PYTHONPATH so attention please when you use CHECK with other module or python package.
 
-### 1. Command line
+### 1. *Command line*
 Check is calleble only from commandline(CL), before launch remind to edit configuration file in *etc* (see next guide section). 
 To see all CL flags use **--help** flag:
 
@@ -80,7 +80,7 @@ The configuration flag take a configuration file as input, in file you can speci
 
     check --configuration myconffile.json
 
-### 2. CHECK etc
+### 2. *CHECK etc*
 
 In **check/etc/** directory you can define your configuration file in json format named check_setting.json . Configuration file in etc overwrite the configuration file template in **check/etc/default/**
 
@@ -119,10 +119,19 @@ The **checktest_directory** is the field where is defined the path of the direct
 
 **check_master_colletting_path** is path on the node where CHECK i launched as master where to store scheduler output file.
 
-### 3. MASTER/SLAVE 
+### 3. *MASTER mode and Architectures*
 
+Check can use scheduler to submit the checktest directly on cluster node. At the moment CHECK create a job for each node and submit it to scheduler. The cluster node must be conteined on hostlist pass to CHECK by *--hostlist* flag.
 
-### 4. LOG
+The structure of the line of hostlist is the follow:
+
+        arch#setting:hostname1,hostname2.../
+
+The **architecture** is the name of architecture file in CHECKTEST directory and for each architecture can have different scheduler **setting**. After ':' we must put the list of hostname separated by comma. We can specifies in the same hostline different architectures, in example for etherogeneus HPC cluster, simply reapeat che line without space among them.
+    
+    arch#setting:hostname1,hostname2.../arch2:hostname3,hostname4/
+
+Is not necessary to specify a name of setting for each architecture, as in the second arch in the line below but in this case we load *default* setting for that architecture.
 
 ***
 
