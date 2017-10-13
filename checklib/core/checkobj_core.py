@@ -72,7 +72,7 @@ class check_core:
             names_of_check_test = "".join(self.setting["check"]).split(",")
             logger.debug(names_of_check_test)
             
-            if self.setting["master"]:
+            if "master" in self.setting:
                 #check existence of checktest
                 self.checktests = self.checktests_existence(names_of_check_test)
             else:
