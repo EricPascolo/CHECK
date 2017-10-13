@@ -51,11 +51,11 @@ With no argument CHECK start and warn you that ***CHECKtest list is empty***. To
 
     check --check linpack
 
-This command imply that you have define *linpack* test to not targer architecture. If you define a test to a target architecture, you must use:
+This command implies that you have defined *linpack* test to not targer architecture. If you define a test to a target architecture, you must use:
 
     check --check linpack@x86
 
-If you have just written CHECKTEST recipes(with install method) but you dont'have generate the executable to launch the software, you can use the follow command to finalize the CHECKTEST installation:
+If you have just written CHECKTEST recipes(with install method) but you don't have generate the executable to launch the software, you can use the follow command to finalize the CHECKTEST installation:
 
     check --check linpack@x86 --install
 
@@ -82,8 +82,42 @@ The configuration flag take a configuration file as input, in file you can speci
 
 ### 2. CHECK etc
 
+In **check/etc/** directory you can define your configuration file in json format named check_setting.json . Configuration file in etc overwrite the configuration file template in **check/etc/default/**
 
+    {
+    "loglevel":"DEBUG",
+    "logtype":"both",   
+    "logfile":"$HOME/checklog.txt",
+    "resultfile":"$HOME/checkresult.txt",
+    "checktest_directory":"$HOME/checktest/",
+    "check_remote_source_path":"$SCRATCH_LOCAL/usprod/",
+    "check_master_collecting_path":"$HOME/check_master_collection"
+    }
 
+In configuration file you can use environment variable beecuase check is able to resolve the string. 
+
+The **loglevel** parameter can have 3 value in order of verbosity:
+
+ - DEBUG
+ - INFO 
+ - CRITICAL
+
+CHECK run result and error are write as CRITICAL level, partial results and other configuration indformation are writed as INFO and developper information are writed as DEBUG level.
+The **logtype** field allow to choose where the log is printed:
+
+ - cl : print log on terminal
+ - file : print log on file
+ - both : print log on terminal and file
+
+If you choose *file* or *both* you can specify the path of log file in field **logfile**.
+
+The result of CHECK is always write in the log and in a file, you can choose the path of this file with **resultfile** field; in that file you find only the result of last run of CHECK.
+
+The **checktest_directory** is the field where is defined the path of the directory that contain checktests.
+
+**check_remote_source_path** is the path in remote node where is located *check* directory, this path is necessary to load check environment.
+
+**check_master_colletting_path** is path on the node where CHECK i launched as master where to store scheduler output file.
 
 ### 3. MASTER/SLAVE 
 
