@@ -142,28 +142,72 @@ Is not necessary to specify a name of setting for each architecture, as in the s
 
 The CHECKTEST directory must have this structure:
 
-                     checktest
-                         |
-         ----------------------------------------
-         |               |                      | 
-    architecture       test1                  test2
-    - x86.json           |                      |
-    - knl.json           |                 -----------------------
-    - GPU.json           |                 |            |        |
-                         |             __init__.py     bin       in 
-                   -------------- 
-                   |      |     |
-                  x86    knl   GPU
-                   |
-                   |
-            -----------------------
-            |            |        |
-        __init__.py     bin       in 
+                                 checktest
+                                     |
+                    ----------------------------------------
+                    |                |                      | 
+                architecture       test1                  test2
+                - x86.json           |                      |
+                - knl.json           |                 -----------------------
+                - GPU.json           |                 |            |        |
+                                     |             __init__.py     bin       in 
+                                -------------- 
+                                |      |     |
+                                x86    knl   GPU
+                                |
+                                |
+                            -----------------------
+                            |            |        |
+                        __init__.py     bin       in 
+
+CHECKTEST is a python package so at each directory level must exist a _ init_.py file. The CHECKTESTs are conteined in  _ init_.py file at the end of descriptor directory. 
+In the example structure reported above we have two CHECKTEST write extended:
+  
+  - test1/x86/__ init__.py this test is named *"test1"* and is designed to x86 target architecture
+  - test2/__ init__.py this test is named *"test2"* and is designed to all architecture.
+
+Into *__init__.py* the name of the class to import in CHECK must be named ad checktest so in the previous example test1 or test2.
+
+In CHECK selected what CHECKTEST you woul'd run  you can defin the target architecture with the symbol **@**:
+    
+    check --check test1@x86
+
+In test directory we can define **bin**,**in**,**out** and **tmp** directory and other but for the four cited CHECK automaticcaly generate the path; if one of this four is not used you can't generate.
 
 ### 2. Architecture
+The architecture files need when CHECK is runned in master mode to know the features of the cluster nodes. The name of the file in **architeture** directory must be equals to name of CHECKTESTs architecture. 
+
+An architecture file is write in *json* format and contain a json object for each **setting**, a setting is a subset of setting for each architeture, in all architerture file must have a setting named *default*. 
+
+Below an architecture file example:
+
+    {
+    "default":{
+
+        "number_of_nodes":"1",
+        "ncpus":"36",
+        "memory":"118GB",
+        "walltime":"00:15:00",
+        "queue":"__noqueue__",
+        "account":"my_account"
+
+    },
+
+    "debug":{
+        
+            "number_of_nodes":"1",
+            "ncpus":"36",
+            "memory":"118GB",
+            "walltime":"00:15:00",
+            "queue":"debug",
+            "account":"my_account"
+        
+            }
+
+    }
+
+The symbol  **_ noqueue _** indicate that the scheduler have an automatic selection of the queue while the other information is classical information that you write in HPC job file. The difference beetween two setting is that the first have automatic queue selection, indeed the second submit the job on *debug* queue.
 
 ### 3. Write a CHECKTEST
 
 ***
-
-## Developper guide
