@@ -107,7 +107,7 @@ The **loglevel** parameter can have 3 value in descending order of verbosity:
  - INFO 
  - CRITICAL
 
-**CHECK** run result and error are written as CRITICAL level, partial results and other configuration indformation are written as INFO and developper information are written as DEBUG level.
+**CHECK** run result and error are writed as CRITICAL level, partial results and other configuration indformation are writed as INFO and developper information are writed as DEBUG level.
 The **logtype** field allow to choose where the log is printed:
 
  - cl : print log on terminal
@@ -165,27 +165,27 @@ The CHECKTEST directory must have this structure:
                     |            |        |
                 __init__.py     bin       in 
 
-CHECKTEST is a python package so at each directory level must exist a _ init_.py file. The CHECKTESTs are conteined in  _ init_.py file at the end of descriptor directory. 
-In the example structure reported above we have two CHECKTEST write extended:
+**CHECKTEST** is a python package so at each directory level must exist a _ init_.py file. The **CHECKTEST**  recipes are conteined in  _ init_.py file at the end of descriptor directory. 
+In the example structure reported above we have two **CHECKTEST** write extended:
   
   - test1/x86/__ init__.py this test is named *"test1"* and is designed to x86 target architecture
   - test2/__ init__.py this test is named *"test2"* and is designed to all architecture.
 
-Into *__init__.py* the name of the class to import in CHECK must be named ad checktest so in the previous example test1 or test2.
+Into *__init__.py* the name of the python class to import in **CHECK** must have the same name of **CHECKTEST**, so in the previous example test1 or test2.
 
-In CHECK selected what CHECKTEST you woul'd run  you can defin the target architecture with the symbol **"@"**:
+In **CHECK**, you select what **CHECKTEST** and the target architecture with the symbol **"@"**:
     
     check --check test1@x86
 
-For each architecture files it is allow have different configuration, so in CHECKTEST directory we can have for arch1 many configuration and iti is possible trough the symbol **"*"**. In example above for he architecture file x512 we have two different memory configuration x512_mem1,x512_mem2; this mean that in master mode on the node descripetd by x512 CHECK launch both x512_mem1,x512_mem2 CHECKTESTs; if you want launch only x512_mem1 test on the nodes you must have an architecture file with the same name.
+For each architecture files it is allowed have different configuration, so in **CHECKTEST** directory we can have for arch1 many configuration and it is possible define them through the symbol **"\_"**. In example above for the x512 architecture file we have two different memory configurations x512_mem1,x512_mem2; this mean that in master mode on the node descripetd by x512 **CHECK** launch both x512_mem1,x512_mem2 **CHECKTEST**s; if you want launch only x512_mem1 test on the nodes you must have an architecture file with the same name.
 
-In test directory we can define **bin**,**in**,**out** and **tmp** directory and other but for the four cited CHECK automaticcaly generate the path; if one of this four is not used you can't generate.
+In test directory you can define **bin**,**in**,**out** and **tmp** directories and other but for the four cited before **CHECK** automaticcaly generate and save the path; if one of them is not used you can't generate.
 
 
 ### 2. Architecture
-The architecture files need when CHECK is runned in master mode to know the features of the cluster nodes. The name of the file in **architeture** directory must be equals to name of CHECKTESTs architecture. 
+**CHECK** needs to the architecture files when it is ran in master mode to know the specs of the cluster nodes. The name of file in **architeture** directory must be equals to name of **CHECKTEST**s architecture. 
 
-An architecture file is write in *json* format and contain a json object for each **setting**, a setting is a subset of setting for each architeture, in all architerture file must have a setting named *default*. 
+An architecture file is write in *json* format and contains a json object for each **setting**, a setting is a subset of parameter for each architeture, in all architerture files must have a setting named *default*. 
 
 Below an architecture file example:
 
@@ -214,17 +214,17 @@ Below an architecture file example:
 
     }
 
-The symbol  **_ noqueue _** indicate that the scheduler have an automatic selection of the queue while the other information is classical information that you write in HPC job file. The difference beetween two setting is that the first have automatic queue selection, indeed the second submit the job on *debug* queue.
+The symbol  **_ noqueue _** indicates that the scheduler have an automatic selection of the queue, while the other information are classical parameter that you write in HPC job file. 
 
 ### 3. Write a CHECKTEST
 
-CHECK provides a *template* to simplify a write of CHECKTEST file, for write a compatible test with CHECK you must follow this rules:
+**CHECK** provides a *template* to simplify the writing of **CHECKTEST** file, to write a compatible test with **CHECK** you must follow this rules:
 
- 0) Import from CHECK the template to checktest class:
+ 0) Import from **CHECK** the template to checktest class:
 
         from checklib.test.check_test_template import *
 
- 1) Your test must be a python class, named as test directory and son of CHECK's class **checktest**, and specifies as global variable *exe* and *version*
+ 1) Your test must be a python class, named as test directory and son of **CHECK**'s class **checktest** and specifies as global variable *exe* and *version*
 
         class linpack(checktest):
 
@@ -232,7 +232,7 @@ CHECK provides a *template* to simplify a write of CHECKTEST file, for write a c
             exe = "xlinpack_xeon64"
             __version__ = "0.1.001"
 
- 2) test class can be have 5 polymorphic methods, if one miss the corrisponding father methods will be called:
+ 2) Test class can be have 5 polymorphic methods, if one miss the corrisponding father methods will be called:
    
    - **preproc** : action to execute before run
    - **run** : call with Popen exe and run the true benchmark
@@ -248,18 +248,19 @@ CHECK provides a *template* to simplify a write of CHECKTEST file, for write a c
         result.udm = "GFLOPS"
         result.status = "OK"
 
- 4) In *run* method it recomends to use Popen package from subprocess to launch executable, subprocess is directly imported by father class. To collect with python stdout and analyze before, it is recomanded use a code like that:
+ 4) In *run* method it recomends to use Popen package from subprocess module to launch executable, subprocess is directly imported by father class. To collect stdout, it is recomanded use a code like that:
 
          
         process = subprocess.Popen( [self.exe,"./input.txt"], shell=False,cwd=self.test_dir["in_dir"],stdout=subprocess.PIPE,env=os.environ)
         self.std_out, self.std_err = process.communicate()
 
- 5) Use the directory structure provide by CHECK. If you put executable in **bin** absolute path is automatically generetad given name of exe in *self.exe* variable. Use:
+ 5) Use the directory structure provides by CHECK. If you put executable in **bin** absolute path is automatically generetad given name of exe in *self.exe* variable. Use:
     
     - **bin** to store executable
     - **in** to store input file
     - **out** to store output
     - **tmp** to place temporaney file
 
- 6) Check what CHECK's template  methods is offered, don't rewrite the useless code or if you think that the code is usefull for all integrated it in template. 
+ 6) Check what CHECK's template  methods is offered to you, don't rewrite the useless code or if you think your code is usefull for all integrated it in template. 
+ 
 ***
