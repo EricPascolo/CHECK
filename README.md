@@ -2,7 +2,7 @@
 
 
 
- Check is a flexible and easy to use software for showing the performance and health of an HPC Cluster. The software consists of two directories/repositories: **CHECK** contains the executable and the python library infrastructure and **CHECKTEST** contains the description of the architectures and test recipes. Check can be used via shell,parallel shell and via a scheduler; if a parallel shared file system is not installed, **CHECK** can be distrubuted on all cluster nodes and is callable from the Master node. A **CHECKTEST** is a little python class based on *check_test_template*, so extending the code is very easy: you just add a python class in the checktest directory using **CHECKTEST** policy and at runtime your new test will be available. The software is callable from the command line and through a launch string it is possible redefine on the fly almost all paramenters contained in configuration file.
+ Check is a flexible and easy to use software for showing the performance and health of an HPC Cluster. The software consists of two directories/repositories: **CHECK** contains the executable and the python library infrastructure and **CHECKTEST** contains the description of the architectures and test recipes. Check can be used via shell,parallel shell and via a scheduler; if a parallel shared file system is not installed, **CHECK** can be distributed on all cluster nodes and is callable from the Master node. A **CHECKTEST** is a little python class based on *check_test_template*, so extending the code is very easy: you just add a python class in the checktest directory using **CHECKTEST** policy and at runtime your new test will be available. The software is callable from the command line and through a launch string it is possible redefine on the fly almost all paramenters contained in the configuration file.
 
 ***
 
@@ -22,29 +22,29 @@ After the environment has loaded, you find the **CHECK** command in your $PATH a
 To see all CL flags use **--help** flag:
 
 
-CHECK 0.1.003 START 
-usage: check [-h] [--master] [--install] [--check CHECK [CHECK ...]]
-             [--configuration CONFIGURATION] [--analysis ANALYSIS]
-             [--loglevel LOGLEVEL] [--logfile LOGFILE]
-             [--checktest_directory CHECKTEST_DIRECTORY] [--hostlist HOSTLIST]
+        CHECK 0.1.003 START 
+        usage: check [-h] [--master] [--install] [--check CHECK [CHECK ...]]
+                    [--configuration CONFIGURATION] [--analysis ANALYSIS]
+                    [--loglevel LOGLEVEL] [--logfile LOGFILE]
+                    [--checktest_directory CHECKTEST_DIRECTORY] [--hostlist HOSTLIST]
 
-    CHECK : Cluster Health and Environment ChecKing system
+            CHECK : Cluster Health and Environment ChecKing system
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --master              Master/slave flag
-  --install             Install checktest
-  --check CHECK [CHECK ...], -ct CHECK [CHECK ...]
-                        List of check
-  --configuration CONFIGURATION
-                        Input file
-  --analysis ANALYSIS   kind of analysis
-  --loglevel LOGLEVEL   Input file
-  --logfile LOGFILE     Input file
-  --checktest_directory CHECKTEST_DIRECTORY, -checkTD CHECKTEST_DIRECTORY
-                        check test directory
-  --hostlist HOSTLIST, -hpc HOSTLIST
-                        List of Hostname to Master submission
+        optional arguments:
+        -h, --help            show this help message and exit
+        --master              Master/slave flag
+        --install             Install checktest
+        --check CHECK [CHECK ...], -ct CHECK [CHECK ...]
+                                List of check
+        --configuration CONFIGURATION
+                                Input file
+        --analysis ANALYSIS   kind of analysis
+        --loglevel LOGLEVEL   Input file
+        --logfile LOGFILE     Input file
+        --checktest_directory CHECKTEST_DIRECTORY, -checkTD CHECKTEST_DIRECTORY
+                                check test directory
+        --hostlist HOSTLIST, -hpc HOSTLIST
+                                List of Hostname to Master submission
 
 
 
@@ -60,11 +60,11 @@ If you have just written **CHECKTEST** recipes(with install method) but you have
 
     check --check linpack@x86 --install
 
-For each **CHECKTEST**, **CHECK** return a **mark** ( e.g. OK,DOWN,WARNING ) defined in multibenchmark analysis class, you can personalize your analysis and call it with another sepcific flag:
+For each **CHECKTEST**, **CHECK** return a **mark** ( e.g. OK,DOWN,WARNING ) defined in multibenchmark_analysis class. You can personalize your analysis and call it with another specific flag:
 
     check --check linpack@x86,stream@x86 --analysis simple 
 
-**CHECK** provide a very flexible environment; indeed you can define at runtime the CHECKTEST directory,loglevel and logfile overwriting the configuration loaded from file.
+**CHECK** provides a very flexible environment; indeed you can define at runtime the CHECKTEST directory,loglevel and logfile overwriting the configuration loaded from file.
 To change the **CHECKTEST** directory you can use this flag ( abbr. -checkTD):
 
     check --check my_personal_linpack --checktest_directory $HOME/my_personal_checktest
@@ -73,7 +73,7 @@ To change log level and logfile you can use:
 
     check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
 
-The flags **--master** and **--hostlist** are used when you launch tests, via the scheduler, on the HPC cluster node. Through *master* flag you enable scheduler mode and with *hostlist* (to syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launches the tests:
+The flags **--master** and **--hostlist** are used when you launch tests, via the scheduler, on the HPC cluster node. Through *master* flag you enable scheduler mode and with *hostlist* (for syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launches the tests:
 
     check --check linpack@x86,linpack@knl --master --hostlist x86:node1,node2/knl:node3,node4/
 
@@ -83,11 +83,11 @@ The *--configuration* flag takes a configuration file as input, this file must b
 
 In **CHECK** you can write all parameters in the command line, via theconfiguration file passed by command line or in the configuration file in the etc directory. The priority order used to assign a parameter vaule is as follows:
 
-        command line > file pass by CL > file in etc
+        command line > file passed by CL > file in etc
 
 ### 2. *CHECK etc*
 
-In **check/etc/** directory you can define your configuration file in json format named *check_setting.json* . The configuration file in etc overwrites the configuration file template in **check/etc/default/**; if the first doesn't exist the last is read. The structure of file is as follows:
+In **check/etc/** directory you can define your configuration file in json format named *check_setting.json* . The configuration file in etc overwrites the configuration file template in **check/etc/default/**; if the first doesn't exist the second is read. The structure of file is as follows:
 
     {
     "loglevel":"DEBUG",
@@ -107,8 +107,8 @@ The **loglevel** parameter can have 3 values in descending order of verbosity:
  - INFO 
  - CRITICAL
 
-**CHECK** run result and error are written as CRITICAL level, partial results and other configuration indformation are writed as INFO and developer information are written as DEBUG level.
-The **logtype** field allow to choose where the log is printed:
+**CHECK** run results and errors are written as CRITICAL level, partial results and other configuration information are written as INFO and developer information are written as DEBUG level.
+The **logtype** field allows you to choose where the log is printed:
 
  - cl : print log on terminal
  - file : print log on file
@@ -126,7 +126,7 @@ The **checktest_directory** is the field where the path of the directory that co
 
 ### 3. *MASTER mode and Architectures*
 
-**CHECK** can use scheduler to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** create a job for each node and submit it to scheduler. The cluster node must be conteined on hostlist passed to CHECK by *--hostlist* flag.
+**CHECK** can use a scheduler to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job for each node and submit to scheduler. The cluster node must be present on hostlist passed to CHECK by *--hostlist* flag.
 
 The structure of the hostlist line is as follows:
 
@@ -136,7 +136,7 @@ The **architecture** is the name of the architecture file (without extension) in
     
     arch#setting:hostname1,hostname2.../arch2:hostname3,hostname4/
 
-Is not necessary to specify a name of setting for each architecture, as in the example above for arch2 **CHECK** loads the *default* setting for that architecture.
+It is not necessary to specify a name of setting for each architecture, as in the example above for arch2 **CHECK** loads the *default* setting for that architecture.
 
 ***
 
@@ -166,7 +166,7 @@ The CHECKTEST directory must have this structure:
                 __init__.py     bin       in 
 
 **CHECKTEST** is a python package so at each directory level there must exist a _ init_.py file. The **CHECKTEST**  recipes are contained in  _ init_.py file at the end of descriptor directory. 
-In the example structure reported above we have two **CHECKTEST** write extended:
+In the example structure reported above we have two **CHECKTEST** written explicity:
   
   - test1/x86/__ init__.py this test is named *"test1"* and is designed to x86 target architecture
   - test2/__ init__.py this test is named *"test2"* and is designed to all architecture.
@@ -177,9 +177,9 @@ In **CHECK**, you select what **CHECKTEST** and the target architecture with the
     
     check --check test1@x86
 
-For each architecture file it is allowed have different configurations, so in the **CHECKTEST** directory we can have for arch1 many configurations and it is possible define them through the symbol **"\_"**. In example above for the x512 architecture file we have two different memory configurations x512_mem1,x512_mem2; this mean that in master mode on the node descripetd by x512 **CHECK** launch both x512_mem1,x512_mem2 **CHECKTEST**s; if you want launch only x512_mem1 test on the nodes you must have an architecture file with the same name.
+For each architecture file it is allowed have different configurations, so in the **CHECKTEST** directory we can have for arch1 many configurations and it is possible define them through the symbol **"\_"**. In example above for the x512 architecture file we have two different memory configurations x512_mem1,x512_mem2; this means that in master mode on the node describe by x512 **CHECK** launch both x512_mem1,x512_mem2 **CHECKTEST**s; if you want to launch only x512_mem1 test on the nodes you must have an architecture file with the same name.
 
-In the test directory you can define **bin**,**in**,**out** and **tmp** directories and other but for the four cited before **CHECK** automatically generates and saves the path; if one of them is not used you can't generate.
+In the test directory you can define **bin**,**in**,**out** and **tmp** directories and other but for this four cited before **CHECK** automatically generates and saves the path; if one of them is not used you don't need to created.
 
 
 ### 2. Architecture
@@ -214,7 +214,7 @@ Below an architecture file example:
 
     }
 
-The symbol  **_ noqueue _** indicates that the scheduler has an automatic selection of the queue, while the other information are classical parameter that you write in HPC job file. 
+The symbol  **_ noqueue _** indicates that the scheduler has an automatic selection of the queue, while the other information are classical parameters that you write in HPC job file. 
 
 ### 3. Write a CHECKTEST
 
@@ -232,7 +232,7 @@ The symbol  **_ noqueue _** indicates that the scheduler has an automatic select
             exe = "xlinpack_xeon64"
             __version__ = "0.1.001"
 
- 2) Test class can be have 5 polymorphic methods, if one is missing the corresponding father methods will be called:
+ 2) The test class can be have 5 polymorphic methods, if one is missing the corresponding father methods will be called:
    
    - **preproc** : action to execute before run
    - **run** : call with Popen exe and run the true benchmark
@@ -248,19 +248,19 @@ The symbol  **_ noqueue _** indicates that the scheduler has an automatic select
         result.udm = "GFLOPS"
         result.status = "OK"
 
- 4) In the *run* method it recommends using the Popen package from subprocess module to launch executable, subprocess is directly imported by father class. To collect stdout, it is recommended use a code like this:
+ 4) In the *run* method we recommend using the Popen package from Subprocess module to launch the executable; subprocess is directly imported by the father class. To collect stdout, it is recommended to use a code like this:
 
          
         process = subprocess.Popen( [self.exe,"./input.txt"], shell=False,cwd=self.test_dir["in_dir"],stdout=subprocess.PIPE,env=os.environ)
         self.std_out, self.std_err = process.communicate()
 
- 5) Use the directory structure provided by CHECK. If you put the executable in the **bin** absolute path is automatically generated given name of exe in *self.exe* variable. Use:
+ 5) Use the directory structure provided by CHECK. If you put the executable in the **bin** absolute path is generated automatically  given name of exe in *self.exe* variable. Use:
     
     - **bin** to store executable
     - **in** to store input file
     - **out** to store output
     - **tmp** to place temporaney file
 
- 6) Check what CHECK's template  methods is offered to you, don't rewrite the useless code or if you think your code is useful for all integrated in the template. 
+ 6) Before writing new code, check what is in **checktest** template and if you think your code could be usefull to the others add to the template.
 
 ***
