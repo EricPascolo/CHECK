@@ -148,17 +148,18 @@ The CHECKTEST directory must have this structure:
                     |                |                      | 
                 architecture       test1                  test2
                 - x86.json           |                      |
-                - knl.json           |                 -----------------------
+                - x512.json          |                 -----------------------
                 - GPU.json           |                 |            |        |
                                      |             __init__.py     bin       in 
-                                -------------- 
-                                |      |     |
-                                x86    knl   GPU
-                                |
-                                |
-                            -----------------------
-                            |            |        |
-                        __init__.py     bin       in 
+                                     |
+                        --------------------------------
+                        |      |           |           |
+                        x86    x512_mem1   x512_mem2   GPU
+                        |
+                        |
+                    -----------------------
+                    |            |        |
+                __init__.py     bin       in 
 
 CHECKTEST is a python package so at each directory level must exist a _ init_.py file. The CHECKTESTs are conteined in  _ init_.py file at the end of descriptor directory. 
 In the example structure reported above we have two CHECKTEST write extended:
@@ -168,11 +169,14 @@ In the example structure reported above we have two CHECKTEST write extended:
 
 Into *__init__.py* the name of the class to import in CHECK must be named ad checktest so in the previous example test1 or test2.
 
-In CHECK selected what CHECKTEST you woul'd run  you can defin the target architecture with the symbol **@**:
+In CHECK selected what CHECKTEST you woul'd run  you can defin the target architecture with the symbol **"@"**:
     
     check --check test1@x86
 
+For each architecture files it is allow have different configuration, so in CHECKTEST directory we can have for arch1 many configuration and iti is possible trough the symbol **"*"**. In example above for he architecture file x512 we have two different memory configuration x512_mem1,x512_mem2; this mean that in master mode on the node descripetd by x512 CHECK launch both x512_mem1,x512_mem2 CHECKTESTs; if you want launch only x512_mem1 test on the nodes you must have an architecture file with the same name.
+
 In test directory we can define **bin**,**in**,**out** and **tmp** directory and other but for the four cited CHECK automaticcaly generate the path; if one of this four is not used you can't generate.
+
 
 ### 2. Architecture
 The architecture files need when CHECK is runned in master mode to know the features of the cluster nodes. The name of the file in **architeture** directory must be equals to name of CHECKTESTs architecture. 
@@ -216,18 +220,42 @@ CHECK provides a *template* to simplify a write of CHECKTEST file, for write a c
 
         from checklib.test.check_test_template import *
 
- 1) Your test must be a python class, named as test directory and son **checktest**, and specifies as global variable *exe* and *version*
+ 1) Your test must be a python class, named as test directory and son of CHECK's class **checktest**, and specifies as global variable *exe* and *version*
 
         class linpack(checktest):
 
             """ Linpack class """
             exe = "xlinpack_xeon64"
             __version__ = "0.1.001"
- 2) test class can be have 5 polymorphic methods, if have less his father methods will be called:
+
+ 2) test class can be have 5 polymorphic methods, if one miss the corrisponding father methods will be called:
+   
    - **preproc** : action to execute before run
    - **run** : call with Popen exe and run the true benchmark
    - **postproc** : action to execute to extract results from output
    - **comparison** : given software outup assign a **mark** of the benchmark
-   - **install** : recipes to compile or install the benchmark
+   - **install** : recipes to download,compile and install the benchmark
 
+ 3) *comparison* mehtod must return to CHECK a **check_result** object that is direct imported by father class. The object have this structure:
+    
+        result = check_result()
+        result._bechmark = "linpack"
+        result.measure = 2000
+        result.udm = "GFLOPS"
+        result.status = "OK"
+
+ 4) In *run* method it recomends to use Popen package from subprocess to launch executable, subprocess is directly imported by father class. To collect with python stdout and analyze before, it is recomanded use a code like that:
+
+         
+        process = subprocess.Popen( [self.exe,"./input"], shell=False,cwd=self.test_dir["in_dir"],stdout=subprocess.PIPE,env=os.environ)
+        self.std_out, self.std_err = process.communicate()
+
+ 5) Use the directory structure provide by CHECK. If you put executable in **bin** absolute path is automatically generetad given name of exe in *self.exe* variable. Use:
+    
+    - **bin** to store executable
+    - **in** to store input file
+    - **out** to store output
+    - **tmp** to place temporaney file
+
+ 6) Check what CHECK's template  methods is offered, don't rewrite the useless code or if you think that the code is usefull for all integrated it in template. 
 ***
