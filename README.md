@@ -2,23 +2,23 @@
 
 
 
- Check is a flexible and easy to use software to have a faster snapshot of Performance and Status of HPC Cluster. The software is compososed by two directory/repository, this one **CHECK** that contain the executable and all infrastructure python library and **CHECKTEST** that contain the description of architectures and  test recipes. Check can be used via shell,parallel shell and via scheduler, if a parallel shared file system is not installed, CHECK can be distrubute on all cluster node and call from the Master node. A CheckTest is a little python class based on checktest template, so extend the code is very easy, it be enough add a python class in checktest directiory using CHECK plugin policy and at runtime your new test it will be available. The software is callable to command line and through lunch string you can redefine on the fly almost all paramenter conteined in etc conf file.
+ Check is a flexible and easy to use software to have a status of Performance and Heath of HPC Cluster. The software is compososed by two directory/repository, **CHECK** contains the executable and all python libray infrastructure and **CHECKTEST** contains the description of architectures and test recipes. Check can be used via shell,parallel shell and via scheduler; if a parallel shared file system is not installed, **CHECK** can be distrubuted on all cluster node and is callable from the Master node. A **CHECKTEST** is a little python class based on *check_test_template*, so extend the code is very easy, it be enough add a python class in checktest directiory using **CHECKTEST** policy and at runtime your new test it will be available. The software is callable to command line and through lunch string it is possible redefine on the fly almost all paramenter conteined in configuration file.
 
 ***
 
 ## CHECK
 
 ### 0. *Environment setup*
-CHECK not require a formal installation. You can download wherever you want and use *source command* to load environment from setup_check.sh.
+**CHECK** not require a formal installation. You can download wherever you want the repository and use *source command* to load environment from setup_check.sh.
 You find setup file in **check/bin** :
 
     source check/bin/setup_check.sh
 
-After the environment was loaded, you find **check** command in your $PATH and the in the $CHECK_HOME variable you find the check directory path. 
-Check setup moreover add CHECK_HOME path to PYTHONPATH so attention please when you use CHECK with other module or python package.
+After the environment was loaded, you find **CHECK** command in your $PATH and in the $CHECK_HOME variable you find check directory path; 
+**CHECK** setup moreover add CHECK_HOME path to PYTHONPATH, so attention please when you use CHECK with other module or python package.
 
 ### 1. *Command line*
-Check is calleble only from commandline(CL), before launch remind to edit configuration file in *etc* (see next guide section). 
+**CHECK** is callable only from commandline(CL), at the moment GUI is not implmented. Please, before launch remind to edit configuration file in *etc* (see next section). 
 To see all CL flags use **--help** flag:
 
 
@@ -48,24 +48,24 @@ optional arguments:
 
 
 
-With no argument CHECK start and warn you that ***CHECKtest list is empty***. To specifies what checktest you want to run you must use **--check** flag:
+With no argument CHECK start and it warn you that ***CHECKtest list is empty***. To specifies what **CHECKTEST** you would like to run you must use **--check** flag:
 
     check --check linpack
 
-This command implies that you have defined *linpack* test to not targer architecture. If you define a test to a target architecture, you must use:
+This command implies that you haven't defined *linpack* test to targer architecture, *linpack* can benchmark all architetures. If you define a test to a target architecture, you must use:
 
     check --check linpack@x86
 
-If you have just written CHECKTEST recipes(with install method) but you don't have generate the executable to launch the software, you can use the follow command to finalize the CHECKTEST installation:
+If you have just written **CHECKTEST** recipes(with install method) but you don't have generated the exe to launch the software, you can use the follow command to finalize the **CHECKTEST** installation:
 
     check --check linpack@x86 --install
 
-For each CHECKTEST, CHECK return a **mark** ( in example OK,DOWN,WARNING ) defined in multybenchmark analysis class, you can personalize your analysis and call it with a sepcific flag:
+For each **CHECKTEST**, **CHECK** return a **mark** ( e.g. OK,DOWN,WARNING ) defined in multybenchmark analysis class, you can personalize your analysis and call it with another sepcific flag:
 
     check --check linpack@x86,stream@x86 --analysis simple 
 
-To provide a very flexible environment,you can define at runtime the CHECKTEST directory,loglevel and logfile overwriting the confinguration loaded from file.
-To change CHECKTEST directory you can use this flag:
+**CHECK** provide a very flexible environment, indeed you can define at runtime the CHECKTEST directory,loglevel and logfile overwriting the confinguration loaded from file.
+To change **CHECKTEST** directory you can use this flag ( abbr. -checkTD):
 
     check --check my_personal_linpack --checktest_directory $HOME/my_personal_checktest
 
@@ -73,11 +73,11 @@ To change log level and logfile you can use:
 
     check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
 
-The flags **--master** and **--hostline** is used when you use a scheduler to submit CHECKTEST on cluster node. Trhough *master* flag you enable scheduler mode and with *hostlist* (to syntax see section below) you specifies the cluster nodes where CHECK launch the bechmark:
+The flags **--master** and **--hostlist** is used when you want to launch tests via scheduler on HPC cluster node. Trhough *master* flag you enable scheduler mode and with *hostlist* (to syntax see section below, abbr *-hpc*) you specifie the cluster nodes where **CHECK** launch the tests:
 
     check --check linpack@x86,linpack@knl --master --hostlist x86:node1,node2/knl:node3,node4/
 
-The configuration flag take a configuration file as input, in file you can specify all CHECK parameter to overwrite conf file loaded to etc moreover you can add CL paramenter in this file with correct tname and format:
+The configuration flag takes a configuration file as input, in file you can specify all **CHECK** parameter and they will be overwrited conf file loaded to etc moreover you can add CL paramenter in this file with correct tname and format:
 
     check --configuration myconffile.json
 
