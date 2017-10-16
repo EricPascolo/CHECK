@@ -67,7 +67,11 @@ class check_core:
         logger = logging.getLogger(self.setting["logger_name"])
         logger.debug(self.setting["logger_name"])
 
-        if not self.setting["check"] == "-999":
+
+        if "checklist" in self.setting:
+            self.printchecklist()  
+
+        elif not self.setting["check"] == "-999":
             # load name of check test in list
             names_of_check_test = "".join(self.setting["check"]).split(",")
             logger.debug(names_of_check_test)
@@ -210,3 +214,47 @@ class check_core:
         return ctarray
 
 ####--------------------------------------------------------------------------------------------------------------
+
+    def printchecklist(self):
+        """ Print list of CHECKTEST installed """
+
+        logger = logging.getLogger(self.setting["logger_name"])
+
+        checklist_string = " "
+        
+        sys.path.append(self.setting["check_test_directory"])
+        subdir = os.listdir(self.setting["check_test_directory"])
+     
+        # check if architecture directory 
+        if "architecture" in subdir:
+            checklist_string = "\n-ARCHITECTURES AVAILABLE:\n\n"
+            arch_dir = self.setting["check_test_directory"]+"/architecture/"
+            arch_list = os.listdir(arch_dir)
+            for a in arch_list:
+                if a.endswith('.json'):
+                    checklist_string = checklist_string+ "--- "+a[:-5]+"\n"
+
+                    try:
+                        jread = file_reader.json_reader(arch_dir+a).keys()
+                        for jk in jread:
+                            checklist_string = checklist_string + "----- "+jk+"\n"
+                    except:
+                        pass
+            
+        checklist_string = checklist_string+"\n-CHECKTEST AVAILABLE:\n\n"
+
+        # check checktest available
+        for dr in subdir:
+            dr_path = self.setting["check_test_directory"]+"/"+dr+"/"
+            if os.path.exists(dr_path+"__init__.py"):
+                sdr = os.listdir(dr_path)
+          
+                for d in sdr:
+                  
+                    if os.path.exists(dr_path+d+"/__init__.py"):
+                        checklist_string = checklist_string+"--- "+dr+"@"+d+"\n"
+        
+        
+        
+        logger.critical(checklist_string)
+        exit()

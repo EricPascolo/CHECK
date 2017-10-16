@@ -22,17 +22,6 @@ def cl_parser():
                             action = 'store_true' ,
                             required = False,
                             help = 'Master/slave flag')
-
-    parser.add_argument(   '--install', 
-                            action = 'store_true' ,
-                            required = False,
-                            help = 'Install checktest')
-
-    # parser.add_argument(   '--daemon', 
-    #                             type = str,
-    #                             required = False,
-    #                             choices=['start', 'submit', 'status','kill'],
-    #                             help = 'Daemon command')
                                 
     parser.add_argument(   '--check', '-ct',
                                 type = str,
@@ -41,11 +30,21 @@ def cl_parser():
                                 default = "-999",
                                 help = 'List of check')                            
 
+    parser.add_argument(   '--checklist', 
+                            action = 'store_true' ,
+                            required = False,
+                            help = 'Print checktest list')
+
     parser.add_argument(   '--configuration', 
                                 type = str,
                                 required = False,
                                 
                                 help = 'Input file')
+
+    parser.add_argument(   '--install', 
+                            action = 'store_true' ,
+                            required = False,
+                            help = 'Install checktest')
 
     parser.add_argument(   '--analysis', 
                                 type = str,
@@ -55,23 +54,39 @@ def cl_parser():
     parser.add_argument(   '--loglevel', 
                                 type = str,
                                 required = False,
-                                help = 'Input file')
+                                help = 'Log level')
     
     parser.add_argument(   '--logfile', 
                                 type = str,
                                 required = False,
-                                help = 'Input file')
+                                help = 'Log file')
+
+    parser.add_argument(   '--logtype', 
+                                type = str,
+                                required = False,
+                                help = 'Log type')
+   
+    parser.add_argument(   '--hostlist', '-hpc', 
+                                type = str,
+                                required = False,
+                                help = 'List of Hostname to Master submission')
 
     parser.add_argument(   '--checktest_directory', '-checkTD', 
                                 type = str,
                                 required = False,
                                 help = 'check test directory')
     
-    parser.add_argument(   '--hostlist', '-hpc', 
+
+    parser.add_argument(   '--check_remote_source_path', '-checkRSP', 
                                 type = str,
                                 required = False,
-                                help = 'List of Hostname to Master submission')
+                                help = 'Remote CHECK directory path')
     
+    parser.add_argument(   '--check_master_collecting_path', '-checkMCP', 
+                                type = str,
+                                required = False,
+                                help = 'Directory path where collect scheduler job results')
+
     return parser.parse_args()
 
 ####--------------------------------------------------------------------------------------------------------------
