@@ -73,17 +73,21 @@ To change log level and logfile you can use:
 
     check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
 
-The flags **--master** and **--hostlist** is used when you want to launch tests via scheduler on HPC cluster node. Trhough *master* flag you enable scheduler mode and with *hostlist* (to syntax see section below, abbr *-hpc*) you specifie the cluster nodes where **CHECK** launch the tests:
+The flags **--master** and **--hostlist** has used when you launch tests, via scheduler, on HPC cluster node. Through *master* flag you enable scheduler mode and with *hostlist* (to syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launchs the tests:
 
     check --check linpack@x86,linpack@knl --master --hostlist x86:node1,node2/knl:node3,node4/
 
-The configuration flag takes a configuration file as input, in file you can specify all **CHECK** parameter and they will be overwrited conf file loaded to etc moreover you can add CL paramenter in this file with correct tname and format:
+The *--configuration* flag takes a configuration file as input, this file must be write in json format and is an easy way to avoid to write long **CHECK** command line:
 
     check --configuration myconffile.json
 
+In **CHECK** you can write all paramenter in command line,configuration file pass by command line or in configuration file in etc directory. The priority order used to assign a parameter vaule is the follow:
+
+        command line > file pass by CL > file in etc
+
 ### 2. *CHECK etc*
 
-In **check/etc/** directory you can define your configuration file in json format named check_setting.json . Configuration file in etc overwrite the configuration file template in **check/etc/default/**
+In **check/etc/** directory you can define your configuration file in json format named *check_setting.json* . Configuration file in etc overwrite the configuration file template in **check/etc/default/**, if the first don't exist the last is read. The structure of file is the follow:
 
     {
     "loglevel":"DEBUG",
@@ -95,15 +99,15 @@ In **check/etc/** directory you can define your configuration file in json forma
     "check_master_collecting_path":"$HOME/check_master_collection"
     }
 
-In configuration file you can use environment variable beecuase check is able to resolve the string. 
+In configuration file you can use environment variables beecuase check is able to resolve them. 
 
-The **loglevel** parameter can have 3 value in order of verbosity:
+The **loglevel** parameter can have 3 value in descending order of verbosity:
 
  - DEBUG
  - INFO 
  - CRITICAL
 
-CHECK run result and error are write as CRITICAL level, partial results and other configuration indformation are writed as INFO and developper information are writed as DEBUG level.
+**CHECK** run result and error are written as CRITICAL level, partial results and other configuration indformation are written as INFO and developper information are written as DEBUG level.
 The **logtype** field allow to choose where the log is printed:
 
  - cl : print log on terminal
@@ -112,27 +116,27 @@ The **logtype** field allow to choose where the log is printed:
 
 If you choose *file* or *both* you can specify the path of log file in field **logfile**.
 
-The result of CHECK is always write in the log and in a file, you can choose the path of this file with **resultfile** field; in that file you find only the result of last run of CHECK.
+The result of CHECK is always written in the log and in a file, you can choose the path of this file with **resultfile** field; in that file you find only the result of *last run* of **CHECK**.
 
-The **checktest_directory** is the field where is defined the path of the directory that contain checktests.
+The **checktest_directory** is the field where is defined the path of the directory that contains checktests.
 
-**check_remote_source_path** is the path in remote node where is located *check* directory, this path is necessary to load check environment.
+**check_remote_source_path** is the path, in remote, node where is located **CHECK** directory, this path is necessary to load check environment.
 
-**check_master_colletting_path** is path on the node where CHECK i launched as master where to store scheduler output file.
+**check_master_colletting_path** is path on the master node, where CHECK is launched, where to store scheduler output file.
 
 ### 3. *MASTER mode and Architectures*
 
-Check can use scheduler to submit the checktest directly on cluster node. At the moment CHECK create a job for each node and submit it to scheduler. The cluster node must be conteined on hostlist pass to CHECK by *--hostlist* flag.
+**CHECK** can use scheduler to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** create a job for each node and submit it to scheduler. The cluster node must be conteined on hostlist passed to CHECK by *--hostlist* flag.
 
-The structure of the line of hostlist is the follow:
+The structure of the hostlist line is the follow:
 
-        arch#setting:hostname1,hostname2.../
+        architecture#setting:hostname1,hostname2.../
 
-The **architecture** is the name of architecture file in CHECKTEST directory and for each architecture can have different scheduler **setting**. After ':' we must put the list of hostname separated by comma. We can specifies in the same hostline different architectures, in example for etherogeneus HPC cluster, simply reapeat che line without space among them.
+The **architecture** is the name of architecture file (without extension) in **CHECKTEST** directory and for each architecture you can define many scheduler **setting**. After ':' we must put the list of hostname separated by comma. You can specify in the same hostline different architectures, in example for etherogeneus HPC cluster, simply reapeat che line without space between them.
     
     arch#setting:hostname1,hostname2.../arch2:hostname3,hostname4/
 
-Is not necessary to specify a name of setting for each architecture, as in the second arch in the line below but in this case we load *default* setting for that architecture.
+Is not necessary to specify a name of setting for each architecture, as in the example above for arch2 **CHECK** loads *default* setting for that architecture.
 
 ***
 
