@@ -150,7 +150,7 @@ The CHECKTEST directory must have this structure:
                 - x86.json           |                      |
                 - x512.json          |                 -----------------------
                 - GPU.json           |                 |            |        |
-                                     |             __init__.py     bin       in 
+                                     |             __init__.py     bin       tmp 
                                      |
                         --------------------------------
                         |      |           |           |
@@ -247,7 +247,7 @@ CHECK provides a *template* to simplify a write of CHECKTEST file, for write a c
  4) In *run* method it recomends to use Popen package from subprocess to launch executable, subprocess is directly imported by father class. To collect with python stdout and analyze before, it is recomanded use a code like that:
 
          
-        process = subprocess.Popen( [self.exe,"./input"], shell=False,cwd=self.test_dir["in_dir"],stdout=subprocess.PIPE,env=os.environ)
+        process = subprocess.Popen( [self.exe,"./input.txt"], shell=False,cwd=self.test_dir["in_dir"],stdout=subprocess.PIPE,env=os.environ)
         self.std_out, self.std_err = process.communicate()
 
  5) Use the directory structure provide by CHECK. If you put executable in **bin** absolute path is automatically generetad given name of exe in *self.exe* variable. Use:
