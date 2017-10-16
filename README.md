@@ -48,7 +48,7 @@ optional arguments:
 
 
 
-With no argument CHECK start and it warn you that ***CHECKtest list is empty***. To specifies what **CHECKTEST** you would like to run you must use **--check** flag:
+With no argument CHECK start and it warn you that ***checktest list is empty***. To specifies what **CHECKTEST** you would like to run you must use **--check** flag:
 
     check --check linpack
 
@@ -262,5 +262,5 @@ The symbol  **_ noqueue _** indicates that the scheduler have an automatic selec
     - **tmp** to place temporaney file
 
  6) Check what CHECK's template  methods is offered to you, don't rewrite the useless code or if you think your code is usefull for all integrated it in template. 
- 
+
 ***
