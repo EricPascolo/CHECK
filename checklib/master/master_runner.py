@@ -12,7 +12,7 @@ from checklib.inout import file_reader
 from checklib.common import utils
 from checklib.scheduler import whatscheduler
 
-
+####--------------------------------------------------------------------------------------------------------------
 
 def check_collectiong_master_directory(checkcore,logger):
     ''' Check if master collection result directory exist, if not create it.
@@ -29,7 +29,8 @@ def check_collectiong_master_directory(checkcore,logger):
 
 
     logger.debug("check_master_collecting_path : "+checkcore.setting["check_master_collecting_path"])
-    
+
+####--------------------------------------------------------------------------------------------------------------    
 
 def select_checktest_on_architercture(arch,checkcore):
     
@@ -43,6 +44,7 @@ def select_checktest_on_architercture(arch,checkcore):
     else:
         return string
 
+####--------------------------------------------------------------------------------------------------------------
 
 def create_slave_cmd_string(arch,checkcore):
 
@@ -55,6 +57,7 @@ def create_slave_cmd_string(arch,checkcore):
 
     return remote_source_path + cmd_check_string
 
+####--------------------------------------------------------------------------------------------------------------
 
 def main(checkcore):
 
