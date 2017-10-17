@@ -29,7 +29,12 @@ def cl_parser():
                                 required = False,
                                 default = "-999",
                                 help = 'List of check')                            
-
+    
+    parser.add_argument(   '--checkparameters', 
+                            action = 'store_true' ,
+                            required = False,
+                            help = 'Print check setting parameter')
+    
     parser.add_argument(   '--checklist', 
                             action = 'store_true' ,
                             required = False,

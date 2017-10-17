@@ -67,6 +67,8 @@ class check_core:
         logger = logging.getLogger(self.setting["logger_name"])
         logger.debug(self.setting["logger_name"])
 
+        if "checkparameters" in self.setting:
+            self.printparameters()
 
         if "checklist" in self.setting:
             self.printchecklist()  
@@ -258,3 +260,18 @@ class check_core:
         
         logger.critical(checklist_string)
         exit()
+
+####--------------------------------------------------------------------------------------------------------------
+
+    def printparameters(self):
+        """ print all check parameters contained in check setting """
+        
+        logger = logging.getLogger(self.setting["logger_name"])
+        checkparameter_string = "\n"
+
+
+        for s, sv in sorted(self.setting.items()):
+             checkparameter_string = checkparameter_string+"-- "+s +" : "+str(sv)+"\n"
+
+        logger.critical(checkparameter_string)
+####--------------------------------------------------------------------------------------------------------------
