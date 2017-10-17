@@ -6,7 +6,7 @@
 
 ***
 
-## CHECK
+## CHECK 0.2
 
 ### 0. *Environment setup*
 **CHECK** does not require a formal installation. You can download wherever you want from the repository and use  the *source command* to load the environment from setup_check.sh.
@@ -22,29 +22,40 @@ After the environment has loaded, you find the **CHECK** command in your $PATH a
 To see all CL flags use **--help** flag:
 
 
-        CHECK 0.1.003 START 
-        usage: check [-h] [--master] [--install] [--check CHECK [CHECK ...]]
-                    [--configuration CONFIGURATION] [--analysis ANALYSIS]
-                    [--loglevel LOGLEVEL] [--logfile LOGFILE]
-                    [--checktest_directory CHECKTEST_DIRECTORY] [--hostlist HOSTLIST]
+    CHECK 0.2.000 START 
+    usage: check [-h] [--master] [--check CHECK [CHECK ...]] [--checkparameters]
+                [--checklist] [--configuration CONFIGURATION] [--install]
+                [--analysis ANALYSIS] [--loglevel LOGLEVEL] [--logfile LOGFILE]
+                [--logtype LOGTYPE] [--hostlist HOSTLIST]
+                [--checktest_directory CHECKTEST_DIRECTORY]
+                [--check_remote_source_path CHECK_REMOTE_SOURCE_PATH]
+                [--check_master_collecting_path CHECK_MASTER_COLLECTING_PATH]
 
-            CHECK : Cluster Health and Environment ChecKing system
+        CHECK : Cluster Health and Environment ChecKing system
 
-        optional arguments:
-        -h, --help            show this help message and exit
-        --master              Master/slave flag
-        --install             Install checktest
-        --check CHECK [CHECK ...], -ct CHECK [CHECK ...]
-                                List of check
-        --configuration CONFIGURATION
-                                Input file
-        --analysis ANALYSIS   kind of analysis
-        --loglevel LOGLEVEL   Input file
-        --logfile LOGFILE     Input file
-        --checktest_directory CHECKTEST_DIRECTORY, -checkTD CHECKTEST_DIRECTORY
-                                check test directory
-        --hostlist HOSTLIST, -hpc HOSTLIST
-                                List of Hostname to Master submission
+    optional arguments:
+    -h, --help            show this help message and exit
+    --master              Master/slave flag
+    --check CHECK [CHECK ...], -ct CHECK [CHECK ...]
+                            List of check
+    --checkparameters     Print check setting parameter
+    --checklist           Print checktest list
+    --configuration CONFIGURATION
+                            Input file
+    --install             Install checktest
+    --analysis ANALYSIS   kind of analysis
+    --loglevel LOGLEVEL   Log level
+    --logfile LOGFILE     Log file
+    --logtype LOGTYPE     Log type
+    --hostlist HOSTLIST, -hpc HOSTLIST
+                            List of Hostname to Master submission
+    --checktest_directory CHECKTEST_DIRECTORY, -checkTD CHECKTEST_DIRECTORY
+                            check test directory
+    --check_remote_source_path CHECK_REMOTE_SOURCE_PATH, -checkRSP CHECK_REMOTE_SOURCE_PATH
+                            Remote CHECK directory path
+    --check_master_collecting_path CHECK_MASTER_COLLECTING_PATH, -checkMCP CHECK_MASTER_COLLECTING_PATH
+                            Directory path where collect scheduler job results
+
 
 
 
@@ -55,6 +66,44 @@ With no arguments CHECK starts and it warns you that ***checktest list is empty*
 This command implies that you haven't defined *linpack* to test the target architecture - *linpack* can benchmark all architetures. If you define a test to a target architecture, you must use:
 
     check --check linpack@x86
+
+You can see all **CHECKTEST** installed with the flag **--checklist**:
+
+    check --cheklist
+        
+    -ARCHITECTURES AVAILABLE:
+    --- arch1
+    ----- default
+    ----- queue1
+    --- arch2
+    ----- default
+    ----- queue2
+        
+    -CHECKTEST AVAILABLE:
+
+    --- test1@arch1
+    --- test2@arch1
+    --- test1@arch2
+    --- test2@arch2
+  
+
+and you can see **CHECK** parameters with flags **--checkparameter**:
+
+    -- check : ['test1@arch1,test2@arch1']
+    -- check_master_collecting_path : $HOME/check_master_collection
+    -- check_remote_source_path : /cinecalocal/usprod/
+    -- check_test_directory : $HOME/checktest/
+    -- checkparameters : True
+    -- checktest_directory : $HOME/checktest/
+    -- hostlist : arch1:node1,node2/
+    -- logfile : $HOME/checklog.txt
+    -- logger_name : check_file_stream_log
+    -- loglevel : DEBUG
+    -- logtype : cl
+    -- master : True
+    -- resultfile : $HOME/checkresult.txt
+
+
 
 If you have just written **CHECKTEST** recipes(with install method) but you haven't generated the exe to launch the software, you can use the follow command to finalize the **CHECKTEST** installation:
 
