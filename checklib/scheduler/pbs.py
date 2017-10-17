@@ -17,7 +17,6 @@ class pbs(scheduler):
             submission_string = submission_string +" -q "+arch_setting["queue"]
         submission_string = submission_string +" -N "+arch_setting["jobname"]
         submission_string = submission_string +" -j oe "
-        submission_string = submission_string +" -o "+arch_setting["jobcollectiongpath"]
         submission_string = submission_string +" -A "+arch_setting["account"]
         submission_string = submission_string +" -- /usr/bin/bash -c "
 
