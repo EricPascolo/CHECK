@@ -54,9 +54,11 @@ elif "daemon" in checkcore.setting:
     Dcheck.command(cl_args)
 
 ## slave
-else:
+elif checkcore.setting["check"] != "-999":
     from checklib.slave import slave_runner
     slave_runner.main(checkcore)
 
+else:
+    pass
 
 ####--------------------------------------------------------------------------------------------------------------

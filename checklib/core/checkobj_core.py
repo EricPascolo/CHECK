@@ -259,12 +259,12 @@ class check_core:
         
         
         logger.critical(checklist_string)
-        exit()
+      
 
 ####--------------------------------------------------------------------------------------------------------------
 
     def printparameters(self):
-        """ print all check parameters contained in check setting """
+        """ print all parameters contained in check setting """
         
         logger = logging.getLogger(self.setting["logger_name"])
         checkparameter_string = "\n"
