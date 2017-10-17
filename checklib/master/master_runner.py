@@ -37,8 +37,14 @@ def select_checktest_on_architercture(arch,checkcore):
     string = ""
     
     for ct in checkcore.checktests:
-        if ct["arch"].split("_")[0]== arch or ct["arch"]== "__all__":
-            string =string+ ct["name"]+"@"+ct["arch"]+","
+        
+        if "_" in arch:
+            if ct["arch"] == arch or ct["arch"]== "__all__":
+                string =string+ ct["name"]+"@"+ct["arch"]+","
+            
+        else:
+            if ct["arch"].split("_")[0]== arch or ct["arch"]== "__all__":
+                string =string+ ct["name"]+"@"+ct["arch"]+","
     
     if string.endswith(","): 
         return string[:-1]
