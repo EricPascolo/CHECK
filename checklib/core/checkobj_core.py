@@ -232,13 +232,13 @@ class check_core:
             checklist_string = "\n-ARCHITECTURES AVAILABLE:\n\n"
             arch_dir = self.setting["check_test_directory"]+"/architecture/"
             arch_list = os.listdir(arch_dir)
-            for a in arch_list:
+            for a in sorted(arch_list):
                 if a.endswith('.json'):
                     checklist_string = checklist_string+ "--- "+a[:-5]+"\n"
 
                     try:
                         jread = file_reader.json_reader(arch_dir+a).keys()
-                        for jk in jread:
+                        for jk in sorted(jread):
                             checklist_string = checklist_string + "----- "+jk+"\n"
                     except:
                         pass
@@ -246,12 +246,12 @@ class check_core:
         checklist_string = checklist_string+"\n-CHECKTEST AVAILABLE:\n\n"
 
         # check checktest available
-        for dr in subdir:
+        for dr in sorted(subdir):
             dr_path = self.setting["check_test_directory"]+"/"+dr+"/"
             if os.path.exists(dr_path+"__init__.py"):
                 sdr = os.listdir(dr_path)
           
-                for d in sdr:
+                for d in sorted(sdr):
                   
                     if os.path.exists(dr_path+d+"/__init__.py"):
                         checklist_string = checklist_string+"--- "+dr+"@"+d+"\n"
