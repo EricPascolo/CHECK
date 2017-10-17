@@ -34,8 +34,9 @@ def check_collectiong_master_directory(checkcore,logger):
 def select_checktest_on_architercture(arch,checkcore):
     
     string = ""
+    
     for ct in checkcore.checktests:
-        if ct["arch"]== arch or ct["arch"]== "__all__":
+        if ct["arch"].split("_")[0]== arch or ct["arch"]== "__all__":
             string =string+ ct["name"]+"@"+ct["arch"]+","
     
     if string.endswith(","): 
