@@ -58,7 +58,6 @@ class check_core:
         ## enable log with user setting
         try:
             lgnm = checklog.checkloggin(self.setting["loglevel"],self.setting["logfile"],self.setting["logtype"])
-            print lgnm
             self.setting.update({"logger_name":lgnm})
         except KeyError:
             pass
