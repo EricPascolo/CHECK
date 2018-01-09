@@ -1,0 +1,140 @@
+{
+
+    "flag":[
+
+        {
+            "name":"--master",
+            "param":{
+                "action":"store_true",
+                "required":"False",
+                "help":"Master slave flag"
+            }
+        },
+
+        {
+            "name":"--check",
+            "param":{
+                "type":"str",
+                "nargs":"+",
+                "default":"-999",
+                "required":"False",
+                "help":"List of check"
+            }
+
+        },
+
+        {
+            "name":"--checkparameters",
+            "param":{
+                 "action":"store_true",
+                 "required":"False",
+                 "help":"Print checktest list"
+            }
+        },
+
+        {
+            "name":"--configuration",
+            "param":{
+                "type":"str",
+                "choices":"",
+                "required":"False",
+                "help":"Input file"
+            }
+        },
+
+        {
+            "name":"--cluster_scheduler",
+            "param":{
+                "type":"str",
+                "required":"False",
+                "help":"Name of scheduler"
+            }
+        },
+
+        {
+            "name":"--install",
+            "param":{
+                "action":"store_true",
+                "required":"False",
+                "help":"Install checktest"
+             }
+        },
+
+        {
+            "name":"--analysis",
+            "param":{
+                "type":"str",
+                "required":"False",
+                "help":"kind of analysis"
+            }
+
+        },
+
+        {
+            "name":"--loglevel",
+            "param":{
+                "type":"str",
+                "choices":"",
+                "required":"False",
+                "help":"Log level "
+            }
+
+        },
+
+        {
+            "name":"--logfile",
+            "param":{
+                "type":"str",
+                "choices":"",
+                "required":"False",
+                "help":"Log type"
+            }
+
+        },
+
+        {
+            "name":"--hostlist",
+            "param":{
+                "type":"str",
+                "required":"False",
+                "help":"List of Hostname to Master submission"
+            }
+
+        },
+
+        {
+            "name":"--checktest_directory",
+            "param":{
+                "type":"str",
+                "required":"False",
+                "help":"check test directory"
+            }
+
+        },
+
+        {
+            "name":"--check_remote_source_path",
+            "param":{
+                "type":"str",
+                "required":"False",
+                "help":"Remote CHECK directory path"
+            }
+
+        },
+
+        {
+            "name":"--check_master_collecting_path",
+            "param":{
+                "type":"str",
+                "required":"False",
+                "help":"Directory path where collect scheduler job results"
+            }
+
+        }
+
+        
+    ]
+
+
+
+}

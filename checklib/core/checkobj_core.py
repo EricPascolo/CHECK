@@ -28,26 +28,28 @@ class check_core:
 
     def __init__(self,cl_arg):
         
+        # check_file = os.path.realpath(os.path.expanduser(__file__))
+        # check_prefix = os.path.dirname(os.path.dirname(os.path.dirname(check_file)))
        
-        check_file = os.path.realpath(os.path.expanduser(__file__))
-        check_prefix = os.path.dirname(os.path.dirname(os.path.dirname(check_file)))
-       
-        ## set setting file path
-        check_setting_path = " "
-        check_setting_path_standard = check_prefix+"/etc"+"/check_setting.json"
-        check_setting_path_default  = check_prefix+"/etc/default"+"/check_setting.json"
+        # ## set setting file path
+        # check_setting_path = " "
+        # check_setting_path_standard = check_prefix+"/etc"+"/check_setting.json"
+        # check_setting_path_default  = check_prefix+"/etc/default"+"/check_setting.json"
         
-        ## check if you create a personal setting file
-        if os.path.exists(check_setting_path_standard):
-            check_setting_path = check_setting_path_standard
+        # ## check if you create a personal setting file
+        # if os.path.exists(check_setting_path_standard):
+        #     check_setting_path = check_setting_path_standard
        
-        ## check if setting file is in default location
-        elif os.path.exists(check_setting_path_default):
-            check_setting_path = check_setting_path_default
+        # ## check if setting file is in default location
+        # elif os.path.exists(check_setting_path_default):
+        #     check_setting_path = check_setting_path_default
        
-        ## setting file not found
-        else:
-            sys.exit("ERROR CHECK setting file not found")
+        # ## setting file not found
+        # else:
+        #     sys.exit("ERROR CHECK setting file not found")
+        
+        # set setting file path
+        check_setting_path = utils.get_setting_file_path("check_setting.json")
         
         ## extract setting information from json file
         json_setting = file_reader.json_reader(check_setting_path)
