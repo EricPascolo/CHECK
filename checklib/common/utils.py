@@ -7,6 +7,7 @@
 
 import os
 import regex
+import sys
 from checklib.common.archive import *
 
 ####--------------------------------------------------------------------------------------------------------------
@@ -108,4 +109,30 @@ def remove_newline_in(stringline):
         return stringline
 
 
-####--------------------------------------------------------------------------------------------------------------
+####--------------------------------------------------------------------------------------------------------------        
+
+def get_setting_file_path(filename):
+    
+    check_file = os.path.realpath(os.path.expanduser(__file__))
+    check_prefix = os.path.dirname(os.path.dirname(os.path.dirname(check_file)))
+    
+    ## set setting file path
+    check_setting_path = " "
+    check_setting_path_standard = check_prefix+"/etc/"+filename
+    check_setting_path_default  = check_prefix+"/etc/default/"+filename
+    
+    ## check if you create a personal setting file
+    if os.path.exists(check_setting_path_standard):
+        check_setting_path = check_setting_path_standard
+    
+    ## check if setting file is in default location
+    elif os.path.exists(check_setting_path_default):
+        check_setting_path = check_setting_path_default
+    
+    ## setting file not found
+    else:
+        sys.exit("ERROR CHECK setting file not found:"+filename)
+
+    return check_setting_path
+
+####--------------------------------------------------------------------------------------------------------------  
