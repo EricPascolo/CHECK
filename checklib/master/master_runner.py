@@ -33,6 +33,7 @@ def check_collectiong_master_directory(checkcore,logger):
 ####--------------------------------------------------------------------------------------------------------------    
 
 def select_checktest_on_architercture(arch,checkcore):
+    ''' Check if checktest for targer architecture exist and create string for job submission '''
     
     string = ""
     
@@ -54,6 +55,7 @@ def select_checktest_on_architercture(arch,checkcore):
 ####--------------------------------------------------------------------------------------------------------------
 
 def create_slave_cmd_string(arch,checkcore):
+    '''Compose slave command string with software name logleve and checktest list'''
 
     remote_source_path = "source "+checkcore.setting["check_remote_source_path"]+"/check/bin/setup_check.sh; "
 
@@ -67,6 +69,19 @@ def create_slave_cmd_string(arch,checkcore):
 ####--------------------------------------------------------------------------------------------------------------
 
 def main(checkcore):
+    '''
+        Master core function, this function compose slave check command, set scheduler interface, hostlist
+        and submit on each node in hostlist via scheduler the slave command.
+
+        To know the scheduler parameter this function read the json architecture file in checktest directory.
+        The hostlist is taken via command line or from config file.
+        The scheduler interface is selected by check_installed_scheduler function and the submission line is composed in this way:
+
+            scheduler_exe  scheduler_parameter check_slave_command
+
+        The slave command for all scheduler is inlined in submission line.
+    
+    '''
 
     #enable logger
     logger = logging.getLogger(checkcore.setting["logger_name"])

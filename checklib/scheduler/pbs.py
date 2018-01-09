@@ -2,6 +2,15 @@ from checklib.scheduler.scheduler_template import scheduler
 
 class pbs(scheduler):
 
+    '''  PBS Pro check interface
+
+            Scheduler cmd        : "qsub" 
+            Anchor to slave cmd  : " -- /usr/bin/bash -c "
+
+        This scheduler allow user to submit to automatic router queue, so the interfece accept the __noqueue__ parameter.
+            
+    '''
+
     def __init__(self):
         self.name = "pbs"
 
