@@ -76,7 +76,7 @@ def main(checkcore):
     check_collectiong_master_directory(checkcore,logger)
 
     # load scheduler object
-    scheduler = whatscheduler.check_installed_scheduler()
+    scheduler = whatscheduler.check_installed_scheduler(checkcore.setting)
     arch_array = utils.split_hostline(checkcore.setting["hostlist"])
     
     

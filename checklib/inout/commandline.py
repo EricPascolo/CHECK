@@ -43,8 +43,12 @@ def cl_parser():
     parser.add_argument(   '--configuration', 
                                 type = str,
                                 required = False,
-                                
                                 help = 'Input file')
+
+    parser.add_argument(   '--cluster_scheduler', 
+                                type = str,
+                                required = False,
+                                help = 'Name of scheduler')
 
     parser.add_argument(   '--install', 
                             action = 'store_true' ,
