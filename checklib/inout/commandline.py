@@ -5,6 +5,7 @@
 #
 
 import argparse
+import sys
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -106,8 +107,11 @@ def cl_convert_to_dict(args):
     """
 
     convdict = vars(args)
-    newdict =   dict([(vkey, vdata) for vkey, vdata in convdict.iteritems() if(vdata) ])
-  
+    if sys.version_info[:2] < (3,0):
+        newdict =   dict([(vkey, vdata) for vkey, vdata in convdict.iteritems() if(vdata) ])
+    else:
+        newdict =   dict([(vkey, vdata) for vkey, vdata in convdict.items() if(vdata) ])
+
     return newdict
 
 ####--------------------------------------------------------------------------------------------------------------
