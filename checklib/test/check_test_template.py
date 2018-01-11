@@ -10,6 +10,7 @@ import os
 import re
 from checklib.core.checkobj_result import check_result 
 from checklib.common.archive import *
+
 class checktest():
 
     """ Checktest template class """
