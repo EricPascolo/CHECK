@@ -1,4 +1,6 @@
 
+####--------------------------------------------------------------------------------------------------------------
+
 def check_installed_scheduler(setting):
     
     ''' This function select scheduler interface, at the momemt the scheduler is selected by parameter  '''
@@ -12,3 +14,5 @@ def check_installed_scheduler(setting):
         scheduler_object = slurm.slurm()
 
     return scheduler_object
+
+####--------------------------------------------------------------------------------------------------------------

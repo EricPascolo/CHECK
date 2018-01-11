@@ -1,6 +1,7 @@
 from checklib.scheduler.scheduler_template import scheduler
 
 class slurm(scheduler):
+    
     '''  Slurm check interface
 
             Scheduler cmd        : "sbatch" 
@@ -9,9 +10,13 @@ class slurm(scheduler):
         This scheduler not allow user to submit to automatic router queue.
             
     '''   
-    
+
+####--------------------------------------------------------------------------------------------------------------
+#     
     def __init__(self):
         self.name = "slurm"
+
+####--------------------------------------------------------------------------------------------------------------
 
     def scheduler_string_generator(self,arch_setting):
 
@@ -29,5 +34,6 @@ class slurm(scheduler):
 
         return submission_string
 
+####--------------------------------------------------------------------------------------------------------------
 
 

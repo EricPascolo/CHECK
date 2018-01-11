@@ -12,6 +12,8 @@ import os
 Python module that contain read file methods
 """
 
+####--------------------------------------------------------------------------------------------------------------
+
 def json_reader(filepath):
     """
     Checking existence of json file and read it
@@ -27,3 +29,5 @@ def json_reader(filepath):
         sys.exit("ERROR JSON file not readable "+filepath)
 
     return filecontained
+
+####--------------------------------------------------------------------------------------------------------------

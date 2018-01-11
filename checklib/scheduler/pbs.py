@@ -10,9 +10,12 @@ class pbs(scheduler):
         This scheduler allow user to submit to automatic router queue, so the interfece accept the __noqueue__ parameter.
             
     '''
+####--------------------------------------------------------------------------------------------------------------
 
     def __init__(self):
         self.name = "pbs"
+
+####--------------------------------------------------------------------------------------------------------------
 
     def scheduler_string_generator(self,arch_setting):
 
@@ -31,5 +34,5 @@ class pbs(scheduler):
 
         return submission_string
 
-
+####--------------------------------------------------------------------------------------------------------------
 

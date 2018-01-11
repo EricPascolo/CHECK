@@ -13,6 +13,8 @@ logger.setLevel( "INFO"  )
 ch = logging.StreamHandler()
 logger.addHandler(ch)
 
+####--------------------------------------------------------------------------------------------------------------
+
 def checkloggin(loglevel,logfile,logtype="both"):
     
 
@@ -45,3 +47,4 @@ def checkloggin(loglevel,logfile,logtype="both"):
 
     return logger_name
     
+####--------------------------------------------------------------------------------------------------------------
