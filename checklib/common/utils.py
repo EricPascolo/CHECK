@@ -6,7 +6,7 @@
 
 
 import os
-import regex
+import re
 import sys
 from checklib.common.archive import *
 
@@ -28,8 +28,8 @@ def resolve_env_path(dictionary):
 def is_valid(path):
     '''Check if path is linux path'''
 
-    #regex to check path
-    prog = regex.compile(regex_path)#(r"^(/)([^/\0]+(/)?)+$")
+    #re to check path
+    prog = re.compile(re_path)#(r"^(/)([^/\0]+(/)?)+$")
     valid = prog.match(path)
     if valid is None:
         return False
@@ -43,8 +43,8 @@ def split_name_version(software_string):
     Given the software split name version and architecture
     Use @ symbol to architecture and # symbol for the version   
     '''
-    prog = regex.compile(regex_splitsoftware)
-    software_list = regex.split(regex_splitsoftware,software_string)
+    prog = re.compile(re_splitsoftware)
+    software_list = re.split(re_splitsoftware,software_string)
 
     software_hardware = ""
     software_version  = ""
@@ -71,8 +71,8 @@ def split_hostline(line):
 
     '''
 
-    # find the pattern that mathc with regex
-    reg_compiled = regex.compile(regex_parser_hostlist)
+    # find the pattern that mathc with re
+    reg_compiled = re.compile(re_parser_hostlist)
     result = reg_compiled.findall(line)
 
     architecture = []
@@ -112,7 +112,9 @@ def remove_newline_in(stringline):
 ####--------------------------------------------------------------------------------------------------------------        
 
 def get_setting_file_path(filename):
-    
+
+    """ Return setting file given its name, the search path is in oreder etc and etc/default """
+
     check_file = os.path.realpath(os.path.expanduser(__file__))
     check_prefix = os.path.dirname(os.path.dirname(os.path.dirname(check_file)))
     
@@ -136,3 +138,13 @@ def get_setting_file_path(filename):
     return check_setting_path
 
 ####--------------------------------------------------------------------------------------------------------------  
+
+def get_iter_object_from_dictionary(d):
+    """ Return different iter object of dictionary, the objects depends to python version"""
+
+    if sys.version_info[:2] < (3,0):
+        return d.iteritems()
+    else:
+        return d.items()
+
+####--------------------------------------------------------------------------------------------------------------

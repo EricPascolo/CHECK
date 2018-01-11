@@ -36,7 +36,6 @@
             "name":"--configuration",
             "param":{
                 "type":"str",
-                "choices":"",
                 "required":"False",
                 "help":"Input file"
             }
@@ -74,7 +73,6 @@
             "name":"--loglevel",
             "param":{
                 "type":"str",
-                "choices":"",
                 "required":"False",
                 "help":"Log level "
             }
