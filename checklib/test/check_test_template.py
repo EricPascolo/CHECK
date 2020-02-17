@@ -8,6 +8,7 @@ import subprocess
 import logging
 import os
 import re
+import sys
 from checklib.core.checkobj_result import check_result 
 from checklib.common.archive import *
 
