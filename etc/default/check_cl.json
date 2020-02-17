@@ -24,11 +24,20 @@
         },
 
         {
+            "name":"--checklist",
+            "param":{
+                "action":"store_true",
+                "required":"False",
+                "help":"Print checktest list"
+            }
+        },
+
+        {
             "name":"--checkparameters",
             "param":{
                  "action":"store_true",
                  "required":"False",
-                 "help":"Print checktest list"
+                 "help":"Print CHECK parameter"
             }
         },
 
