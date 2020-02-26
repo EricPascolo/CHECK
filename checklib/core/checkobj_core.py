@@ -231,11 +231,15 @@ class check_core:
             dr_path = self.setting["check_test_directory"]+"/"+dr+"/"
             if os.path.exists(dr_path+"__init__.py"):
                 sdr = os.listdir(dr_path)
-          
-                for d in sorted(sdr):
-                  
-                    if os.path.exists(dr_path+d+"/__init__.py"):
-                        checklist_string = checklist_string+"--- "+dr+"@"+d+"\n"
+                
+                if os.path.exists(dr_path+"/__init__.py") and os.path.exists(dr_path+"/bin"):
+		    checklist_string = checklist_string+"--- "+dr+"\n"
+
+		else:
+                    for d in sorted(sdr):
+                        if os.path.exists(dr_path+d+"/__init__.py"):
+                            checklist_string = checklist_string+"--- "+dr+"@"+d+"\n"
+                    
         
         
         
