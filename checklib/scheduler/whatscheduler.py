@@ -12,6 +12,10 @@ def check_installed_scheduler(setting):
     if setting["cluster_scheduler"] == "Slurm":
         from checklib.scheduler import slurm
         scheduler_object = slurm.slurm()
+    
+    if setting["cluster_scheduler"] == "ssh":
+        from checklib.scheduler import ssh
+        scheduler_object = ssh.ssh()
 
     return scheduler_object
 

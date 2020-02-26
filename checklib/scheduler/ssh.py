@@ -4,8 +4,8 @@ class ssh(scheduler):
     
     '''  Slurm check interface
 
-            Scheduler cmd        : "sbatch" 
-            Anchor to slave cmd  : " --wrap "
+            Scheduler cmd        : "ssh" 
+            Anchor to slave cmd  : " nohup... "
 
         This scheduler not allow user to submit to automatic router queue.
             
@@ -14,7 +14,7 @@ class ssh(scheduler):
 ####--------------------------------------------------------------------------------------------------------------
 #     
     def __init__(self):
-        self.name = "slurm"
+        self.name = "ssh"
 
 ####--------------------------------------------------------------------------------------------------------------
 
