@@ -92,7 +92,18 @@
             "name":"--logfile",
             "param":{
                 "type":"str",
-                "choices":"",
+                "default":"__nofile__",
+                "required":"False",
+                "help":"Log file"
+            }
+
+        },
+
+        {
+            "name":"--logtype",
+            "param":{
+                "type":"str",
+                "choices":"cl,file,both",
                 "required":"False",
                 "help":"Log type"
             }
@@ -139,7 +150,7 @@
 
         }
 
-        
+
     ]
 
 
