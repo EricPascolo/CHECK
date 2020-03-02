@@ -14,7 +14,7 @@ from checklib.common import utils
 
 ####--------------------------------------------------------------------------------------------------------------
 
-def installator(check_core):    
+def installator(check_core):
 
     """
     CHECK's installator function, provide the launch of installtion function to all checktest selected.
@@ -24,7 +24,7 @@ def installator(check_core):
     for cs in check_core.checktests:
 
         logger.debug("--------------- CheckTest installation: "+cs.get_name())
-        try: 
+        try:
             cs.install()
         except:
             logger.CRITICAL("Installation FAIL")
@@ -42,11 +42,11 @@ def worker(check_core):
     logger = logging.getLogger(check_core.setting["logger_name"])
     # checktest result collection list
     check_results = []
-    
+
     # loop for check test launch, each benchmark will be completed in 4 step, launched separatelly
     for cs in check_core.checktests:
         logger.debug("--------------- CheckTest : "+cs.get_name())
-        try: 
+        try:
             cs.preproc()
             cs.run()
             cs.postproc()
@@ -66,42 +66,43 @@ def worker(check_core):
 
     # multibenchmark analyis call
     nodemark = multibenchmark.analisys(check_core,check_results)
-    
-    #open last result in checkresult file 
-    out_file = open(check_core.setting["resultfile"],"w")
+
+    #open last result in checkresult file
+
+    out_file = open(check_core.setting["resultfile"],"a+")
 
     # log partial result of single benchmark
     for cr in check_results:
         logger.info(str(nameofnode) +" --> "+str(cr.measure)+" "+cr.udm+" "+cr.status )
         out_file.write("[PARTIAL] "+str(nameofnode) +" --> "+str(cr.measure)+" "+cr.udm+" "+cr.status+"\n")
-    
+
     # log multibenchmark analysis result
     logger.critical(str(nameofnode) +"  "+ nodemark)
     out_file.write("[RESULT] "+str(nameofnode) +"  "+ nodemark+"\n")
 
-    
+
     #close last result in checkresult file
     out_file.close()
 
 ####--------------------------------------------------------------------------------------------------------------
 
 def main(check_core):
-    
+
     """
     CHECK's launch core function, select if launch benchmark or installation
     """
-    
+
     # define logger
     logger = logging.getLogger(check_core.setting["logger_name"])
     logger.debug("Star slave")
 
-    #choose if install or launch checktest 
+    #choose if install or launch checktest
     if "install" in check_core.setting:
-        
+
         installator(check_core)
 
     else:
 
         worker(check_core)
-    
+
 ####--------------------------------------------------------------------------------------------------------------
