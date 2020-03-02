@@ -97,11 +97,14 @@ class checktest():
     def check_path_builder(self):
          
         for k in self.test_dir:
-           
-            if not os.path.isabs(self.test_dir[k]):
-                    self.test_dir[k] = self.check_core["check_test_directory"]+"/"+self.get_name()+"/"+self.target_arch+"/"+self.test_dir[k]
-                    self.check_log.debug(self.test_dir[k])
-
+            if self.target_arch =="__all__":
+                if not os.path.isabs(self.test_dir[k]):
+                       self.test_dir[k] = self.check_core["check_test_directory"]+"/"+self.get_name()+"/"+"/"+self.test_dir[k]
+                       self.check_log.debug(self.test_dir[k])
+            else:
+                if not os.path.isabs(self.test_dir[k]):
+                       self.test_dir[k] = self.check_core["check_test_directory"]+"/"+self.get_name()+"/"+self.target_arch+"/"+self.test_dir[k]
+                       self.check_log.debug(self.test_dir[k])
         
         if not os.path.isabs(self.exe):
             self.exe = self.test_dir['bin_dir'] +"/"+ self.exe

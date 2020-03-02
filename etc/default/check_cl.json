@@ -100,6 +100,16 @@
         },
 
         {
+            "name":"--resultfile",
+            "param":{
+                "type":"str",
+                "required":"False",
+                "help":"Log file"
+            }
+
+        },
+
+        {
             "name":"--logtype",
             "param":{
                 "type":"str",
