@@ -46,7 +46,7 @@ def split_name_version(software_string):
     prog = re.compile(re_splitsoftware)
     software_list = re.split(re_splitsoftware,software_string)
 
-    software_hardware = ""
+    software_hardware = "__all__"
     software_version  = ""
     software_name = software_list[0]
     num_parameter = len(software_list)
@@ -72,24 +72,25 @@ def split_hostline(line):
     '''
 
     # find the pattern that mathc with re
+    print(line)
     reg_compiled = re.compile(re_parser_hostlist)
     result = reg_compiled.findall(line)
-
+    print(result[:])
     architecture = []
 
     for r in result:
 
         #check if node is env var and substitute it
-        if "$" in r[5]:
-            r[5] = os.path.expandvars(r[5])
+        if "$" in r[1]:
+            r[1] = os.path.expandvars(r[1])
         #split nodelist 
-        nodes_splitted = "".join(r[5]).split(",")
+        nodes_splitted = "".join(r[1]).split(",")
         
         #check if submission recipes is default or other
-        if r[3] is not '':
-            architecture.append({"arch":r[2],"setting":r[3],"nodes":nodes_splitted})
-        else:
-            architecture.append({"arch":r[4],"setting":"default","nodes":nodes_splitted})
+        #if r[3] is not '':
+        #    architecture.append({"arch":r[2],"setting":r[3],"nodes":nodes_splitted})
+        #else:
+        architecture.append({"arch":r[0],"setting":"default","nodes":nodes_splitted})
    
     return architecture
     
