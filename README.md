@@ -313,3 +313,11 @@ The symbol  **_ noqueue _** indicates that the scheduler has an automatic select
  6) Before writing new code, check what is in **checktest** template and if you think your code could be usefull to the others add to the template.
 
 ***
+
+## CHECK VERSION rules
+
+- +1.0.0 a major release increment means a big improvement of functionalities of CHECK
+- 0.+1.0 a minor release increment means an implementation of features 
+- 0.0.+1 a minor minor release increment means a general bugfix
+
+***
