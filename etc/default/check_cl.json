@@ -121,13 +121,22 @@
         },
 
         {
-            "name":"--hostlist",
+            "name":"--hpc",
             "param":{
                 "type":"str",
                 "required":"False",
                 "help":"List of Hostname to Master submission"
             }
 
+        },
+
+        {
+            "name":"--hpc_cluster_map",
+            "param":{
+                "type":"str",
+                "required":"False",
+                "help":"Cluster map description file"
+            }
         },
 
         {
