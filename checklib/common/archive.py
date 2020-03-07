@@ -1,7 +1,7 @@
 #
 # CHECK
 #
-# @authors : Eric Pascolo, Roberto Da Vià
+# @authors : Eric Pascolo, Roberto Da Via
 #
 
 re_scientific_notation = '[\s=]+([+-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+))$'
