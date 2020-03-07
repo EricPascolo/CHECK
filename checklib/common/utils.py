@@ -98,6 +98,16 @@ def split_hostline(line):
 
 ####--------------------------------------------------------------------------------------------------------------
 
+def list_to_String(slist,separator):
+    '''
+    Return string from list symbol separeted and remove newline
+    '''
+
+    return remove_newline_in(separator.join(slist)) 
+
+
+####--------------------------------------------------------------------------------------------------------------
+
 def remove_newline_in(stringline):
     '''
     remove newline at the end of the string
