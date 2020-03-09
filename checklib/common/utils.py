@@ -1,7 +1,7 @@
 #
 # CHECK
 #
-# @authors : Eric Pascolo
+# @authors : Eric Pascolo, Roberto Da Via
 #
 
 
@@ -79,18 +79,20 @@ def split_hostline(line):
     architecture = []
 
     for r in result:
-
         #check if node is env var and substitute it
-        if "$" in r[1]:
-            r[1] = os.path.expandvars(r[1])
-        #split nodelist 
-        nodes_splitted = "".join(r[1]).split(",")
+        if "$" in r[4]:
+            r[4] = os.path.expandvars(r[4])
         
-        #check if submission recipes is default or other
-        #if r[3] is not '':
-        #    architecture.append({"arch":r[2],"setting":r[3],"nodes":nodes_splitted})
-        #else:
-        architecture.append({"arch":r[0],"setting":"default","nodes":nodes_splitted})
+        # see archive.py for details about the regex groups
+        nodes=r[4]
+        arch=r[1] if r[1] != "" else r[2]
+        settings=r[3] if r[3] != "" else "default"
+
+        #split nodelist 
+        nodes_splitted = "".join(nodes).split(",")
+        
+        architecture.append({"arch":arch,"setting":settings,"nodes":nodes_splitted})
+        print(architecture)
    
     return architecture
     
