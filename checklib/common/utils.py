@@ -72,10 +72,10 @@ def split_hostline(line):
     '''
 
     # find the pattern that mathc with re
-    print(line)
+    
     reg_compiled = re.compile(re_parser_hostlist)
     result = reg_compiled.findall(line)
-    print(result[:])
+    
     architecture = []
 
     for r in result:
@@ -92,7 +92,7 @@ def split_hostline(line):
         nodes_splitted = "".join(nodes).split(",")
         
         architecture.append({"arch":arch,"setting":settings,"nodes":nodes_splitted})
-        print(architecture)
+        
    
     return architecture
     

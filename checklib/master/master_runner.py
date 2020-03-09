@@ -115,12 +115,12 @@ def main(checkcore):
     #loop on architecture
     for a in arch_array:
 
-        host_array = []
+        #host_array = []
 
         #extract arch
         arch = a["arch"]
         arch_set = a["setting"]
-        host_array.append(a["nodes"])
+        host_array = a["nodes"]
         
         #load descriptor of architecture
         arch_jsonfile = checkcore.setting["check_test_directory"]+"/hpc/"+arch+".json"
