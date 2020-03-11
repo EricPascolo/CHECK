@@ -11,6 +11,7 @@ import re
 import sys
 from checklib.core.checkobj_result import check_result 
 from checklib.common.archive import *
+from checklib.scheduler import whatscheduler
 
 class checktest():
 
@@ -121,5 +122,16 @@ class checktest():
       string_to_execute = self.exe + self.exe_argument
       process = subprocess.Popen( self.exe, shell=False,cwd=self.test_dir["bin_dir"],stdout=subprocess.PIPE)
       self.std_out, self.std_err = process.communicate()
+
+####--------------------------------------------------------------------------------------------------------------
+
+
+    def get_allocated_resources(self):
+
+        resources = {}
+        scheduler = whatscheduler.check_installed_scheduler(self.check_core)
+        resources = scheduler.get_job_resources()
+        return resources
+
 
 ####--------------------------------------------------------------------------------------------------------------

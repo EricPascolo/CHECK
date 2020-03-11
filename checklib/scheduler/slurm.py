@@ -1,3 +1,4 @@
+import os
 from checklib.scheduler.scheduler_template import scheduler
 from checklib.common import utils
 
@@ -48,5 +49,22 @@ class slurm(scheduler):
         return submission_string
 
 ####--------------------------------------------------------------------------------------------------------------
+    def get_job_resources(self):
+        '''
+        Take job requested resources from env variables
+        '''
+        resources = {}
+        resources.update({"JOB_CPUS_PER_NODE":os.path.expandvars("$SLURM_JOB_CPUS_PER_NODE")})
+        resources.update({"CPUS_ON_NODE":os.path.expandvars("$SLURM_CPUS_ON_NODE")})
+        resources.update({"CPUS_PER_TASK":os.path.expandvars("$SLURM_CPUS_PER_TASK")})
+        resources.update({"GPUS":os.path.expandvars("$SLURM_GPUS")})
+        resources.update({"JOB_ID":os.path.expandvars("$SLURM_JOB_ID")})
+        resources.update({"JOB_NAME":os.path.expandvars("$SLURM_JOB_NAME")})
+        resources.update({"NTASKS_PER_NODE":os.path.expandvars("$SLURM_NTASKS_PER_NODE")})
+        resources.update({"NODENAME":os.path.expandvars("$SLURMD_NODENAME")})
+        resources.update({"GPUS_PER_NODE":os.path.expandvars("$SLURM_GPUS_PER_NODE")})
+        resources.update({"GPUS_PER_TASK":os.path.expandvars("$SLURM_GPUS_PER_TASK")})
+        return resources
 
 
+####--------------------------------------------------------------------------------------------------------------

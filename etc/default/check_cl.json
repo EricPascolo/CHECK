@@ -69,6 +69,15 @@
         },
 
         {
+            "name":"--ssh",
+            "param":{
+                "action":"store_true",
+                "required":"False",
+                "help":"Enable SSH, disable scheduler submission"
+             }
+        },
+
+        {
             "name":"--analysis",
             "param":{
                 "type":"str",

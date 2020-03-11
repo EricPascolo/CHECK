@@ -1,5 +1,6 @@
 from checklib.scheduler.scheduler_template import scheduler
 from checklib.common import utils
+import os
 
 class pbs(scheduler):
 
@@ -37,3 +38,14 @@ class pbs(scheduler):
 
 ####--------------------------------------------------------------------------------------------------------------
 
+    def get_job_resources(self):
+        '''
+        Take job requested resources from env variables
+        '''
+        resources = {}
+        resources.update({"JOB_ID":os.path.expandvars("$PBS_JOBID")})
+        resources.update({"JOB_NAME":os.path.expandvars("$PBS_JOBNAME")})
+        resources.update({"NODE_FILE":os.path.expandvars("$PBS_NODEFILE")})
+        resources.update({"NODENAME":os.path.expandvars("$PBS_O_HOST")})
+        
+        return resources

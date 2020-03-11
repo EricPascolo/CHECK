@@ -8,5 +8,5 @@
     "check_remote_source_path":"/cinecalocal/usprod/",
     "check_master_collecting_path":"$HOME/check_master_collection",
 
-    "cluster_scheduler":"Slurm"
+    "cluster_scheduler":" "
 }

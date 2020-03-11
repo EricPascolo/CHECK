@@ -2,7 +2,7 @@ from checklib.scheduler.scheduler_template import scheduler
 
 class ssh(scheduler):
     
-    '''  Slurm check interface
+    '''  SSH check interface
 
             Scheduler cmd        : "ssh" 
             Anchor to slave cmd  : " nohup... "
@@ -28,4 +28,11 @@ class ssh(scheduler):
 
 ####--------------------------------------------------------------------------------------------------------------
 
+    def get_job_resources(self):
+        '''
+        Return job requested resources in a dictionary
+        '''
 
+        pass
+
+####--------------------------------------------------------------------------------------------------------------

@@ -110,6 +110,7 @@ def main(checkcore):
     
     if os.path.exists(hpc_mapfile):
         hpc_map = file_reader.hpc_map_file_reader(hpc_mapfile)
+        logger.debug("Hpc_map_file: FOUND ")
         
     
     #loop on architecture

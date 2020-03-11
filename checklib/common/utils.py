@@ -161,3 +161,12 @@ def get_iter_object_from_dictionary(d):
         return d.items()
 
 ####--------------------------------------------------------------------------------------------------------------
+
+def is_tool(tool_name):
+    """Check if tool is on PATH."""
+
+    from distutils.spawn import find_executable
+
+    return find_executable(tool_name) is not None
+
+####--------------------------------------------------------------------------------------------------------------
