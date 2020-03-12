@@ -258,7 +258,7 @@ class check_core:
         checkparameter_string = "\n"
 
 
-        for s, sv in sorted(self.setting.items()):
+        for s, sv in sorted(utils.get_iter_object_from_dictionary(self.setting)):
              checkparameter_string = checkparameter_string+"-- "+s +" : "+str(sv)+"\n"
 
         logger.critical(checkparameter_string)
