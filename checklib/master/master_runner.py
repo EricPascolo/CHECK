@@ -116,17 +116,19 @@ def main(checkcore):
     #loop on architecture
     for a in arch_array:
 
-        #host_array = []
-
         #extract arch
         arch = a["arch"]
         arch_set = a["setting"]
-        host_array = a["nodes"]
+
+        #if singleton is defined in cl, split group in single nodes
+        if "singleton" in checkcore.setting:
+            host_array = utils.extract_elements_from_dict_by_keylist(a["nodes"],hpc_map)
+        else:
+            host_array = a["nodes"]
         
         #load descriptor of architecture
         arch_jsonfile = checkcore.setting["check_test_directory"]+"/hpc/"+arch+".json"
         arch_setting = file_reader.json_reader(arch_jsonfile)[arch_set]
-
 
         for h in host_array:
             

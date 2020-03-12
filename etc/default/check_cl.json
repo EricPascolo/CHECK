@@ -140,6 +140,16 @@
         },
 
         {
+            "name":"--singleton",
+            "param":{
+                "action":"store_true",
+                "required":"False",
+                "help":"Force submission to each node of group"
+             }
+
+        },
+
+        {
             "name":"--hpc_cluster_map",
             "param":{
                 "type":"str",

@@ -107,6 +107,24 @@ def list_to_String(slist,separator):
 
     return remove_newline_in(separator.join(slist)) 
 
+####--------------------------------------------------------------------------------------------------------------
+
+def extract_elements_from_dict_by_keylist(keylist,dictionary):
+    '''
+    Given a key list and  dict{of list[]} return a single list
+    extended with each list in a dictionary that have a key in keylist 
+    '''
+    dict_list = [] 
+    
+    for k in keylist: 
+        
+        if k in dictionary:
+            dict_list.extend(dictionary[k])
+        else:
+            dict_list.append(str(k)) 
+    
+    return dict_list
+
 
 ####--------------------------------------------------------------------------------------------------------------
 
