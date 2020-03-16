@@ -22,40 +22,48 @@ After the environment has loaded, you find the **CHECK** command in your $PATH a
 To see all CL flags use **--help** flag:
 
 
-    CHECK 0.2.000 START 
-    usage: check [-h] [--master] [--check CHECK [CHECK ...]] [--checkparameters]
-                [--checklist] [--configuration CONFIGURATION] [--install]
-                [--analysis ANALYSIS] [--loglevel LOGLEVEL] [--logfile LOGFILE]
-                [--logtype LOGTYPE] [--hostlist HOSTLIST]
-                [--checktest_directory CHECKTEST_DIRECTORY]
-                [--check_remote_source_path CHECK_REMOTE_SOURCE_PATH]
-                [--check_master_collecting_path CHECK_MASTER_COLLECTING_PATH]
+    usage: check [-h] [--master] [--check CHECK [CHECK ...]] [--checklist]
+             [--checkparameters] [--configuration CONFIGURATION]
+             [--cluster_scheduler CLUSTER_SCHEDULER] [--install] [--ssh]
+             [--analysis ANALYSIS] [--loglevel LOGLEVEL] [--logfile LOGFILE]
+             [--resultfile RESULTFILE] [--logtype {c,l,,,f,i,l,e,,,b,o,t,h}]
+             [--hpc HPC] [--singleton] [--hpc_cluster_map HPC_CLUSTER_MAP]
+             [--checktest_directory CHECKTEST_DIRECTORY]
+             [--check_remote_source_path CHECK_REMOTE_SOURCE_PATH]
+             [--check_master_collecting_path CHECK_MASTER_COLLECTING_PATH]
 
-        CHECK : Cluster Health and Environment ChecKing system
+    CHECK : Cluster Health and Environment ChecKing system
 
     optional arguments:
     -h, --help            show this help message and exit
-    --master              Master/slave flag
-    --check CHECK [CHECK ...], -ct CHECK [CHECK ...]
+    --master              Master slave flag
+    --check CHECK [CHECK ...]
                             List of check
-    --checkparameters     Print check setting parameter
     --checklist           Print checktest list
+    --checkparameters     Print CHECK parameter
     --configuration CONFIGURATION
                             Input file
+    --cluster_scheduler CLUSTER_SCHEDULER
+                            Name of scheduler
     --install             Install checktest
+    --ssh                 Enable SSH, disable scheduler submission
     --analysis ANALYSIS   kind of analysis
-    --loglevel LOGLEVEL   Log level
+    --loglevel LOGLEVEL   Log level 
     --logfile LOGFILE     Log file
-    --logtype LOGTYPE     Log type
-    --hostlist HOSTLIST, -hpc HOSTLIST
-                            List of Hostname to Master submission
-    --checktest_directory CHECKTEST_DIRECTORY, -checkTD CHECKTEST_DIRECTORY
+    --resultfile RESULTFILE
+                            Log file
+    --logtype {c,l,,,f,i,l,e,,,b,o,t,h}
+                            Log type
+    --hpc HPC             List of Hostname to Master submission
+    --singleton           Force submission to each node of group
+    --hpc_cluster_map HPC_CLUSTER_MAP
+                            Cluster map description file
+    --checktest_directory CHECKTEST_DIRECTORY
                             check test directory
-    --check_remote_source_path CHECK_REMOTE_SOURCE_PATH, -checkRSP CHECK_REMOTE_SOURCE_PATH
+    --check_remote_source_path CHECK_REMOTE_SOURCE_PATH
                             Remote CHECK directory path
-    --check_master_collecting_path CHECK_MASTER_COLLECTING_PATH, -checkMCP CHECK_MASTER_COLLECTING_PATH
+    --check_master_collecting_path CHECK_MASTER_COLLECTING_PATH
                             Directory path where collect scheduler job results
-
 
 
 
@@ -122,9 +130,13 @@ To change log level and logfile you can use:
 
     check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
 
-The flags **--master** and **--hostlist** are used when you launch tests, via the scheduler, on the HPC cluster node. Through *master* flag you enable scheduler mode and with *hostlist* (for syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launches the tests:
+The flags **--master** and **--hpc** are used when you launch tests, via the scheduler, on the HPC cluster node. Through *master* flag you enable scheduler mode and with *hpc* (for syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launches the tests:
 
-    check --check linpack@x86,linpack@knl --master --hostlist x86:node1,node2/knl:node3,node4/
+    check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
+
+You can also use predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file map.hpc  in architecture directory. When you specify a group of node you can launch a 1 job on the all nodes of the group or multiple job, one for each node, the default behaviour is the first, to use the second you must add a flag *--singleton*:
+
+    check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
 
 The *--configuration* flag takes a configuration file as input, this file must be written in json format and is an easy way to avoid writing long **CHECK** command lines:
 
@@ -175,17 +187,18 @@ The **checktest_directory** is the field where the path of the directory that co
 
 ### 3. *MASTER mode and Architectures*
 
-**CHECK** can use a scheduler to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job for each node and submit to scheduler. The cluster node must be present on hostlist passed to CHECK by *--hostlist* flag.
+**CHECK** can use a scheduler to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job  and submit to scheduler. The cluster node must be present on hostlist passed to CHECK by *--hpc* flag.
 
 The structure of the hostlist line is as follows:
 
-        architecture#setting:hostname1,hostname2.../
+        architecture#setting:hostname1,GroupOfNodes1.../
 
-The **architecture** is the name of the architecture file (without extension) in **CHECKTEST** directory and for each architecture you can define many scheduler **setting**. After ':' we must put the list of hostname separated by comma. You can specify in the same hostline different architectures, for example in a heterogenous HPC cluster, simply repeat the line without space between them.
+The **architecture** is the name of the architecture file (without extension) in **CHECKTEST** directory and for each architecture you can define many scheduler **setting**. After ':' we must put the list of hostname or group of nodes separated by comma. You can specify in the same hostline different architectures, for example in a heterogenous HPC cluster, simply repeat the line without space between them.
     
     arch#setting:hostname1,hostname2.../arch2:hostname3,hostname4/
 
 It is not necessary to specify a name of setting for each architecture, as in the example above for arch2 **CHECK** loads the *default* setting for that architecture.
+
 
 ***
 
@@ -200,6 +213,7 @@ The CHECKTEST directory must have this structure:
                     ----------------------------------------
                     |                |                      | 
                 architecture       test1                  test2
+                - map.hpc            |                      |
                 - x86.json           |                      |
                 - x512.json          |                 -----------------------
                 - GPU.json           |                 |            |        |
@@ -265,7 +279,15 @@ Below an architecture file example:
 
 The symbol  **_ noqueue _** indicates that the scheduler has an automatic selection of the queue, while the other information are classical parameters that you write in HPC job file. 
 
-### 3. Write a CHECKTEST
+### 3. HPC MAP
+A convenience can be to define a group of nodes accumulated by certain properties and this in **CHECK** can be done via file.
+In the same directory of architectures there is the file **map.hpc** where node groups can be specified, the file has a very simple format, for each line is specified the name of the group and after the space the list of hostnames separated by comma:
+
+    group1 hostname1,hostname2
+    group2 hostname3,hostname4,hostname1,
+    group3 hostname1,hostname2,hostname4,hostname5
+
+### 4. Write a CHECKTEST
 
 **CHECK** provides a *template* to simplify the writing of **CHECKTEST** file, to write a compatible test with **CHECK** you must follow these rules:
 
