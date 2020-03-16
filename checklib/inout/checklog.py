@@ -15,7 +15,7 @@ logger.addHandler(ch)
 
 ####--------------------------------------------------------------------------------------------------------------
 
-def checkloggin(loglevel,logfile,logtype="both"):
+def checkloggin(run_id,loglevel,logfile,logtype="both"):
 
     if logfile != "__nofile__" and logtype == "cl":
         logtype="both"
@@ -24,7 +24,7 @@ def checkloggin(loglevel,logfile,logtype="both"):
     logger = logging.getLogger(logger_name)
     logger.setLevel( loglevel  )
     # create formatter and add it to the handlers
-    formatter = logging.Formatter('[%(levelname)s] %(asctime)s (%(module)s %(funcName)s) : %(message)s')
+    formatter = logging.Formatter(str(run_id)+' %(asctime)s [%(levelname)s] (%(funcName)s) : %(message)s',"%H:%M")
 
     # create file handler which logs even debug messages
     if logfile != "__nofile__":

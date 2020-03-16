@@ -20,13 +20,14 @@ class check_core:
     '''
     This object contain all setting that the software
     '''
-    setting = None  # check core setting object
+    setting = {}  # check core setting object
     checktests = [] # list of checktest object
 
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def __init__(self,cl_arg):
+    def __init__(self,cl_arg,run_id):
+
 
         # set setting file path
         check_setting_path = utils.get_setting_file_path("check_setting.json")
@@ -36,13 +37,18 @@ class check_core:
 
         ## extract check setting and put it in core object
         self.extract_merge_setting(cl_arg,json_setting)
+        
+        #set run id
+        self.setting.update({"id":run_id})
 
         ## enable log with user setting
         try:
-            lgnm = checklog.checkloggin(self.setting["loglevel"],self.setting["logfile"],self.setting["logtype"])
+            lgnm = checklog.checkloggin(run_id,self.setting["loglevel"], \
+                             self.setting["logfile"],self.setting["logtype"])
             self.setting.update({"logger_name":lgnm})
         except KeyError:
             pass
+        
 
         #set logger for this subroutine
         logger = logging.getLogger(self.setting["logger_name"])
@@ -105,8 +111,8 @@ class check_core:
 
 
         self.setting = json_basic.copy()
-        self.setting.update({"check_test_directory" :self.setting["checktest_directory"]})
-        logger.info("CHECKTEST DIR : "+self.setting["check_test_directory"])
+        #self.setting.update({"check_test_directory" :self.setting["checktest_directory"]})
+        #logger.info("CHECKTEST DIR : "+self.setting["check_test_directory"])
 
 
 
@@ -118,7 +124,7 @@ class check_core:
         logger = logging.getLogger(self.setting["logger_name"])
 
         ctarray = []
-        sys.path.append(self.setting["check_test_directory"])
+        sys.path.append(self.setting["checktest_directory"])
 
         for ct in cklist:
 
@@ -127,10 +133,10 @@ class check_core:
             logger.debug("CT split : "+ct+" name "+ct_sfw+" arch "+ct_arch+" version "+ct_vers)
 
             if ct_arch != "__all__":
-                path_test_dir = self.setting["check_test_directory"]+"/"+ct_sfw+"/"+ct_arch
+                path_test_dir = self.setting["checktest_directory"]+"/"+ct_sfw+"/"+ct_arch
                 module_name = ct_sfw+"."+ct_arch
             else:
-                path_test_dir = self.setting["check_test_directory"]+"/"+ct_sfw
+                path_test_dir = self.setting["checktest_directory"]+"/"+ct_sfw
                 module_name = ct_sfw
 
 
@@ -157,7 +163,7 @@ class check_core:
         logger = logging.getLogger(self.setting["logger_name"])
 
         ctarray = []
-        sys.path.append(self.setting["check_test_directory"])
+        sys.path.append(self.setting["checktest_directory"])
 
         for ct in cklist:
 
@@ -167,10 +173,10 @@ class check_core:
 
 
             if ct_arch != "__all__":
-                path_test_dir = self.setting["check_test_directory"]+"/"+ct_sfw+"/"+ct_arch
+                path_test_dir = self.setting["checktest_directory"]+"/"+ct_sfw+"/"+ct_arch
                 module_name = ct_sfw+"."+ct_arch
             else:
-                path_test_dir = self.setting["check_test_directory"]+"/"+ct_sfw
+                path_test_dir = self.setting["checktest_directory"]+"/"+ct_sfw
                 module_name = ct_sfw
 
 
@@ -208,13 +214,13 @@ class check_core:
 
         checklist_string = " "
 
-        sys.path.append(self.setting["check_test_directory"])
-        subdir = os.listdir(self.setting["check_test_directory"])
+        sys.path.append(self.setting["checktest_directory"])
+        subdir = os.listdir(self.setting["checktest_directory"])
 
         # check if architecture directory
         if "architecture" in subdir:
             checklist_string = "\n-ARCHITECTURES AVAILABLE:\n\n"
-            arch_dir = self.setting["check_test_directory"]+"/architecture/"
+            arch_dir = self.setting["checktest_directory"]+"/architecture/"
             arch_list = os.listdir(arch_dir)
             for a in sorted(arch_list):
                 if a.endswith('.json'):
@@ -231,7 +237,7 @@ class check_core:
 
         # check checktest available
         for dr in sorted(subdir):
-            dr_path = self.setting["check_test_directory"]+"/"+dr+"/"
+            dr_path = self.setting["checktest_directory"]+"/"+dr+"/"
             if os.path.exists(dr_path+"__init__.py"):
                 sdr = os.listdir(dr_path)
 

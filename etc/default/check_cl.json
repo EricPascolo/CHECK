@@ -42,6 +42,16 @@
         },
 
         {
+            "name":"--master_id",
+            "param":{
+                "type":"str",
+                "default":"-999",
+                "required":"False",
+                "help":"Set id from master"
+            }
+        },
+
+        {
             "name":"--configuration",
             "param":{
                 "type":"str",

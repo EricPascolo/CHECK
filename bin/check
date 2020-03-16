@@ -12,10 +12,12 @@ from __future__ import print_function
 from checklib.inout import commandline
 from checklib.inout import checklog
 from checklib.core import checkobj_core
+from datetime import datetime
 import sys
 import os
 import logging
-
+import platform
+import uuid
 ####--------------------------------------------------------------------------------------------------------------
 
 __author__ = "Eric Pascolo"
@@ -32,15 +34,26 @@ if sys.version_info[:2] < (2,7):
     sys.exit("CHECK requires Python 2.7 or higher."
              "This is Python %d.%d.%d." % v_info)
 
-#set basic logger
-logger = logging.getLogger("basic")
-logger.critical("CHECK "+__version__+" START ")
-
 ##read commandline flag
 cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
 
+#generate uuid of this run if is son process take 
+#from CL and delete in any case master_id entry
+if cl_args["master_id"] == "-999":
+    run_id = uuid.uuid4().hex
+else:
+    run_id = uuid.UUID(cl_args["master_id"]).hex
+del cl_args["master_id"]
+
+
+#set basic logger
+logger = logging.getLogger("basic")
+logger.critical("**** CHECK "+__version__ +" - "+platform.node()+ \
+     " - "+datetime.now().strftime("%d/%m/%Y %H:%M:%S")+" - "+str(run_id))
+
+
 ##init check setting object
-checkcore = checkobj_core.check_core(cl_args)
+checkcore = checkobj_core.check_core(cl_args,run_id)
 
 ## master
 if "master" in checkcore.setting:
@@ -60,5 +73,8 @@ elif checkcore.setting["check"] != "-999":
 
 else:
     pass
+
+logger.critical("**** CHECK STOP - "+platform.node()+ \
+     " - "+datetime.now().strftime("%d/%m/%Y %H:%M:%S") +" - "+ str(run_id))
 
 ####--------------------------------------------------------------------------------------------------------------

@@ -100,7 +100,6 @@ and you can see **CHECK** parameters with flags **--checkparameter**:
     -- check : ['test1@arch1,test2@arch1']
     -- check_master_collecting_path : $HOME/check_master_collection
     -- check_remote_source_path : /cinecalocal/usprod/
-    -- check_test_directory : $HOME/checktest/
     -- checkparameters : True
     -- checktest_directory : $HOME/checktest/
     -- hostlist : arch1:node1,node2/

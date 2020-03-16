@@ -62,6 +62,7 @@ def create_slave_cmd_string(arch,checkcore):
 
     cmd_check_string = "check"
     cmd_check_string = cmd_check_string + " --loglevel " + checkcore.setting["loglevel"]
+    cmd_check_string = cmd_check_string + " --master_id " + checkcore.setting["id"]
     cmd_check_string = cmd_check_string + " --check " + select_checktest_on_architercture(arch,checkcore)
     if arch=='ssh':
         cmd_check_string = cmd_check_string +  "< /dev/null > /dev/null 2>&1 &"
@@ -96,17 +97,12 @@ def main(checkcore):
     scheduler = whatscheduler.check_installed_scheduler(checkcore.setting)
     arch_array = utils.split_hostline(checkcore.setting["hpc"])
 
-    ###### trial because slipt_regex dosn't run
-    #arch_array = []
-    #arch_array.append({"arch":"x86","setting":"default","nodes":checkcore.setting["hpc"]}) 
-    ######
-
     #load hpc cluster file
     hpc_map = {}
     if "hpc_cluster_map" in checkcore.setting:
         hpc_mapfile = checkcore.setting["hpc_cluster_map"]
     else:
-        hpc_mapfile = checkcore.setting["check_test_directory"]+"/hpc/"+"map.hpc"
+        hpc_mapfile = checkcore.setting["checktest_directory"]+"/hpc/"+"map.hpc"
     
     if os.path.exists(hpc_mapfile):
         hpc_map = file_reader.hpc_map_file_reader(hpc_mapfile)
@@ -127,7 +123,7 @@ def main(checkcore):
             host_array = a["nodes"]
         
         #load descriptor of architecture
-        arch_jsonfile = checkcore.setting["check_test_directory"]+"/hpc/"+arch+".json"
+        arch_jsonfile = checkcore.setting["checktest_directory"]+"/hpc/"+arch+".json"
         arch_setting = file_reader.json_reader(arch_jsonfile)[arch_set]
 
         for h in host_array:
