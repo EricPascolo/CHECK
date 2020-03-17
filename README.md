@@ -19,6 +19,16 @@ After the environment has loaded, you find the **CHECK** command in your $PATH a
 
 ### 1. *Command line*
 **CHECK** is callable only from commandline(CL), since at the moment the GUI is not implmented. Please, before launch remember to edit the configuration file in *etc* (see next section). 
+When you call **CHECK** command, you obtain an output like this:
+
+    **** CHECK 0.2.2 - puffin - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
+    21fce0631c554459b526c2f25bf8791b 09:26 [INFO] (checkloggin) : logger: check_file_stream_log type:cl
+    21fce0631c554459b526c2f25bf8791b 09:26 [DEBUG] (__init__) : check_file_stream_log
+    21fce0631c554459b526c2f25bf8791b 09:26 [CRITICAL] (__init__) : Checktest list is empty
+    **** CHECK STOP - puffin - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
+
+Each run of **CHECK** is identify with unique **ID** number reported in each line of output, it's very confortable if you run multiple istance of **CHECK** or you want repeat analys on the same node without change output file. 
+
 To see all CL flags use **--help** flag:
 
 
@@ -41,6 +51,7 @@ To see all CL flags use **--help** flag:
                             List of check
     --checklist           Print checktest list
     --checkparameters     Print CHECK parameter
+    --master_id MASTER_ID Set id from master
     --configuration CONFIGURATION
                             Input file
     --cluster_scheduler CLUSTER_SCHEDULER
@@ -186,7 +197,12 @@ The **checktest_directory** is the field where the path of the directory that co
 
 ### 3. *MASTER mode and Architectures*
 
-**CHECK** can use a scheduler to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job  and submit to scheduler. The cluster node must be present on hostlist passed to CHECK by *--hpc* flag.
+**CHECK** can use a scheduler to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job containing a istance of **CHECK** in *slave* mode and submit to scheduler. 
+The **ID** of the slave instance is the same as the master instance. 
+
+CHECK is designed to run on the system without a parallel FS mounted, so the position of the slave instance must be specified in the setting file via *check_remote_source_path* parameter; if the parallel FS is mouted you can use the same installation of **CHECK** as master and slave, setting the configuration parameter as $CHECK_IM_REMOTE.
+
+The cluster node must be present on hostlist passed to CHECK by *--hpc* flag.
 
 The structure of the hostlist line is as follows:
 
