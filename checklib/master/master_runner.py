@@ -8,6 +8,7 @@ import os
 import logging
 import subprocess
 import traceback
+import json
 from checklib.inout import file_reader
 from checklib.common import utils
 from checklib.scheduler import whatscheduler
@@ -108,7 +109,8 @@ def main(checkcore):
         hpc_map = file_reader.hpc_map_file_reader(hpc_mapfile)
         logger.debug("Hpc_map_file: FOUND ")
         
-    
+    out_file = open(checkcore.setting["resultfile"],"a+")
+
     #loop on architecture
     for a in arch_array:
 
@@ -125,6 +127,13 @@ def main(checkcore):
         #load descriptor of architecture
         arch_jsonfile = checkcore.setting["checktest_directory"]+"/hpc/"+arch+".json"
         arch_setting = file_reader.json_reader(arch_jsonfile)[arch_set]
+
+        json.dump({"master_submission":{"id":checkcore.setting["id"],\
+                 "check":str(select_checktest_on_architercture(arch,checkcore)),\
+                 "arch":arch+"#"+arch_set,
+                 "hpc":utils.list_to_String(host_array,",")}},
+                 out_file,indent=2)
+        out_file.write("\n")
 
         for h in host_array:
             
@@ -156,5 +165,7 @@ def main(checkcore):
             except:
                 logger.critical("SUBMISSION ERROR")
                 traceback.print_exc()
-                
+
+    #close last result in checkresult file
+    out_file.close()           
 ####--------------------------------------------------------------------------------------------------------------

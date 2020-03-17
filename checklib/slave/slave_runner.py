@@ -7,6 +7,7 @@
 import traceback
 import logging
 import subprocess
+import json
 from checklib.core import checkobj_result
 from checklib.slave import multibenchmark
 from checklib.common import utils
@@ -67,22 +68,28 @@ def worker(check_core):
     # multibenchmark analyis call
     nodemark = multibenchmark.analisys(check_core,check_results)
 
-    #open last result in checkresult file
-
-    out_file = open(check_core.setting["resultfile"],"a+")
-
     # log partial result of single benchmark
+    res_file_json = {"id":check_core.setting["id"],"hostname":str(nameofnode)}
+    if "master_id" in check_core.setting:
+        res_file_json.update({"slave_mode":True})
+
+    #partial log on logger and json file
     for cr in check_results:
-        logger.info(" @ "+str(nameofnode)+" --> "+ \
+        logger.info( cr._benchmark + " @ "+str(nameofnode)+" --> "+ \
                                         str(cr.measure)+" "+cr.udm+" "+cr.status )
-        out_file.write(check_core.setting["id"]+" @ "+str(nameofnode) +" [PARTIAL] "+str(cr.measure)+" "+cr.udm+" "+cr.status+"\n")
+        res_file_json.update({cr._benchmark:{"check":cr._benchmark,
+                                         "value":str(cr.measure),
+                                         "udm":cr.udm,
+                                         "status":cr.status}})
 
     # log multibenchmark analysis result
     logger.critical(str(nameofnode) +"  "+ nodemark)
-    out_file.write(check_core.setting["id"]+" @ "+str(nameofnode)+" [RESULT] "+ nodemark+"\n")
-
-
-    #close last result in checkresult file
+    res_file_json.update({"RESULT":nodemark})
+    
+    #write result dictionary on check_result file
+    out_file = open(check_core.setting["resultfile"],"a+")
+    json.dump(res_file_json,out_file,indent=2)
+    out_file.write("\n")
     out_file.close()
 
 ####--------------------------------------------------------------------------------------------------------------

@@ -41,10 +41,10 @@ cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
 #from CL and delete in any case master_id entry
 if cl_args["master_id"] == "-999":
     run_id = uuid.uuid4().hex
+    del cl_args["master_id"]
 else:
     run_id = uuid.UUID(cl_args["master_id"]).hex
-del cl_args["master_id"]
-
+    
 
 #set basic logger
 logger = logging.getLogger("basic")
