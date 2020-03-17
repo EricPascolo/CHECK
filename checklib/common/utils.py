@@ -14,7 +14,7 @@ from checklib.common.archive import *
 
 def resolve_env_path(dictionary):
     '''Given dictionary substitute into path env var'''
-    for key, value in dictionary.items():
+    for key, value in get_iter_object_from_dictionary(dictionary):
 
         try:
             path = os.path.expandvars(value)
@@ -144,26 +144,29 @@ def remove_newline_in(stringline):
 
 def get_setting_file_path(filename):
 
-    """ Return setting file given its name, the search path is in oreder etc and etc/default """
+    """ Return a list of setting file given its name, the search path is in oreder etc and etc/default """
 
+    check_setting_path = []
+    check_setting_not_find = True
     check_file = os.path.realpath(os.path.expanduser(__file__))
     check_prefix = os.path.dirname(os.path.dirname(os.path.dirname(check_file)))
     
     ## set setting file path
-    check_setting_path = " "
     check_setting_path_standard = check_prefix+"/etc/"+filename
     check_setting_path_default  = check_prefix+"/etc/default/"+filename
     
+    ## check if setting file is in default location
+    if os.path.exists(check_setting_path_default):
+        check_setting_path.append(check_setting_path_default)
+        check_setting_find = False
+   
     ## check if you create a personal setting file
     if os.path.exists(check_setting_path_standard):
-        check_setting_path = check_setting_path_standard
-    
-    ## check if setting file is in default location
-    elif os.path.exists(check_setting_path_default):
-        check_setting_path = check_setting_path_default
+        check_setting_path.append(check_setting_path_standard)
+        check_setting_find = False
     
     ## setting file not found
-    else:
+    if check_setting_find:
         sys.exit("ERROR CHECK setting file not found:"+filename)
 
     return check_setting_path

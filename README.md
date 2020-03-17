@@ -2,7 +2,7 @@
 
 
 
- Check is a flexible and easy to use software for showing the performance and health of an HPC Cluster. The software consists of two directories/repositories: **CHECK** contains the executable and the python library infrastructure and **CHECKTEST** contains the description of the architectures and test recipes. Check can be used via shell,parallel shell and via a scheduler; if a parallel shared file system is not installed, **CHECK** can be distributed on all cluster nodes and is callable from the Master node. A **CHECKTEST** is a little python class based on *check_test_template*, so extending the code is very easy: you just add a python class in the checktest directory using **CHECKTEST** policy and at runtime your new test will be available. The software is callable from the command line and through a launch string it is possible redefine on the fly almost all paramenters contained in the configuration file.
+ Check is a flexible and easy to use software for showing the performance and health of an HPC Cluster. The software consists of two directories/repositories: **CHECK** contains the executable and the python library infrastructure and **CHECKTEST** contains the description of the architectures and test recipes. Check can be used via shell,parallel shell and via a scheduler; if a parallel  file system is not installed, **CHECK** can be distributed on all cluster nodes and is callable from the Master node. A **CHECKTEST** is a little python class based on *check_test_template*, so extending the code is very easy: you just add a python class in the checktest directory using **CHECKTEST** policy and at runtime your new test will be available. The software is callable from the command line and through a launch string it is possible redefine on the fly almost all paramenters contained in the configuration file.
 
 ***
 
@@ -21,13 +21,14 @@ After the environment has loaded, you find the **CHECK** command in your $PATH a
 **CHECK** is callable only from commandline(CL), since at the moment the GUI is not implmented. Please, before launch remember to edit the configuration file in *etc* (see next section). 
 When you call **CHECK** command, you obtain an output like this:
 
-    **** CHECK 0.2.2 - puffin - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
+    **** CHECK 0.2.2 - r64s08u38 - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
     21fce0631c554459b526c2f25bf8791b 09:26 [INFO] (checkloggin) : logger: check_file_stream_log type:cl
     21fce0631c554459b526c2f25bf8791b 09:26 [DEBUG] (__init__) : check_file_stream_log
     21fce0631c554459b526c2f25bf8791b 09:26 [CRITICAL] (__init__) : Checktest list is empty
-    **** CHECK STOP - puffin - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
+    **** CHECK STOP - r64s08u38 - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
 
 Each run of **CHECK** is identify with unique **ID** number reported in each line of output, it's very confortable if you run multiple istance of **CHECK** or you want repeat analys on the same node without change output file. 
+The first and last line report the version, the hostname, the time and the **ID** of run.
 
 To see all CL flags use **--help** flag:
 

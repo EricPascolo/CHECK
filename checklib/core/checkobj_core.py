@@ -28,18 +28,20 @@ class check_core:
 
     def __init__(self,cl_arg,run_id):
 
+        #set run id
+        self.setting.update({"id":run_id})
 
         # set setting file path
         check_setting_path = utils.get_setting_file_path("check_setting.json")
 
         ## extract setting information from json file
-        json_setting = file_reader.json_reader(check_setting_path)
+        json_setting = []
+        for p in check_setting_path:
+            json_setting.append(file_reader.json_reader(p))
 
         ## extract check setting and put it in core object
         self.extract_merge_setting(cl_arg,json_setting)
         
-        #set run id
-        self.setting.update({"id":run_id})
 
         ## enable log with user setting
         try:
@@ -80,39 +82,37 @@ class check_core:
 
     def extract_merge_setting(self,cl,json_basic):
 
-        """ Extract and merge  all setting information from command line, json conf file and json
-        basic conf file. The priority order is cl, conf file, basic conf file """
+        '''
+        Extract and merge  all setting information from command line, json conf file and json
+        basic conf file. The priority order is:
+            - configuration file passed by cl flag
+            - other parameter setting in cl
+            - check_setting.json in etc/
+            - check_setting.json in etc/default
+        The merged dictionary update the global setting dict in class
+        '''
 
-        logger = logging.getLogger("basic")
+        #dict where to merge setting
+        json_setting ={}
 
-        ## substitute in path ENV variable
+        # merge json file setting
+        for j in json_basic:
+            utils.resolve_env_path(j)
+            json_setting.update(j)
+        
+        #merge cl file setting
         utils.resolve_env_path(cl)
-        utils.resolve_env_path(json_basic)
+        json_setting.update(cl)
 
+        #if present read and merge configuration file setting
         if "configuration" in cl:
-
-            try:
                 json_config_setting = {}
                 json_config_setting = file_reader.json_reader(cl["configuration"])
                 utils.resolve_env_path(json_config_setting)
-                json_config_setting.update(cl)
-                json_basic.update(json_config_setting)
-                logger.debug("merge cl with conf file and basic setting file")
-            except:
-                logger.critical("wrong merge amog cl,json conf and json basic")
+                json_setting.update(json_config_setting)
 
-        else :
-
-            try:
-                json_basic.update(cl)
-                logger.debug("merge cl with basic setting file")
-            except:
-                logger.critical("wrong merge between cl and json basic")
-
-
-        self.setting = json_basic.copy()
-        #self.setting.update({"check_test_directory" :self.setting["checktest_directory"]})
-        #logger.info("CHECKTEST DIR : "+self.setting["check_test_directory"])
+        #update global setting with merged dict
+        self.setting.update(json_setting)
 
 
 

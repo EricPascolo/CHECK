@@ -57,7 +57,7 @@ def cl_parser():
     check_setting_path = utils.get_setting_file_path("check_cl.json")
         
     # extract setting information from json file
-    cl_setting = file_reader.json_reader(check_setting_path)
+    cl_setting = file_reader.json_reader(check_setting_path[0])
     
     #init parser 
     parser = argparse.ArgumentParser(description = ''' CHECK : Cluster Health and Environment ChecKing system''', formatter_class=argparse.RawTextHelpFormatter)
