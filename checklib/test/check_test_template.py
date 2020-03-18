@@ -33,14 +33,12 @@ class checktest():
         self.test_vers = ""
 
         # check object
-        self.result = None
         self.check_log = None
         self.check_core = None
         self.std_out = None
         self.std_err = None
 
         # test parameter
-        
         self.exe_argument = ""
         self.check_core = core 
         self.target_arch = arch
@@ -48,6 +46,9 @@ class checktest():
         self.set_test_logger()
         self.check_path_builder()
         self.check_log.debug("CHECK TEST INIT : "+self.get_name())
+
+        # result object
+        self.result = check_result()
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -71,9 +72,8 @@ class checktest():
 ####--------------------------------------------------------------------------------------------------------------
 
     def comparison(self):
-        result = check_result()
+        pass
         
-        return result
 
 ####--------------------------------------------------------------------------------------------------------------
 

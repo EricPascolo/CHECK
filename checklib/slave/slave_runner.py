@@ -51,7 +51,8 @@ def worker(check_core):
             cs.preproc()
             cs.run()
             cs.postproc()
-            check_results.append(cs.comparison())
+            cs.comparison()
+            check_results.append(cs.result)
         except:
             check_results.append(checkobj_result.check_result(cs.get_name(),"FAIL"))
             traceback.print_exc()
