@@ -61,7 +61,7 @@ class check_core:
 
         if "checklist" in self.setting:
             self.printchecklist()
-            exit()
+            return
 
         elif not self.setting["check"] == "-999":
             # load name of check test in list

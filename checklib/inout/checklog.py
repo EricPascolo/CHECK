@@ -46,7 +46,7 @@ def checkloggin(run_id,loglevel,logfile,logtype="both"):
     if logtype == "file":
         logger.addHandler(fh)
 
-    logger.info("Enable logger name:"+logger_name+" type:"+logtype)
+    logger.info("Logger type: "+logtype)
 
     return logger_name
 
