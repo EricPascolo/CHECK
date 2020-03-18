@@ -25,7 +25,7 @@ def simple_mb_analisys(result_array):
     final_mark = 1
 
     for m in result_array:
-        partial = float(check_status_dictionary[m.status])
+        partial = float(check_status_dictionary[m.result.status])
         final_mark = partial * final_mark
 
     if final_mark == 0:
@@ -44,17 +44,17 @@ def simple_mb_analisys(result_array):
 
 ####--------------------------------------------------------------------------------------------------------------
 
-def  analisys(check_core,check_result_array):
+def  analisys(check_core):
 
     logger = logging.getLogger(check_core.setting["logger_name"])
     
     mark = "empty"
     
     if "analysis" not in check_core.setting:
-        mark = simple_mb_analisys(check_result_array)
+        mark = simple_mb_analisys(check_core.checktests)
 
     elif  check_core.setting["analysis"] == "simple":
-        mark = simple_mb_analisys(check_result_array)
+        mark = simple_mb_analisys(check_core.checktests)
     else:
         logger.info("NOT MULTIBENCHMARK ANALYSIS FOUND")
 

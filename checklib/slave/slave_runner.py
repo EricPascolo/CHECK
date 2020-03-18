@@ -43,7 +43,7 @@ def worker(check_core):
 
     logger = logging.getLogger(check_core.setting["logger_name"])
     # checktest result collection list
-    check_results = []
+    #check_results = []
 
     # loop for check test launch, each benchmark will be completed in 4 step, launched separatelly
     for cs in check_core.checktests:
@@ -53,33 +53,41 @@ def worker(check_core):
             cs.run()
             cs.postproc()
             cs.comparison()
-            check_results.append(cs.result)
+            #check_results.append(cs.result)
         except:
-            check_results.append(checkobj_result.check_result(cs.get_name(),"FAIL"))
+            #check_results.append(checkobj_result.check_result(cs.get_name(),"FAIL"))
             traceback.print_exc()
 
     #  get name of the node through hostname command
     nameofnode = platform.node()
 
     # multibenchmark analyis call
-    nodemark = multibenchmark.analisys(check_core,check_results)
+    nodemark = multibenchmark.analisys(check_core)
 
     # log partial result of single benchmark
     res_file_json = {"id":check_core.setting["id"],"hostname":str(nameofnode)}
     if "master_id" in check_core.setting:
         res_file_json.update({"slave_mode":True})
 
+    res_partial_list = []
     #partial log on logger and json file
-    for cr in check_results:
-        logger.info( cr._benchmark + " @ "+str(nameofnode)+" --> "+ \
-                                        str(cr.measure)+" "+cr.udm+" "+cr.status )
-        res_file_json.update({cr._benchmark:{"check":cr._benchmark,
-                                         "value":str(cr.measure),
-                                         "udm":cr.udm,
-                                         "status":cr.status}})
+    for cs in check_core.checktests:
+        logger.info(str(nameofnode)+" - " \
+                        +str(cs.get_name()) + " @ "\
+                        +cs.target_arch \
+                        +" --> " \
+                        +str(cs.result.measure)+" " \
+                        +cs.result.udm+" " \
+                        +cs.result.status )
+
+        res_partial_list.append({cs.get_name():{"arch":cs.target_arch, \
+                                         "value":str(cs.result.measure), \
+                                         "udm":cs.result.udm, \
+                                         "status":cs.result.status}})
 
     # log multibenchmark analysis result
     logger.critical(str(nameofnode) +"  "+ nodemark)
+    res_file_json.update({"PARTIAL":res_partial_list})
     res_file_json.update({"RESULT":nodemark})
     
     #write result dictionary on check_result file
