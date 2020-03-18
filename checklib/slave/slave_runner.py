@@ -8,6 +8,7 @@ import traceback
 import logging
 import subprocess
 import json
+import platform
 from checklib.core import checkobj_result
 from checklib.slave import multibenchmark
 from checklib.common import utils
@@ -57,14 +58,8 @@ def worker(check_core):
             check_results.append(checkobj_result.check_result(cs.get_name(),"FAIL"))
             traceback.print_exc()
 
-    # try to get name of the node through hostname command
-    try:
-        p = subprocess.Popen("hostname",stdout=subprocess.PIPE, stderr=None)
-        out,err = p.communicate()
-        nameofnode = utils.remove_newline_in(out)
-    except:
-        nameofnode = "NOTDEFINED"
-        logger.critical("WARNING : impossible to get hostname")
+    #  get name of the node through hostname command
+    nameofnode = platform.node()
 
     # multibenchmark analyis call
     nodemark = multibenchmark.analisys(check_core,check_results)
