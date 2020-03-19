@@ -1,12 +1,15 @@
 # CHECK : Cluster Health and Environment ChecKing system
 
 
-
  Check is a flexible and easy to use software for showing the performance and health of an HPC Cluster. The software consists of two directories/repositories: **CHECK** contains the executable and the python library infrastructure and **CHECKTEST** contains the description of the architectures and test recipes. Check can be used via shell,parallel shell and via a scheduler; if a parallel  file system is not installed, **CHECK** can be distributed on all cluster nodes and is callable from the Master node. A **CHECKTEST** is a little python class based on *check_test_template*, so extending the code is very easy: you just add a python class in the checktest directory using **CHECKTEST** policy and at runtime your new test will be available. The software is callable from the command line and through a launch string it is possible redefine on the fly almost all paramenters contained in the configuration file.
 
 ***
 
+
+
 ## CHECK 0.2
+
+
 
 ### 0. *Environment setup*
 **CHECK** does not require a formal installation. You can download wherever you want from the repository and use  the *source command* to load the environment from setup_check.sh.
@@ -16,6 +19,8 @@ You find setup file in **check/bin** :
 
 After the environment has loaded, you find the **CHECK** command in your $PATH and in the $CHECK_HOME variable you find the check directory path; 
 **CHECK** setup also adds the CHECK_HOME path to PYTHONPATH, so attention please when you use CHECK with other modules or python packages.
+
+
 
 ### 1. *Command line*
 **CHECK** is callable only from commandline(CL), since at the moment the GUI is not implmented. Please, before launch remember to edit the configuration file in *etc* (see next section). 
@@ -31,7 +36,6 @@ Each run of **CHECK** is identify with unique **ID** number reported in each lin
 The first and last line report the version, the hostname, the time and the **ID** of run.
 
 To see all CL flags use **--help** flag:
-
 
     usage: check [-h] [--master] [--check CHECK [CHECK ...]] [--checklist]
              [--checkparameters] [--configuration CONFIGURATION]
@@ -106,7 +110,6 @@ You can see all **CHECKTEST** installed with the flag **--checklist**:
     --- test1@arch2
     --- test2@arch2
   
-
 and you can see **CHECK** parameters with flags **--checkparameter**:
 
     -- check : ['test1@arch1,test2@arch1']
@@ -121,8 +124,6 @@ and you can see **CHECK** parameters with flags **--checkparameter**:
     -- logtype : cl
     -- master : True
     -- resultfile : $HOME/checkresult.txt
-
-
 
 If you have just written **CHECKTEST** recipes(with install method) but you haven't generated the exe to launch the software, you can use the follow command to finalize the **CHECKTEST** installation:
 
@@ -141,13 +142,15 @@ To change log level and logfile you can use:
 
     check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
 
-The flags **--master** and **--hpc** are used when you launch tests, via the scheduler, on the HPC cluster node. Through *master* flag you enable scheduler mode and with *hpc* (for syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launches the tests:
+The flags **--master** / **--ssh** and **--hpc** are used when you launch tests, via the scheduler/ssh, on the HPC cluster node. Through *master* flag you enable master slave mode (via scheduler as default) and with *hpc* (for syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launches the tests:
 
     check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
 
-You can also use predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file map.hpc  in architecture directory. When you specify a group of node you can launch a 1 job on the all nodes of the group or multiple job, one for each node, the default behaviour is the first, to use the second you must add a flag *--singleton*:
+You can also use predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file map.hpc  in architecture directory. When you specify a group of node you can launch a 1 job on the all nodes of the group or multiple job, one for each node, the default behaviour is the first, to use the second you must add a flag **--singleton**:
 
     check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
+
+If you add *--ssh*, the submission of remote command is via ssh following the same rules above, in this case the singleton flag is implicit.
 
 The *--configuration* flag takes a configuration file as input, this file must be written in json format and is an easy way to avoid writing long **CHECK** command lines:
 
@@ -156,6 +159,8 @@ The *--configuration* flag takes a configuration file as input, this file must b
 In **CHECK** you can write all parameters in the command line, via theconfiguration file passed by command line or in the configuration file in the etc directory. The priority order used to assign a parameter vaule is as follows:
 
         command line > file passed by CL > file in etc
+
+
 
 ### 2. *CHECK etc*
 
@@ -196,9 +201,11 @@ The **checktest_directory** is the field where the path of the directory that co
 
 **check_master_collecting_path** is the path on the master node, where CHECK is launched and used to store the scheduler output file.
 
+
+
 ### 3. *MASTER mode and Architectures*
 
-**CHECK** can use a scheduler to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job containing a istance of **CHECK** in *slave* mode and submit to scheduler. 
+**CHECK** can use a scheduler or ssh to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job containing a istance of **CHECK** in *slave* mode and submit to scheduler or lauch ad ssh command. 
 The **ID** of the slave instance is the same as the master instance. 
 
 CHECK is designed to run on the system without a parallel FS mounted, so the position of the slave instance must be specified in the setting file via *check_remote_source_path* parameter; if the parallel FS is mouted you can use the same installation of **CHECK** as master and slave, setting the configuration parameter as $CHECK_IM_REMOTE.
@@ -215,10 +222,13 @@ The **architecture** is the name of the architecture file (without extension) in
 
 It is not necessary to specify a name of setting for each architecture, as in the example above for arch2 **CHECK** loads the *default* setting for that architecture.
 
+If your cluster is not scheduler equipped or you pre allocate the nodes, you can use directly ssh to submit **CHECK** remote commad, adding to command line the flag *--ssh*, in this case the architecture needs only to indentify a pool of nodes where ssh launch a slave command. When you add *--ssh* flag you implicitly use *--master --singleton* flag.
 
 ***
 
 ## CHECKTEST
+
+
 
 ### 1. Structure of directory
 
@@ -261,6 +271,7 @@ For each architecture file it is allowed have different configurations, so in th
 In the test directory you can define **bin**,**in**,**out** and **tmp** directories and other but for this four cited before **CHECK** automatically generates and saves the path; if one of them is not used you don't need to created.
 
 
+
 ### 2. Architecture
 **CHECK** needs to find the architecture files when it is run in master mode to know the specs of the cluster nodes. The name of file in **architecture** directory must be equal to the name of the **CHECKTEST**s architecture. 
 
@@ -295,6 +306,8 @@ Below an architecture file example:
 
 The symbol  **_ noqueue _** indicates that the scheduler has an automatic selection of the queue, while the other information are classical parameters that you write in HPC job file. 
 
+
+
 ### 3. HPC MAP
 A convenience can be to define a group of nodes accumulated by certain properties and this in **CHECK** can be done via file.
 In the same directory of architectures there is the file **map.hpc** where node groups can be specified, the file has a very simple format, for each line is specified the name of the group and after the space the list of hostnames separated by comma:
@@ -302,6 +315,8 @@ In the same directory of architectures there is the file **map.hpc** where node 
     group1 hostname1,hostname2
     group2 hostname3,hostname4,hostname1,
     group3 hostname1,hostname2,hostname4,hostname5
+
+
 
 ### 4. Write a CHECKTEST
 
@@ -351,6 +366,8 @@ In the same directory of architectures there is the file **map.hpc** where node 
  6) Before writing new code, check what is in **checktest** template and if you think your code could be usefull to the others add to the template.
 
 ***
+
+
 
 ## CHECK VERSION rules
 
