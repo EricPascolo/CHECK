@@ -55,6 +55,13 @@ class check_core:
         #set logger for this subroutine
         logger = logging.getLogger(self.setting["logger_name"])
         logger.debug(self.setting["logger_name"])
+        
+        # ssh enable master singleton mode
+        if "ssh" in self.setting:
+            if "master" not in self.setting:
+                self.setting["master"] = True
+            if "singleton" not in self.setting:
+                self.setting["singleton"] = True
 
         if "checkparameters" in self.setting:
             self.printparameters()

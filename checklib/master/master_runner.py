@@ -60,14 +60,11 @@ def create_slave_cmd_string(arch,checkcore):
 
     remote_source_path = "source "+checkcore.setting["check_remote_source_path"]+"/check/bin/setup_check.sh; "
 
-
     cmd_check_string = "check"
     cmd_check_string = cmd_check_string + " --loglevel " + checkcore.setting["loglevel"]
     cmd_check_string = cmd_check_string + " --master_id " + checkcore.setting["id"]
     cmd_check_string = cmd_check_string + " --check " + select_checktest_on_architercture(arch,checkcore)
-    if arch=='ssh':
-        cmd_check_string = cmd_check_string +  "< /dev/null > /dev/null 2>&1 &"
-
+    
     return remote_source_path + cmd_check_string
 
 ####--------------------------------------------------------------------------------------------------------------
@@ -154,10 +151,16 @@ def main(checkcore):
             #get slave string
             slave_string = create_slave_cmd_string(arch,checkcore)
 
-            #create submit string
-            slave_submit_string = scheduler_string + "\"" + slave_string + "\""
-            logger.info(slave_submit_string)
+            slave_submit_string = ""
 
+            #create submit string, different for scheduler and ssh
+            if "ssh" in checkcore.setting:
+                slave_submit_string = scheduler_string + " \"(" + slave_string + " )&>/dev/null & \""
+            else:    
+                slave_submit_string = scheduler_string + "\"" + slave_string + "\""
+            
+            logger.info(slave_submit_string)
+            
             #submit via scheduler
             try:
                 process = subprocess.call( slave_submit_string, shell=True,cwd=checkcore.setting["check_master_collecting_path"],executable='/bin/bash',env=os.environ)
