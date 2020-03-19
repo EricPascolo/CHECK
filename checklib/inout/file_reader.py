@@ -7,6 +7,7 @@
 import sys
 import json
 import os
+from checklib.common import utils
 
 """
 Python module that contain read file methods
@@ -49,7 +50,8 @@ def hpc_map_file_reader(hpcmap_file):
     hpc_groups = generic_file_reader(hpcmap_file)
 
     for group in hpc_groups:
-        group_name, group_array = group.split(" ")
+        group_cut = utils.remove_newline_in(group)
+        group_name, group_array = group_cut.split(" ")
         group_nodes = group_array.split(",")
         hpcmap.update({group_name: group_nodes}) 
 

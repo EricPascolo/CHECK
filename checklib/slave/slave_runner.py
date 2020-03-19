@@ -9,6 +9,7 @@ import logging
 import subprocess
 import json
 import platform
+from datetime import datetime
 from checklib.core import checkobj_result
 from checklib.slave import multibenchmark
 from checklib.common import utils
@@ -89,6 +90,7 @@ def worker(check_core):
     logger.critical(str(nameofnode) +"  "+ nodemark)
     res_file_json.update({"PARTIAL":res_partial_list})
     res_file_json.update({"RESULT":nodemark})
+    res_file_json.update({"Date":str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))})
     
     #write result dictionary on check_result file
     out_file = open(check_core.setting["resultfile"],"a+")

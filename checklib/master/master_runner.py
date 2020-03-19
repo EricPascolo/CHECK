@@ -9,6 +9,7 @@ import logging
 import subprocess
 import traceback
 import json
+from datetime import datetime
 from checklib.inout import file_reader
 from checklib.common import utils
 from checklib.scheduler import whatscheduler
@@ -120,16 +121,18 @@ def main(checkcore):
             host_array = utils.extract_elements_from_dict_by_keylist(a["nodes"],hpc_map)
         else:
             host_array = a["nodes"]
-        
+               
         #load descriptor of architecture
         arch_jsonfile = checkcore.setting["checktest_directory"]+"/hpc/"+arch+".json"
         arch_setting = file_reader.json_reader(arch_jsonfile)[arch_set]
 
         json.dump({"master_submission":{"id":checkcore.setting["id"],\
                  "check":str(select_checktest_on_architercture(arch,checkcore)),\
-                 "arch":arch+"#"+arch_set,
-                 "hpc":utils.list_to_String(host_array,",")}},
+                 "arch":arch+"#"+arch_set, \
+                 "Date":str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")), \
+                 "hpc":utils.list_to_String(host_array,",")}}, \
                  out_file,indent=2)
+
         out_file.write("\n")
 
         for h in host_array:
@@ -140,7 +143,7 @@ def main(checkcore):
                 host_list = hpc_map[h]
             else:
                 host_list.append(h)
-
+            
             arch_setting["hostname"]=host_list
             arch_setting["jobname"]= "check_"+h
             arch_setting["jobcollectiongpath"] = checkcore.setting["check_master_collecting_path"]
