@@ -224,6 +224,82 @@ It is not necessary to specify a name of setting for each architecture, as in th
 
 If your cluster is not scheduler equipped or you pre allocate the nodes, you can use directly ssh to submit **CHECK** remote commad, adding to command line the flag *--ssh*, in this case the architecture needs only to indentify a pool of nodes where ssh launch a slave command. When you add *--ssh* flag you implicitly use *--master --singleton* flag.
 
+
+
+### 4. CHECK OUTPUT
+
+**CHECK** have two type of output, the log and the resultfile. The log can be printed on command line or file and in master mode, each job sumbitted via scheduler report its log in the job output file named *check_nodename*, the job output files are collected in *check_master_collecting_path* set in check_setting.json.
+
+The most important output is the **checkresult file** writed as collection of json objects, the position of this file is set through the parameter *resultfile* in check_setting.json. You can find in the results file two type of json: master_submission or result; i.e. the command below produce 3 json object.
+
+     check --check linpack@x86,stream@x86 --ssh --hpc x86:node1,node2
+
+Master_submission json contains all information regards the submission:
+
+        {
+        "master_submission": {
+            "hpc": "node1,node2", 
+            "arch": "x86#default", 
+            "id": "77179d4427964d6da83aa4de9e463b99", 
+            "check": "linpack@x86,stream@x86"
+        }
+        }
+
+The result object contains partial results with measure, unit and the final mark of the node. If **CHECK** is used 
+in slave mode the information *slave_mode* is reported and the unique *ID* is the same as the master who submitted. it.
+
+        {
+        "RESULT": "OK", 
+        "hostname": "node1", 
+        "PARTIAL": [
+            {
+            "linpack": {
+                "status": "OK", 
+                "arch": "x86", 
+                "value": "1036.6957", 
+                "unit": "GFLOPS"
+            }
+            }, 
+            {
+            "stream": {
+                "status": "OK", 
+                "arch": "x86", 
+                "value": "95483.0", 
+                "unit": "MB/s"
+            }
+            }
+        ], 
+        "id": "77179d4427964d6da83aa4de9e463b99", 
+        "slave_mode": true
+        }
+
+        {
+        "RESULT": "OK", 
+        "hostname": "node2", 
+        "PARTIAL": [
+            {
+            "linpack": {
+                "status": "OK", 
+                "arch": "x86", 
+                "value": "1021.1955", 
+                "unit": "GFLOPS"
+            }
+            }, 
+            {
+            "stream": {
+                "status": "OK", 
+                "arch": "x86", 
+                "value": "95662.0", 
+                "unit": "MB/s"
+            }
+            }
+        ], 
+        "id": "77179d4427964d6da83aa4de9e463b99", 
+        "slave_mode": true
+        }
+        
+The *check result* file in conclusion is a logbook of all operation done from this instance of **CHECK**. Trough the unique ID number it is possible to date back to and group all operation that **CHECK** done.    
+
 ***
 
 ## CHECKTEST

@@ -82,7 +82,7 @@ def worker(check_core):
 
         res_partial_list.append({cs.get_name():{"arch":cs.target_arch, \
                                          "value":str(cs.result.measure), \
-                                         "udm":cs.result.udm, \
+                                         "unit":cs.result.udm, \
                                          "status":cs.result.status}})
 
     # log multibenchmark analysis result
