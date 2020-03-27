@@ -94,7 +94,7 @@ def worker(check_core):
     
     #write result dictionary on check_result file
     out_file = open(check_core.setting["resultfile"],"a+")
-    json.dump(res_file_json,out_file,indent=2)
+    json.dump(res_file_json,out_file)
     out_file.write("\n")
     out_file.close()
 

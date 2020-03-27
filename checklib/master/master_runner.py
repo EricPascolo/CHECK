@@ -131,7 +131,7 @@ def main(checkcore):
                  "arch":arch+"#"+arch_set, \
                  "Date":str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")), \
                  "hpc":utils.list_to_String(host_array,",")}}, \
-                 out_file,indent=2)
+                 out_file)
 
         out_file.write("\n")
 
