@@ -71,6 +71,11 @@ elif checkcore.setting["check"] != "-999":
     from checklib.slave import slave_runner
     slave_runner.main(checkcore)
 
+## report
+elif checkcore.setting["report"] != "-999":
+    from checklib.report import reporter
+    reporter.main(checkcore)
+
 else:
     pass
 
