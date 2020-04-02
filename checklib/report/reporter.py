@@ -85,7 +85,7 @@ def id(reportjson,opt,logger):
 def node(reportjson,opt,logger):
 
     """
-    *report node:hostname - return all checktest and result for a specific hostname
+     report node:hostname - return all checktest and result for a specific hostname
      report node:hostname#checktest - return a specific (linpack or Stream, ..) checktest and result for a specific hostname
     """
 
@@ -97,7 +97,7 @@ def node(reportjson,opt,logger):
     all_res ={}
 
     checktest=False
-    ctType="all"
+    ctType=""
     if "#" in opt:
         x = opt.split("#")
         print(x)
@@ -117,7 +117,8 @@ def node(reportjson,opt,logger):
                 #print("json ",count," is RESULT") 
                 result += 1
                 loc_res=cur_res
-                all_res[cur_res["id"]]=loc_res
+                nameNode = cur_res["id"]+"_"+cur_res["hostname"]
+                all_res[nameNode]=loc_res
             count += 1 
         else:
             #print("json ",count," is OTHER") 
@@ -147,7 +148,7 @@ def node(reportjson,opt,logger):
         
 ####--------------------------------------------------------------------------------------------------------------
 
-def master(reportjson,logger,opt):
+def master(reportjson,opt,logger):
 
     """
     Master 
@@ -193,6 +194,72 @@ def master(reportjson,logger,opt):
 
 ####--------------------------------------------------------------------------------------------------------------
 
+def checktest(reportjson,opt,logger):
+
+    """
+     report checktest:checktest - return all partial of a specific checktest (id,hostname,checktest - (linpack or Stream, ..))
+     report checktest:checktest#id - return all partial of a specific checktest (linpack or Stream, ..) and id(hostname,checktest)
+    """
+
+    if(opt == None):
+        return "ERROR - report checktest - expected checktest or checktest#id"
+    result = 0
+    count  = 0
+    other = 0
+    all_res ={}
+
+    onlyOneId=False
+    specID=""
+    if "#" in opt:
+        x = opt.split("#")
+        print(x)
+        ctType = str(x[0])
+        onlyOneId=True
+        specID = x[1]
+    else:
+        ctType = opt
+
+    for cur_res in reportjson["all"]:
+
+        loc_res=None
+        if "PARTIAL" in cur_res: # and ctType in cur_res["PARTIAL"]:
+#            print( ctType+" - "+str(cur_res["PARTIAL"].keys()[0]))
+            partials = cur_res["PARTIAL"]
+            for cur_p in partials:
+                if ctType in cur_p:
+                    nameNode = cur_res["id"]+"_"+cur_res["hostname"]
+                    if not(onlyOneId) or (cur_res["id"]== specID):
+                        result += 1
+                        loc_res=cur_res
+                        all_res[nameNode]=loc_res
+                    count += 1 
+        else:
+            #print("json ",count," is OTHER") 
+            count += 1  
+            other += 1
+    #print("TOT ",count," - added ",result," size ", len(all_res))
+    #print(hpc)
+
+    output=""
+    output+="\n--------------- Partial for checkTest "+ctType 
+    if(onlyOneId):
+        output+=" and ID "+specID
+    outtest=""
+    outresult=""
+    for x in all_res:
+        t = all_res[x]
+        outresult="\nId: "+str(t["id"])+" - hostname "+str(t["hostname"])+" - Date: "+str(t["Date"])+"\n"
+        outtest=""
+        for p in t["PARTIAL"]:
+            if p.keys()[0]== ctType:
+                for s, sv in sorted(utils.get_iter_object_from_dictionary(p.values()[0])):
+                    outtest += "\t\t"+s +" : "+str(sv)+"\n"
+                outtest+="\n"
+        if len(outtest)>0:
+            output+=outresult+outtest
+    return output
+        
+####--------------------------------------------------------------------------------------------------------------
 
 def main(check_core):
 
@@ -204,8 +271,8 @@ def main(check_core):
      report node:hostname - return all checktest and result for a specific hostname
      report node:hostname#checktest - return a specific (linpack or Stream, ..) checktest and result for a specific hostname
     Checktest 
-    *report checktest:checktest - return all partial of a specific checktest (id,hostname,checktest)
-    *report checktest:checktest#id - return all partial of a specific checktest and id(hostname,checktest)
+     report checktest:checktest - return all partial of a specific checktest (id,hostname,checktest - (linpack or Stream, ..))
+     report checktest:checktest#id - return all partial of a specific checktest (linpack or Stream, ..) and id(hostname,checktest)
     Master 
      report master:n - print last n master_submission [if n=0 --> all, def n = 1] 
     """
@@ -238,8 +305,10 @@ def main(check_core):
             logger.critical(id(reportjson,rep_id,logger))
         elif "node"  in rep_option: 
             logger.critical(node(reportjson,rep_id,logger))
+        elif "checktest" in rep_option: 
+            logger.critical(checktest(reportjson,rep_id,logger))
         elif "master" in rep_option: 
-            logger.critical(master(reportjson,logger,rep_id))
+            logger.critical(master(reportjson,rep_id,logger))
         else:
             logger.critical("Invalid option "+option)
 
