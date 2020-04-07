@@ -9,7 +9,7 @@ import logging
 import subprocess
 import traceback
 import json
-from datetime import datetime
+import datetime 
 from checklib.inout import file_reader
 from checklib.common import utils
 from checklib.scheduler import whatscheduler
@@ -82,6 +82,9 @@ def main(checkcore):
             scheduler_exe  scheduler_parameter check_slave_command
 
         The slave command for all scheduler is inlined in submission line.
+        Can you request a job without hostlist in this way:
+
+        arch#def:'<"nnodes"=4;"exclusive"="yes";"wtime"=20;"queue"="system";"account"="cin_pos">'
     
     '''
 
@@ -124,30 +127,49 @@ def main(checkcore):
                
         #load descriptor of architecture
         arch_jsonfile = checkcore.setting["checktest_directory"]+"/hpc/"+arch+".json"
-        arch_setting = file_reader.json_reader(arch_jsonfile)[arch_set]
-
+        arch_setting_global = file_reader.json_reader(arch_jsonfile)[arch_set]
+        print(utils.list_to_String(host_array,","))
         json.dump({"master_submission":{"id":checkcore.setting["id"],\
                  "check":str(select_checktest_on_architercture(arch,checkcore)),\
                  "arch":arch+"#"+arch_set, \
-                 "Date":str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")), \
+                 "date":str(datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")), \
                  "hpc":utils.list_to_String(host_array,",")}}, \
-                 out_file,indent=2)
+                 out_file,sort_keys=True)
 
         out_file.write("\n")
 
         for h in host_array:
+
+            #local arch setting for each job
+            arch_setting = arch_setting_global.copy()
+
+            #request job without nodelist
+            if "<" in h: 
+                new_set_dict = utils.convert_request_to_json(h)
+                arch_setting.update(new_set_dict)
+                del arch_setting["hostname"]
+                arch_setting["jobname"]= "check_"+checkcore.setting["id"][:6]
             
-            #select group of nodes or single hostname
-            host_list = []
-            if h in hpc_map:
-                host_list = hpc_map[h]
+            # node or group of nodes, separated by comma
             else:
-                host_list.append(h)
-            
-            arch_setting["hostname"]=host_list
-            arch_setting["jobname"]= "check_"+h
+
+                host_list = []
+                #groups of nodes
+                if h in hpc_map:
+                    host_list = hpc_map[h]
+                #single nodes
+                else:
+                    host_list.append(h)
+                arch_setting["hostname"]=host_list
+                arch_setting["jobname"]= "check_"+h
+
+            #set up path for job output file
             arch_setting["jobcollectiongpath"] = checkcore.setting["check_master_collecting_path"]
             
+            #wtime(min) -> walltime(hh:mm:ss)
+            if "wtime" in arch_setting:
+                arch_setting["walltime"] = str(datetime.timedelta(minutes=arch_setting["wtime"]))
+
             #get scheduler string
             scheduler_string = scheduler.scheduler_string_generator(arch_setting)
 

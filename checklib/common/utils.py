@@ -8,6 +8,8 @@
 import os
 import re
 import sys
+import json
+import datetime
 from checklib.common.archive import *
 
 ####--------------------------------------------------------------------------------------------------------------
@@ -91,6 +93,8 @@ def split_hostline(line):
         #split nodelist 
         nodes_splitted = "".join(nodes).split(",")
         
+        
+
         architecture.append({"arch":arch,"setting":settings,"nodes":nodes_splitted})
         
    
@@ -102,10 +106,10 @@ def split_hostline(line):
 
 def list_to_String(slist,separator):
     '''
-    Return string from list symbol separeted and remove newline
+    Return string from list symbol separeted and remove newline and substitute double quote
     '''
 
-    return remove_newline_in(separator.join(slist)) 
+    return remove_newline_in(separator.join(slist).replace("\"","\'")) 
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -191,3 +195,25 @@ def is_tool(tool_name):
     return find_executable(tool_name) is not None
 
 ####--------------------------------------------------------------------------------------------------------------
+
+def is_json(myjson):
+  try:
+    json_object = json.loads(myjson)
+  except ValueError as e:
+    return False
+  return True
+
+####--------------------------------------------------------------------------------------------------------------
+
+def convert_request_to_json(s0):
+    
+    s1 = s0.replace("<","{")
+    s2 = s1.replace(">","}")
+    s3 = s2.replace("=",":")
+    s4 = s3.replace(";",",")
+    if is_json(s4):
+        return json.loads(s4)
+        
+    else:
+        return "-999"
+        

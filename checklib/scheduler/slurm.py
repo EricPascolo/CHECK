@@ -21,12 +21,24 @@ class slurm(scheduler):
 ####--------------------------------------------------------------------------------------------------------------
 
     def scheduler_string_generator(self,arch_setting):
+        '''
+        arch_setting object:
+            - nnodes
+            - ncpus
+            - memory
+            - exclusive
+            - hostname
+            - walltime
+            - queue
+            - jobname
+            - account
 
+        '''
         submission_string = "sbatch"
 
         #automatic select number of nodes: explicit in setting or number of element of hostlist
-        if arch_setting["number_of_nodes"] != "":
-            submission_string = submission_string +" -N "+arch_setting["number_of_nodes"]
+        if arch_setting["nnodes"] != "":
+            submission_string = submission_string +" -N "+str(arch_setting["nnodes"])
         else:
             submission_string = submission_string +" -N "+str(len(arch_setting["hostname"]))
 
@@ -37,7 +49,8 @@ class slurm(scheduler):
             submission_string = submission_string +" -n "+arch_setting["ncpus"]
             submission_string = submission_string +" --mem="+arch_setting["memory"]
         
-        submission_string = submission_string +" --nodelist "+utils.list_to_String(arch_setting["hostname"],',')
+        if "hostname" in arch_setting:
+            submission_string = submission_string +" --nodelist "+utils.list_to_String(arch_setting["hostname"],',')
 
         submission_string = submission_string +" -t 0-"+arch_setting["walltime"]
         submission_string = submission_string +" --partition "+arch_setting["queue"]

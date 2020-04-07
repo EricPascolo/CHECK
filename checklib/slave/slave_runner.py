@@ -90,11 +90,11 @@ def worker(check_core):
     logger.critical(str(nameofnode) +"  "+ nodemark)
     res_file_json.update({"PARTIAL":res_partial_list})
     res_file_json.update({"RESULT":nodemark})
-    res_file_json.update({"Date":str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))})
+    res_file_json.update({"date":str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))})
     
     #write result dictionary on check_result file
     out_file = open(check_core.setting["resultfile"],"a+")
-    json.dump(res_file_json,out_file,indent=2)
+    json.dump(res_file_json,out_file,sort_keys=True)
     out_file.write("\n")
     out_file.close()
 

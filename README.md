@@ -152,6 +152,12 @@ You can also use predefined groups of nodes, like "groupnode1" in the string abo
 
 If you add *--ssh*, the submission of remote command is via ssh following the same rules above, in this case the singleton flag is implicit.
 
+It is also possible to launch a job without a set of target nodes and this can be done by entering a **\<job object>** in the nodes list:
+
+    check --check linpack@x86 --master --hpc x86#gpu:node2,'<"nnodes"=4;"queue"="system";"ncpus"=10>',node3
+
+In this case the basic parameters of the *x86* architecture with the *gpu* setting will be overwritten and a job will be launched without defining the nodes list. In a **\<job object>** all the parameters defined in the architecture can be overridden, only *hostlist* will be ignored. 
+
 The *--configuration* flag takes a configuration file as input, this file must be written in json format and is an easy way to avoid writing long **CHECK** command lines:
 
     check --configuration myconffile.json
@@ -358,7 +364,7 @@ Below an architecture file example:
     {
     "default":{
 
-        "number_of_nodes":"1",
+        "nnodes":"1",
         "ncpus":"36",
         "memory":"118GB",
         "walltime":"00:15:00",
@@ -369,20 +375,18 @@ Below an architecture file example:
 
     "debug":{
         
-            "number_of_nodes":"1",
-            "ncpus":"36",
-            "memory":"118GB",
-            "walltime":"00:15:00",
-            "queue":"debug",
-            "account":"my_account"
-        
-            }
+        "nnodes":"1",
+        "ncpus":"36",
+        "memory":"118GB",
+        "walltime":"00:15:00",
+        "queue":"debug",
+        "account":"my_account"
+    
+        }
 
     }
 
 The symbol  **_ noqueue _** indicates that the scheduler has an automatic selection of the queue, while the other information are classical parameters that you write in HPC job file. 
-
-
 
 ### 3. HPC MAP
 A convenience can be to define a group of nodes accumulated by certain properties and this in **CHECK** can be done via file.
