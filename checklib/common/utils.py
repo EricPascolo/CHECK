@@ -9,6 +9,7 @@ import os
 import re
 import sys
 import json
+import platform
 import datetime
 from checklib.common.archive import *
 
@@ -216,4 +217,18 @@ def convert_request_to_json(s0):
         
     else:
         return "-999"
-        
+
+####--------------------------------------------------------------------------------------------------------------
+
+def get_name_of_nodes(resources=None):
+    ''' 
+    Return a name of the node or a list of the node if it is in a job
+    '''
+    nodename = platform.node()
+    if resources is not None:
+        if not "$" in resources["NODENAME"]:
+            nodename = resources["NODENAME"]
+    
+    return nodename
+
+####--------------------------------------------------------------------------------------------------------------

@@ -10,13 +10,14 @@
 
 from __future__ import print_function
 from checklib.inout import commandline
+from checklib.common import utils
 from checklib.inout import checklog
 from checklib.core import checkobj_core
 from datetime import datetime
 import sys
 import os
 import logging
-import platform
+
 import uuid
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -48,7 +49,7 @@ else:
 
 #set basic logger
 logger = logging.getLogger("basic")
-logger.critical("**** CHECK "+__version__ +" - "+platform.node()+ \
+logger.critical("**** CHECK "+__version__ +" - "+utils.get_name_of_nodes()+ \
      " - "+datetime.now().strftime("%d/%m/%Y %H:%M:%S")+" - "+str(run_id))
 
 
@@ -74,7 +75,7 @@ elif checkcore.setting["check"] != "-999":
 else:
     pass
 
-logger.critical("**** CHECK STOP - "+platform.node()+ \
+logger.critical("**** CHECK STOP - "+utils.get_name_of_nodes()+ \
      " - "+datetime.now().strftime("%d/%m/%Y %H:%M:%S") +" - "+ str(run_id))
 
 ####--------------------------------------------------------------------------------------------------------------

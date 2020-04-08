@@ -8,11 +8,11 @@ import traceback
 import logging
 import subprocess
 import json
-import platform
 from datetime import datetime
 from checklib.core import checkobj_result
 from checklib.slave import multibenchmark
 from checklib.common import utils
+from checklib.scheduler import whatscheduler
 
 
 ####--------------------------------------------------------------------------------------------------------------
@@ -59,8 +59,11 @@ def worker(check_core):
             #check_results.append(checkobj_result.check_result(cs.get_name(),"FAIL"))
             traceback.print_exc()
 
-    #  get name of the node through hostname command
-    nameofnode = platform.node()
+    #get scheduler env
+    resources = whatscheduler.check_installed_scheduler(check_core.setting).get_job_resources()
+    
+    #  get name of the node 
+    nameofnode = utils.get_name_of_nodes(resources) #platform.node()
 
     # multibenchmark analyis call
     nodemark = multibenchmark.analisys(check_core)
