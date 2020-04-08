@@ -77,7 +77,7 @@ class checktest():
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def install(self):
+    def install(self,setting="default"):
         self.check_log.debug("call empty install")
         pass
 

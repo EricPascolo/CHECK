@@ -72,7 +72,9 @@
         {
             "name":"--install",
             "param":{
-                "action":"store_true",
+                "type":"str",
+                "nargs":"?",
+                "const":"default",
                 "required":"False",
                 "help":"Install checktest"
              }

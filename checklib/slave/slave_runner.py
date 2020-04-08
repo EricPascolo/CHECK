@@ -28,10 +28,10 @@ def installator(check_core):
 
         logger.debug("--------------- CheckTest installation: "+cs.get_name())
         try:
-            cs.install()
+            cs.install(check_core.setting["install"])
         except:
-            logger.CRITICAL("Installation FAIL")
-            traceback.print_exc()
+            logger.critical("Installation FAIL")
+            #traceback.print_exc()
 
 ####--------------------------------------------------------------------------------------------------------------
 
