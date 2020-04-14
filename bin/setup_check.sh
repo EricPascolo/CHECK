@@ -14,5 +14,5 @@ export CHECK_IM_REMOTE=${CHECK_HOME%%check/}
 #set bin path to system path and package path to python path
 export PATH=$BINDIR:$PATH
 export PYTHONPATH=$CHECK_PATH:$PYTHONPATH
-alias pyccleandir='find . -name '*.pyc' -delete'
+alias pyccleandir="find . -name '*.pyc' -delete"
 alias checkcleandir='cd $CHECK_HOME ; pyccleandir ; cd $OLDPWD'
