@@ -4,13 +4,16 @@
 # @authors : Eric Pascolo
 #
 
+import traceback
 import logging
 import os
 import sys
 import importlib
+import subprocess
 from checklib.inout import file_reader
 from checklib.inout import checklog
 from checklib.common import utils
+from checklib.common import capture
 from operator import concat
 from checklib.test.check_test_template import checktest
 
@@ -66,6 +69,19 @@ class check_core:
         if "checkparameters" in self.setting:
             self.printparameters()
 
+        
+        if "module_env_py_interface" in self.setting:
+            try:
+    
+                exec(open(self.setting["module_env_py_interface"]).read())
+                logger.info("Module Env has Python callable interface:")
+                module('-V','list')
+                self.setting.update({"module_env":self.setting["module_env_py_interface"]})
+                del self.setting["module_env_py_interface"]
+            except:
+                logger.critical("Module Env has not Python callable interface")
+                
+        
         if "checklist" in self.setting:
             self.printchecklist()
             return
