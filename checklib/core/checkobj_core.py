@@ -13,7 +13,6 @@ import subprocess
 from checklib.inout import file_reader
 from checklib.inout import checklog
 from checklib.common import utils
-from checklib.common import capture
 from operator import concat
 from checklib.test.check_test_template import checktest
 
@@ -72,7 +71,6 @@ class check_core:
         
         if "module_env_py_interface" in self.setting:
             try:
-    
                 exec(open(self.setting["module_env_py_interface"]).read())
                 logger.info("Module Env has Python callable interface:")
                 module('-V','list')
