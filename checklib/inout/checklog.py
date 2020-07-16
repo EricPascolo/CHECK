@@ -44,7 +44,10 @@ def checkloggin(run_id,loglevel,logfile,logtype="both"):
     if logtype == "cl":
         logger.addHandler(ch)
     if logtype == "file":
-        logger.addHandler(fh)
+        if logfile != "__nofile__":
+            logger.addHandler(fh)
+        else:
+            print("ERROR NO LOGGER FILE SET")
 
     logger.info("Logger type: "+logtype)
 
