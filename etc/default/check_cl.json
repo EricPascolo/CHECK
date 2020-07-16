@@ -113,7 +113,6 @@
             "name":"--logfile",
             "param":{
                 "type":"str",
-                "default":"__nofile__",
                 "required":"False",
                 "help":"Log file"
             }
