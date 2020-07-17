@@ -3,7 +3,7 @@
 #
 # CHECK
 #
-# @authors : Eric Pascolo
+# @authors : Eric Pascolo, Roberto Da Via'
 #
 # Copyright (C) 2017 
 #
@@ -21,7 +21,7 @@ import logging
 import uuid
 ####--------------------------------------------------------------------------------------------------------------
 
-__author__ = "Eric Pascolo"
+__author__ = "Eric Pascolo, Roberto Da Via'"
 __copyright__ = "Copyright 2020"
 __credits__ = [""]
 __license__ = "GNU Affero GPL v.3"
@@ -57,10 +57,13 @@ logger.critical("**** CHECK "+__version__ +" - "+utils.get_name_of_nodes()+ \
 checkcore = checkobj_core.check_core(cl_args,run_id)
 # if module interface is defined then set checkcore.module function
 if "module_env_py_interface" in checkcore.setting:
-    exec(open(checkcore.setting["module_env_py_interface"]).read())
-    logger.info("Using modules")
-    logger.info(module("-V", "list"))      
-    checkcore.set_module_function(module)
+    try:
+        exec(open(checkcore.setting["module_env_py_interface"]).read())
+        module("-V", "list")    
+        checkcore.set_module_function(module)
+        logger.info("Found python interface to modules")
+    except:
+        logger.info("Python interface to modules is not usable")
 
 
 ## master

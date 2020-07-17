@@ -1,7 +1,7 @@
 #
 # CHECK
 #
-# @authors : Eric Pascolo
+# @authors : Eric Pascolo, Roberto Da Via'
 #
 
 import traceback
@@ -35,6 +35,7 @@ class check_core:
 
         #set an empty module instance
         self.module = None
+        self.setting["module"] = self.module
 
         # set setting file path
         check_setting_path = utils.get_setting_file_path("check_setting.json")
@@ -69,20 +70,6 @@ class check_core:
         if "checkparameters" in self.setting:
             self.printparameters()
         
-       # if "module_env_py_interface" in self.setting:
-      #      try:
-      #          # ext_func is module function, loaded at check level
-      #          self.module = ext_func
-      #          self.setting["module"] = self.module
-      #          self.module("list")
-      #          
-      #          # could be obsolete now 
-      #          self.setting.update({"module_env":self.setting["module_env_py_interface"]})
-      #          del self.setting["module_env_py_interface"]
-      #      except:
-      #          logger.critical("Module Env has not Python callable interface")
-                
-        
         if "checklist" in self.setting:
             self.printchecklist()
             return
@@ -111,8 +98,6 @@ class check_core:
         '''
         self.module = module
         self.setting["module"] = self.module
-        self.setting.update({"module_env":self.setting["module_env_py_interface"]})
-        del self.setting["module_env_py_interface"]
 
 ####--------------------------------------------------------------------------------------------------------------
 
