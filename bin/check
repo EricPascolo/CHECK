@@ -55,6 +55,13 @@ logger.critical("**** CHECK "+__version__ +" - "+utils.get_name_of_nodes()+ \
 
 ##init check setting object
 checkcore = checkobj_core.check_core(cl_args,run_id)
+# if module interface is defined then set checkcore.module function
+if "module_env_py_interface" in checkcore.setting:
+    exec(open(checkcore.setting["module_env_py_interface"]).read())
+    logger.info("Using modules")
+    logger.info(module("-V", "list"))      
+    checkcore.set_module_function(module)
+
 
 ## master
 if "master" in checkcore.setting:
