@@ -42,8 +42,15 @@ class slurm(scheduler):
         else:
             submission_string = submission_string +" -N "+str(len(arch_setting["hostname"]))
 
+        settings_to_search = ["ntasks-per-node", "sockets-per-node", "ntasks-per-socket", "cpus-per-task", "threads-per-core"]
+        for _ in settings_to_search: 
+            if _ in arch_setting:
+                if arch_setting[_] != "":
+                    submission_string = submission_string + " --" + _ + "=" + str(arch_setting[_])
+      
         #automatic select number of node resources: explicit in setting or exclusive(all node taken)
         if "exclusive" in arch_setting:
+            submission_string = submission_string 
             submission_string = submission_string +" --exclusive "
         else:
             submission_string = submission_string +" -n "+arch_setting["ncpus"]
