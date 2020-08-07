@@ -35,7 +35,7 @@ def id(reportjson,params,logger):
         hpc.append(x[1])
     else:
         id = params
-
+   
     #the method scans the json dictonary and detects all object "master_submission" and "RESULT"
     for cur in reportjson["all"]:
             #for each object "master_submission" that have the same input id parameter, 
@@ -70,6 +70,13 @@ def id(reportjson,params,logger):
                 continue
         if loc_res=="":
             list_noRes.append(node)
+    
+    # case with only random nodes
+    if len(new_hpc) == 0:
+        for res_node in all_res:
+            map_res[res_node["hostname"].encode("utf8")]=res_node["RESULT"].encode("utf8")
+            #print("loc "+res_node["hostname"].encode("utf8"))
+
 
     #print all partial for each hostname and the list of all hostname not completed
     output=""
@@ -126,7 +133,7 @@ def node(reportjson,params,logger):
     outresult=""
     for x in all_res:
         t = all_res[x]
-        outresult="\nId: "+str(x)+" - Date: "+str(t["Date"])+" - Result: "+str(t["RESULT"])+"\n"
+        outresult="\nId: "+str(x)+" - Date: "+str(t["date"])+" - Result: "+str(t["RESULT"])+"\n"
         outtest=""
         for p in t["PARTIAL"]:
             if not(checktest) or p.keys()[0]== ctType:
@@ -164,13 +171,13 @@ def master(reportjson,params,logger):
     
 
     #sort the master_submission list by descendent date    
-    masterSorted =sorted(all_master, key = lambda i: i['Date'], reverse=True)
+    masterSorted =sorted(all_master, key = lambda i: i['date'], reverse=True)
 
     count=0
 
     #print a determinated number of master_submission (see parameter) ordered by descendent date
     for x in masterSorted:
-        output+="\nId: "+x["id"]+" - Date: "+x["Date"]+"\n\tarch: "+x["arch"]+"\n\tcheck: "+x["check"]+"\n\thpc:\n"
+        output+="\nId: "+x["id"]+" - Date: "+x["date"]+"\n\tarch: "+x["arch"]+"\n\tcheck: "+x["check"]+"\n\thpc:\n"
         hpcs = x["hpc"].split(",")
 
         for hpc in hpcs:
@@ -231,7 +238,7 @@ def checktest(reportjson,params,logger):
     outresult=""
     for x in all_res:
         t = all_res[x]
-        outresult="\nId: "+str(t["id"])+" - hostname "+str(t["hostname"])+" - Date: "+str(t["Date"])+"\n"
+        outresult="\nId: "+str(t["id"])+" - hostname "+str(t["hostname"])+" - Date: "+str(t["date"])+"\n"
         outtest=""
         for p in t["PARTIAL"]:
             if p.keys()[0]== ctType:

@@ -234,9 +234,30 @@ If your cluster is not scheduler equipped or you pre allocate the nodes, you can
 
 ### 4. CHECK OUTPUT
 
-**CHECK** have two type of output, the log and the resultfile. The log can be printed on command line or file and in master mode, each job sumbitted via scheduler report its log in the job output file named *check_nodename*, the job output files are collected in *check_master_collecting_path* set in check_setting.json.
+With the flag "--report" CHECK shows the results of is operation, the results are searchable by:
 
-The most important output is the **checkresult file** writed as collection of json objects, the position of this file is set through the parameter *resultfile* in check_setting.json. You can find in the results file two type of json: master_submission or result; i.e. the command below produce 3 json object.
+- Id
+    - report id:id - return all results with specific ID and, in case of master_submission, the list of node without result
+    - report id:id#hostname - return one specific result of hostname selected by ID
+- Node
+    - report node:hostname - return all checktests and results selected by hostname
+    - report node:hostname#checktest - return a specific (linpack or Stream, ..) checktest and results selected by hostname
+- Checktest name 
+    - report checktest:checktest - return all partial of a specific checktest (id,hostname,checktest - (linpack or Stream, ..))
+    - report checktest:checktest#id - return all partial of a specific checktest (linpack or Stream, ..) selected by id(hostname,checktest)
+- Master 
+    - report master:n - print last n master_submission [if n=0 --> all, def n = 1] 
+
+
+
+
+
+### 5. CHECK OUT AND DB FILE
+
+**CHECK** have two type of output, the log and the resultfile. The log can be printed on command line or file and in master mode, each job sumbitted via scheduler report its log in the job output file named *check_nodename*, the job results and  submission operation  are collected in *check_master_collecting_path* set in check_setting.json.
+
+The most important output is the **checkresult file** that is the database of CHECK operation writed as collection of json objects, the position of this file is set through the parameter *resultfile* in check_setting.json. This file  s explorable with **--report** flag describe in the section 4. 
+You can find in the  file two type of json: master_submission or result; i.e. the command below produce 3 json object.
 
      check --check linpack@x86,stream@x86 --ssh --hpc x86:node1,node2
 
@@ -304,7 +325,7 @@ in slave mode the information *slave_mode* is reported and the unique *ID* is th
         "slave_mode": true
         }
         
-The *check result* file in conclusion is a logbook of all operation done from this instance of **CHECK**. Trough the unique ID number it is possible to date back to and group all operation that **CHECK** done.    
+The json above, to increase readability have been exploded over several lines, but in the real file each line contain a json about operation. It is not recommended to edit this file by hand. Trough the unique ID number it is possible to date back to and group all operation that **CHECK** done.    
 
 ***
 
