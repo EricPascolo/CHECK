@@ -1,13 +1,15 @@
 #
 # CHECK
 #
-# @authors : Eric Pascolo
+# @authors : Eric Pascolo, Roberto Da Via'
 #
 
+import traceback
 import logging
 import os
 import sys
 import importlib
+import subprocess
 from checklib.inout import file_reader
 from checklib.inout import checklog
 from checklib.common import utils
@@ -27,9 +29,13 @@ class check_core:
 ####--------------------------------------------------------------------------------------------------------------
 
     def __init__(self,cl_arg,run_id):
-
+        
         #set run id
         self.setting.update({"id":run_id})
+
+        #set an empty module instance
+        self.module = None
+        self.setting["module"] = self.module
 
         # set setting file path
         check_setting_path = utils.get_setting_file_path("check_setting.json")
@@ -41,8 +47,7 @@ class check_core:
 
         ## extract check setting and put it in core object
         self.extract_merge_setting(cl_arg,json_setting)
-        
-
+         
         ## enable log with user setting
         try:
             lgnm = checklog.checkloggin(run_id,self.setting["loglevel"], \
@@ -51,7 +56,6 @@ class check_core:
         except KeyError:
             pass
         
-
         #set logger for this subroutine
         logger = logging.getLogger(self.setting["logger_name"])
         logger.debug(self.setting["logger_name"])
@@ -65,7 +69,7 @@ class check_core:
 
         if "checkparameters" in self.setting:
             self.printparameters()
-
+        
         if "checklist" in self.setting:
             self.printchecklist()
             return
@@ -84,6 +88,16 @@ class check_core:
 
         else:
             logger.critical("Checktest list is empty")
+        
+####--------------------------------------------------------------------------------------------------------------
+
+    def set_module_function(self, module):
+        '''
+        Set the module function as check_core method. The function is used to load
+        software modules from hpc environment 
+        '''
+        self.module = module
+        self.setting["module"] = self.module
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -98,7 +112,6 @@ class check_core:
             - check_setting.json in etc/default
         The merged dictionary update the global setting dict in class
         '''
-
         #dict where to merge setting
         json_setting ={}
 
@@ -106,7 +119,7 @@ class check_core:
         for j in json_basic:
             utils.resolve_env_path(j)
             json_setting.update(j)
-        
+
         #merge cl file setting
         utils.resolve_env_path(cl)
         json_setting.update(cl)
@@ -117,10 +130,9 @@ class check_core:
                 json_config_setting = file_reader.json_reader(cl["configuration"])
                 utils.resolve_env_path(json_config_setting)
                 json_setting.update(json_config_setting)
-
+ 
         #update global setting with merged dict
         self.setting.update(json_setting)
-
 
 
 ####--------------------------------------------------------------------------------------------------------------

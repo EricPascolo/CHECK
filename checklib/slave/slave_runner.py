@@ -31,7 +31,8 @@ def installator(check_core):
             cs.install(check_core.setting["install"])
         except:
             logger.critical("Installation FAIL")
-            #traceback.print_exc()
+            if check_core.setting["loglevel"] == "DEBUG":
+                traceback.print_exc()
 
 ####--------------------------------------------------------------------------------------------------------------
 

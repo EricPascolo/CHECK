@@ -6,6 +6,7 @@
     "checktest_directory":"$HOME/checktest/",
     "check_remote_source_path":"$CHECK_IM_REMOTE",
     "check_master_collecting_path":"$HOME/check_master_collection",
+    "module_env_py_interface":"$MODULESHOME/init/python.py",
     "cluster_scheduler":" "
     
 }

@@ -52,6 +52,16 @@
         },
 
         {
+            "name":"--report",
+            "param":{
+                "type":"str",
+                "default":"-999",
+                "required":"False",
+                "help":"print report query"
+            }
+        },
+
+        {
             "name":"--configuration",
             "param":{
                 "type":"str",
@@ -113,7 +123,6 @@
             "name":"--logfile",
             "param":{
                 "type":"str",
-                "default":"__nofile__",
                 "required":"False",
                 "help":"Log file"
             }
