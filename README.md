@@ -196,19 +196,19 @@ You can add a personalized analysis in the **CHECK** and select with `--analysis
 
 ### 1.3 Master/Slave submission
 
-The flags `--master` / `--ssh` and `--hpc` are used to launch tests, via the scheduler/ssh, on the HPC cluster node from login or master node. Through `--master¡ flag you enable master/slave mode (via scheduler as default) and with `--hpc` you specify the architecture and cluster nodes where **CHECK** launches the tests:
+The flags `--master` / `--ssh` and `--hpc` are used to launch tests, via the scheduler/ssh, on the HPC cluster node from login or master node. Through `--master` flag you enable master/slave mode (via scheduler as default) and with `--hpc` you specify the architecture and cluster nodes where **CHECK** launches the tests:
 
- check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
+    check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
 
 You can also use predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file `map.hpc` in *hpc* directory in  **CHECKTEST**. When you specify more than one node, the default behavior is to launch a unique job on the all nodes selected with the same architecture; but with the flag `--singleton` **CHECK** launches one job for each node selected in hpc flag (including those defined by a group):
 
- check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
+    check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
 
 The *--ssh* flag, allows the submission of the remote command via ssh following the same rules above. In this case, the singleton flag is implicit.
 
 **CHECK** allow to launch a job  a random set of nodes selected by the scheduler and this can be done by entering a `<job object>` in the nodes list:
 
- check --check linpack@x86 --master --hpc x86#gpu:node2,'<"nnodes"=4;"queue"="system";"ncpus"=10>',node3
+    check --check linpack@x86 --master --hpc x86#gpu:node2,'<"nnodes"=4;"queue"="system";"ncpus"=10>',node3
 
 In this case, the basic parameters of the *x86* architecture with the *gpu* setting will be overwritten and a job will be launched without specifying the nodes list by hostname. In a **\<job object>** all the parameters defined in the architecture can be overridden, only *hostlist* will be ignored. 
 
@@ -275,7 +275,7 @@ To print the result on **CHECKTEST**, operation and activity of **CHECK** use `-
     - `--report master:n` print last n master_submission, if n=0 print all master submission, the default value is 1
 
 
-### 3.1 CHECK OUT AND DB FILE
+### 3.1 OUTPUT FILES
 
 **CHECK** have two types of output, the log and the resultfile. The log can be printed on the command line or file and in master mode, each job submitted via scheduler report its log in the job output file named *check_nodename*. In addition, the job results and submission operation are collected in *check_master_collecting_path* set in check_setting.json.
 
@@ -355,7 +355,7 @@ CHECKTEST
 ------------------------------------------------
 
 
-### 1. Structure of directory
+## 1. Structure of directory
 
 The CHECKTEST directory must have this structure:
 
@@ -397,7 +397,7 @@ In the test directory you can define **bin**,**in**,**out** and **tmp** director
 
 
 
-### 2. Architecture
+## 2. Architecture
 **CHECK** needs to find the architecture files when it is run in master mode to know the specs of the cluster nodes. The name of file in **architecture** directory must be equal to the name of the **CHECKTEST**s architecture. 
 
 An architecture file is write in *json* format and contains a json object for each **setting**, a setting is a subset of the parameters for each architeture and in all architerture files must have a setting named *default*. 
@@ -441,7 +441,7 @@ In the same directory of architectures there is the file **map.hpc** where node 
 
 
 
-### 4. Write a CHECKTEST
+## 4. Write a CHECKTEST
 
 **CHECK** provides a *template* to simplify the writing of **CHECKTEST** file, to write a compatible test with **CHECK** you must follow these rules:
 
@@ -492,8 +492,8 @@ In the same directory of architectures there is the file **map.hpc** where node 
 
 
 
-## CHECK VERSION rules
-
+ CHECK VERSION rules
+--------------------------
 - +1.0.0 a major release increment means a big improvement of functionalities of CHECK
 - 0.+1.0 a minor release increment means an implementation of features 
 - 0.0.+1 a minor minor release increment means a general bugfix
