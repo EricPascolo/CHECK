@@ -1,30 +1,81 @@
-# CHECK : Cluster Health and Environment ChecKing system
+CHECK: Cluster Health and Environment ChecKing system
+=========
 
 
- Check is a flexible and easy to use software for showing the performance and health of an HPC Cluster. The software consists of two directories/repositories: **CHECK** contains the executable and the python library infrastructure and **CHECKTEST** contains the description of the architectures and test recipes. Check can be used via shell,parallel shell and via a scheduler; if a parallel  file system is not installed, **CHECK** can be distributed on all cluster nodes and is callable from the Master node. A **CHECKTEST** is a little python class based on *check_test_template*, so extending the code is very easy: you just add a python class in the checktest directory using **CHECKTEST** policy and at runtime your new test will be available. The software is callable from the command line and through a launch string it is possible redefine on the fly almost all paramenters contained in the configuration file.
+Check is a flexible and easy to use software for proving the performance and health of an HPC Cluster. The software consists of two directories/repositories: **CHECK** contains the executable and the python library infrastructure, and **CHECKTEST** includes the test and benchmark recipes and the description of the cluster. **CHECK** can be used via shell, parallel shell and scheduler; if a parallel file system is not present, **CHECK** can be distributed on all cluster nodes and is callable from the Master node. A **CHECKTEST** is a little python class based on *check_test_template*, so extending the code is very easy: you just add a python class in the **CHECKTEST** directory using **CHECKTEST** policy, and at runtime, your new test will be available. The software is callable from the command line, and through a launch string, it is possible to redefine on the fly almost all parameters contained in the configuration file. CHECK also has a report function that allows the examination of analysis results.
 
 ***
 
+CHECK 0.3
+------------------------------------------------
 
+## 0. *Environment setup and configuration*
 
-## CHECK 0.2
+**CHECK** does not require a formal installation. You can download wherever you want from the repository and use the *source command* to load the environment from setup_check.sh, before first use configures the application using  **CHECK** etc file.
 
+    $ git clone https://github.com/EricPascolo/CHECK.git  check
 
-
-### 0. *Environment setup*
-**CHECK** does not require a formal installation. You can download wherever you want from the repository and use  the *source command* to load the environment from setup_check.sh.
 You find setup file in **check/bin** :
 
-    source check/bin/setup_check.sh
+    $ source check/bin/setup_check.sh
 
-After the environment has loaded, you find the **CHECK** command in your $PATH and in the $CHECK_HOME variable you find the check directory path; 
+After the environment has loaded, you find the **CHECK** command in your $PATH and the check directory path is set to $CHECK_HOME; 
 **CHECK** setup also adds the CHECK_HOME path to PYTHONPATH, so attention please when you use CHECK with other modules or python packages.
 
+### 0.1 *CHECK etc*
+
+In **check/etc/** directory, you can set up your configuration file written in JSON format and named `check_setting.json`. The configuration file in etc overwrites the default configuration file in **check/etc/default/**; if a parameter is not found in the first, it will be read in the second. 
+The structure of the file is as follows:
+
+    {
+    "loglevel":"DEBUG",
+    "logfile":"$HOME/checklog.txt",
+    "resultfile":"$HOME/checkresult.txt",
+    "logtype":"cl",
+    "checktest_directory":"$HOME/checktest/",
+    "check_remote_source_path":"$CHECK_IM_REMOTE",
+    "check_master_collecting_path":"$HOME/check_master_collection",
+    "module_env_py_interface":"$MODULESHOME/init/python.py",
+    "cluster_scheduler":" "
+    }
+
+In the configuration file, you can use environment variables because CHECK can resolve them. 
+
+The `loglevel` parameter can have 3 values in descending order of verbosity:
+
+ - DEBUG
+ - INFO 
+ - CRITICAL
+
+**CHECK** run results and errors are written as CRITICAL level, partial results and other configuration information are written as INFO and developer information are written as DEBUG level.
+The `logtype` field allows you to choose where the log is printed:
+
+ - cl : print log on terminal
+ - file : print log on file
+ - both : print log on terminal and file
+
+If you choose *file* or *both*, you can specify the log file path in field `logfile`.
+
+The file of results set by `resultfile` field; contains the database of CHECK; here will be written all submission and result operations. The results data is explorable via `report` flag.
+
+`checktest_directory` define the path of the directory of **CHECKTEST**.
+
+`check_remote_source_path` is the path in the remote node where **CHECK** directory is located; this path is necessary to use the software without a parallel filesystem.
+
+`check_master_collecting_path` is the path on the master node, where the job scheduler output file is stored.
+
+`module_env_py_interface` is the path where is located the interface to Cluster Module Environment, is necessary to load modules, such as MPI, during a **CHECKTEST** run. 
+
+`cluster_scheduler` is the name of the scheduler installed on the cluster, **CHECK** currently provides an interface to Slurm, PBS.
 
 
-### 1. *Command line*
-**CHECK** is callable only from commandline(CL), since at the moment the GUI is not implmented. Please, before launch remember to edit the configuration file in *etc* (see next section). 
-When you call **CHECK** command, you obtain an output like this:
+
+
+## 1. *Command line interface*
+
+### 1.1 Basic command
+
+**CHECK** is callable from the command line(CL):
 
     **** CHECK 0.2.2 - r64s08u38 - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
     21fce0631c554459b526c2f25bf8791b 09:26 [INFO] (checkloggin) : logger: check_file_stream_log type:cl
@@ -32,10 +83,9 @@ When you call **CHECK** command, you obtain an output like this:
     21fce0631c554459b526c2f25bf8791b 09:26 [CRITICAL] (__init__) : Checktest list is empty
     **** CHECK STOP - r64s08u38 - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
 
-Each run of **CHECK** is identify with unique **ID** number reported in each line of output, it's very confortable if you run multiple istance of **CHECK** or you want repeat analys on the same node without change output file. 
-The first and last line report the version, the hostname, the time and the **ID** of run.
+Each run of **CHECK** is identified with a unique **ID** number reported in each line of output. The first and last line reports: the version, the hostname, the time and the run **ID**.
 
-To see all CL flags use **--help** flag:
+To see all CL flags use `--help` flag:
 
     usage: check [-h] [--master] [--check CHECK [CHECK ...]] [--checklist]
              [--checkparameters] [--configuration CONFIGURATION]
@@ -68,7 +118,7 @@ To see all CL flags use **--help** flag:
     --logfile LOGFILE     Log file
     --resultfile RESULTFILE
                             Log file
-    --logtype {c,l,,,f,i,l,e,,,b,o,t,h}
+    --logtype {cl,file,both}
                             Log type
     --hpc HPC             List of Hostname to Master submission
     --singleton           Force submission to each node of group
@@ -83,15 +133,13 @@ To see all CL flags use **--help** flag:
 
 
 
-With no arguments CHECK starts and it warns you that ***checktest list is empty***. To specify what **CHECKTEST** you would like to run you must use the **--check** flag:
-
-    check --check linpack
-
-This command implies that you haven't defined *linpack* to test the target architecture - *linpack* can benchmark all architetures. If you define a test to a target architecture, you must use:
+The **CHECKTEST**s to run are set by  `--check` flag:
 
     check --check linpack@x86
 
-You can see all **CHECKTEST** installed with the flag **--checklist**:
+This command will be launched the linpack benchmark with the setting of x86 architecture defined in the HPC directory.
+
+To see which **CHECKTEST** are installed and on which architectures, use the flag `-checklist`:
 
     check --cheklist
         
@@ -110,7 +158,7 @@ You can see all **CHECKTEST** installed with the flag **--checklist**:
     --- test1@arch2
     --- test2@arch2
   
-and you can see **CHECK** parameters with flags **--checkparameter**:
+To see **CHECK** parameters on runtime, use the flags `--checkparameter`:
 
     -- check : ['test1@arch1,test2@arch1']
     -- check_master_collecting_path : $HOME/check_master_collection
@@ -125,28 +173,34 @@ and you can see **CHECK** parameters with flags **--checkparameter**:
     -- master : True
     -- resultfile : $HOME/checkresult.txt
 
-If you have just written **CHECKTEST** recipes(with install method) but you haven't generated the exe to launch the software, you can use the follow command to finalize the **CHECKTEST** installation:
+Some **CHECKTEST** needs an installation before the first use. To finalize it, specify the **CHECKTEST** and adding the flag `--install`:
 
     check --check linpack@x86 --install
 
-For each **CHECKTEST**, **CHECK** return a **mark** ( e.g. OK,DOWN,WARNING ) defined in multibenchmark_analysis class. You can personalize your analysis and call it with another specific flag:
+### 1.2 Mark and Analisys
 
-    check --check linpack@x86,stream@x86 --analysis simple 
+For each **CHECKTEST**, **CHECK** assigns a **mark** to the node or the nodes pools among OK, DOWN, WARNING. The whole node/pool result is the combination of the single results from all benchmark launched on the node/pool. Currently, in **CHECK** only default analisys is implemented, and follow this schema:
+	
 
-**CHECK** provides a very flexible environment; indeed you can define at runtime the CHECKTEST directory,loglevel and logfile overwriting the configuration loaded from file.
-To change the **CHECKTEST** directory you can use this flag ( abbr. -checkTD):
+|MARK         | DESCRIPTION                              |
+|-------------|------------------------------------------|
+|FAIL         | one or more tests have not been executed |
+|DOWN         | one or more tests have returned DOWN     |
+|DEEP WARNING | all test return WARNING                  |
+|WARNING      | one or more tests have returned WARNING  |
+|OK           | all test return OK                       |
 
-    check --check my_personal_linpack --checktest_directory $HOME/my_personal_checktest
+You can add a personalized analysis in the **CHECK** and select with `--analysis` flag: 
 
-To change log level and logfile you can use:
+     check --check linpack@x86,stream@x86 --analysis simple
 
-    check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
+### 1.3 Master/Slave submission
 
-The flags **--master** / **--ssh** and **--hpc** are used when you launch tests, via the scheduler/ssh, on the HPC cluster node. Through *master* flag you enable master slave mode (via scheduler as default) and with *hpc* (for syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launches the tests:
+The flags `--master` / `--ssh` and `--hpc` are used when you launch tests, via the scheduler/ssh, on the HPC cluster node. Through *master* flag you enable master slave mode (via scheduler as default) and with *hpc* (for syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launches the tests:
 
     check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
 
-You can also use predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file map.hpc  in architecture directory. When you specify a group of node you can launch a 1 job on the all nodes of the group or multiple job, one for each node, the default behaviour is the first, to use the second you must add a flag **--singleton**:
+You can also use predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file map.hpc  in architecture directory. When you specify a group of node you can launch a 1 job on the all nodes of the group or multiple job, one for each node, the default behaviour is the first, to use the second you must add a flag `--singleton`:
 
     check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
 
@@ -158,55 +212,24 @@ It is also possible to launch a job without a set of target nodes and this can b
 
 In this case the basic parameters of the *x86* architecture with the *gpu* setting will be overwritten and a job will be launched without defining the nodes list. In a **\<job object>** all the parameters defined in the architecture can be overridden, only *hostlist* will be ignored. 
 
-The *--configuration* flag takes a configuration file as input, this file must be written in json format and is an easy way to avoid writing long **CHECK** command lines:
+### 1.4 Etc on the fly
+
+**CHECK** provides a very flexible environment; indeed you can define at runtime the CHECKTEST directory,loglevel and logfile overwriting the configuration loaded from file.
+To change the **CHECKTEST** directory you can use this flag ( abbr. -checkTD):
+
+    check --check my_personal_linpack --checktest_directory $HOME/my_personal_checktest
+
+To change log level and logfile you can use:
+
+    check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
+
+The `--configuration` flag takes a configuration file as input, this file must be written in json format and is an easy way to avoid writing long **CHECK** command lines:
 
     check --configuration myconffile.json
 
 In **CHECK** you can write all parameters in the command line, via theconfiguration file passed by command line or in the configuration file in the etc directory. The priority order used to assign a parameter vaule is as follows:
 
         command line > file passed by CL > file in etc
-
-
-
-### 2. *CHECK etc*
-
-In **check/etc/** directory you can define your configuration file in json format named *check_setting.json* . The configuration file in etc overwrites the configuration file template in **check/etc/default/**; if the first doesn't exist the second is read. The structure of file is as follows:
-
-    {
-    "loglevel":"DEBUG",
-    "logtype":"both",   
-    "logfile":"$HOME/checklog.txt",
-    "resultfile":"$HOME/checkresult.txt",
-    "checktest_directory":"$HOME/checktest/",
-    "check_remote_source_path":"$SCRATCH_LOCAL/usprod/",
-    "check_master_collecting_path":"$HOME/check_master_collection"
-    }
-
-In the configuration file you can use environment variables because check is able to resolve them. 
-
-The **loglevel** parameter can have 3 values in descending order of verbosity:
-
- - DEBUG
- - INFO 
- - CRITICAL
-
-**CHECK** run results and errors are written as CRITICAL level, partial results and other configuration information are written as INFO and developer information are written as DEBUG level.
-The **logtype** field allows you to choose where the log is printed:
-
- - cl : print log on terminal
- - file : print log on file
- - both : print log on terminal and file
-
-If you choose *file* or *both* you can specify the path of the log file in field **logfile**.
-
-The result of CHECK is always written in the log and in a file, you can choose the path of this file with **resultfile** field; in that file you find only the result of *last run* of **CHECK**.
-
-The **checktest_directory** is the field where the path of the directory that contains checktests is defined.
-
-**check_remote_source_path** is the path, in the remote node where  **CHECK** directory is located; this path is necessary for loading the check environment.
-
-**check_master_collecting_path** is the path on the master node, where CHECK is launched and used to store the scheduler output file.
-
 
 
 ### 3. *MASTER mode and Architectures*
@@ -234,7 +257,7 @@ If your cluster is not scheduler equipped or you pre allocate the nodes, you can
 
 ### 4. CHECK OUTPUT
 
-With the flag "--report" CHECK shows the results of is operation, the results are searchable by:
+With the flag `--report` CHECK shows the results of is operation, the results are searchable by:
 
 - Id
     - report id:id - return all results with specific ID and, in case of master_submission, the list of node without result
@@ -256,7 +279,7 @@ With the flag "--report" CHECK shows the results of is operation, the results ar
 
 **CHECK** have two type of output, the log and the resultfile. The log can be printed on command line or file and in master mode, each job sumbitted via scheduler report its log in the job output file named *check_nodename*, the job results and  submission operation  are collected in *check_master_collecting_path* set in check_setting.json.
 
-The most important output is the **checkresult file** that is the database of CHECK operation writed as collection of json objects, the position of this file is set through the parameter *resultfile* in check_setting.json. This file  s explorable with **--report** flag describe in the section 4. 
+The most important output is the **checkresult file** that is the database of CHECK operation writed as collection of json objects, the position of this file is set through the parameter *resultfile* in check_setting.json. This file  s explorable with `--report` flag describe in the section 4. 
 You can find in the  file two type of json: master_submission or result; i.e. the command below produce 3 json object.
 
      check --check linpack@x86,stream@x86 --ssh --hpc x86:node1,node2
@@ -329,8 +352,8 @@ The json above, to increase readability have been exploded over several lines, b
 
 ***
 
-## CHECKTEST
-
+CHECKTEST
+------------------------------------------------
 
 
 ### 1. Structure of directory
@@ -363,13 +386,13 @@ In the example structure reported above we have two **CHECKTEST** written explic
   - test1/x86/__ init__.py this test is named *"test1"* and is designed to x86 target architecture
   - test2/__ init__.py this test is named *"test2"* and is designed to all architecture.
 
-Into *__init__.py* the name of the python class to import in **CHECK** must have the same name of **CHECKTEST**, so in the previous example test1 or test2.
+Into `__init__.py` the name of the python class to import in **CHECK** must have the same name of **CHECKTEST**, so in the previous example test1 or test2.
 
-In **CHECK**, you select what **CHECKTEST** and the target architecture with the symbol **"@"**:
+In **CHECK**, you select what **CHECKTEST** and the target architecture with the symbol `"@"`:
     
     check --check test1@x86
 
-For each architecture file it is allowed have different configurations, so in the **CHECKTEST** directory we can have for arch1 many configurations and it is possible define them through the symbol **"\_"**. In example above for the x512 architecture file we have two different memory configurations x512_mem1,x512_mem2; this means that in master mode on the node describe by x512 **CHECK** launch both x512_mem1,x512_mem2 **CHECKTEST**s; if you want to launch only x512_mem1 test on the nodes you must have an architecture file with the same name.
+For each architecture file it is allowed have different configurations, so in the **CHECKTEST** directory we can have for arch1 many configurations and it is possible define them through the symbol `"\_"`. In example above for the x512 architecture file we have two different memory configurations x512_mem1,x512_mem2; this means that in master mode on the node describe by x512 **CHECK** launch both x512_mem1,x512_mem2 **CHECKTEST**s; if you want to launch only x512_mem1 test on the nodes you must have an architecture file with the same name.
 
 In the test directory you can define **bin**,**in**,**out** and **tmp** directories and other but for this four cited before **CHECK** automatically generates and saves the path; if one of them is not used you don't need to created.
 
@@ -407,7 +430,7 @@ Below an architecture file example:
 
     }
 
-The symbol  **_ noqueue _** indicates that the scheduler has an automatic selection of the queue, while the other information are classical parameters that you write in HPC job file. 
+The symbol  `_ noqueue _` indicates that the scheduler has an automatic selection of the queue, while the other information are classical parameters that you write in HPC job file. 
 
 ### 3. HPC MAP
 A convenience can be to define a group of nodes accumulated by certain properties and this in **CHECK** can be done via file.
