@@ -196,91 +196,91 @@ You can add a personalized analysis in the **CHECK** and select with `--analysis
 
 ### 1.3 Master/Slave submission
 
-The flags `--master` / `--ssh` and `--hpc` are used when you launch tests, via the scheduler/ssh, on the HPC cluster node. Through *master* flag you enable master slave mode (via scheduler as default) and with *hpc* (for syntax see section below, abbr *-hpc*) you specify the cluster nodes where **CHECK** launches the tests:
+The flags `--master` / `--ssh` and `--hpc` are used to launch tests, via the scheduler/ssh, on the HPC cluster node from login or master node. Through `--master¡ flag you enable master/slave mode (via scheduler as default) and with `--hpc` you specify the architecture and cluster nodes where **CHECK** launches the tests:
 
-    check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
+ check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
 
-You can also use predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file map.hpc  in architecture directory. When you specify a group of node you can launch a 1 job on the all nodes of the group or multiple job, one for each node, the default behaviour is the first, to use the second you must add a flag `--singleton`:
+You can also use predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file `map.hpc` in *hpc* directory in  **CHECKTEST**. When you specify more than one node, the default behavior is to launch a unique job on the all nodes selected with the same architecture; but with the flag `--singleton` **CHECK** launches one job for each node selected in hpc flag (including those defined by a group):
 
-    check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
+ check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
 
-If you add *--ssh*, the submission of remote command is via ssh following the same rules above, in this case the singleton flag is implicit.
+The *--ssh* flag, allows the submission of the remote command via ssh following the same rules above. In this case, the singleton flag is implicit.
 
-It is also possible to launch a job without a set of target nodes and this can be done by entering a **\<job object>** in the nodes list:
+**CHECK** allow to launch a job  a random set of nodes selected by the scheduler and this can be done by entering a `<job object>` in the nodes list:
 
-    check --check linpack@x86 --master --hpc x86#gpu:node2,'<"nnodes"=4;"queue"="system";"ncpus"=10>',node3
+ check --check linpack@x86 --master --hpc x86#gpu:node2,'<"nnodes"=4;"queue"="system";"ncpus"=10>',node3
 
-In this case the basic parameters of the *x86* architecture with the *gpu* setting will be overwritten and a job will be launched without defining the nodes list. In a **\<job object>** all the parameters defined in the architecture can be overridden, only *hostlist* will be ignored. 
+In this case, the basic parameters of the *x86* architecture with the *gpu* setting will be overwritten and a job will be launched without specifying the nodes list by hostname. In a **\<job object>** all the parameters defined in the architecture can be overridden, only *hostlist* will be ignored. 
 
 ### 1.4 Etc on the fly
 
-**CHECK** provides a very flexible environment; indeed you can define at runtime the CHECKTEST directory,loglevel and logfile overwriting the configuration loaded from file.
-To change the **CHECKTEST** directory you can use this flag ( abbr. -checkTD):
+**CHECK** provides a very flexible environment. Indeed you can also define at runtime the all **CHECKTEST** parameters overwriting the configuration loaded from the configuration file. Some parameter have specific flag to set on CL, the other is overwriting by a configuration json file.
 
-    check --check my_personal_linpack --checktest_directory $HOME/my_personal_checktest
+To change the **CHECKTEST** directory use `--checktest_directory` flag:
 
-To change log level and logfile you can use:
+ check --check my_linpack@x86 --checktest_directory $HOME/my_personal_checktest
 
-    check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
+To change log level and logfile use `--loglevel`and `--logfile`:
 
-The `--configuration` flag takes a configuration file as input, this file must be written in json format and is an easy way to avoid writing long **CHECK** command lines:
+ check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
 
-    check --configuration myconffile.json
+The `--configuration` flag takes a configuration file as input, this file must be written in JSON format and is an easy way to avoid writing long **CHECK** command lines:
 
-In **CHECK** you can write all parameters in the command line, via theconfiguration file passed by command line or in the configuration file in the etc directory. The priority order used to assign a parameter vaule is as follows:
+ check --configuration myconffile.json
 
-        command line > file passed by CL > file in etc
+In **CHECK**,  the parameter is organized by a hierarchical structure. If the parameter is not found, it is searched in the next setting layer:
+        
+| SETTING HIERARCHICAL ORDER   |
+|:----------------------------:|
+|Command line                  |
+|Config file by `--config`     |
+|Config file in /etc           | 
+|Config file in /etc/default   |
 
 
-### 3. *MASTER mode and Architectures*
+## 2. *MASTER mode and Architectures*
 
-**CHECK** can use a scheduler or ssh to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job containing a istance of **CHECK** in *slave* mode and submit to scheduler or lauch ad ssh command. 
+**CHECK** can use a scheduler or ssh to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job containing an instance of **CHECK** in *slave* mode and submit to the scheduler or launch an ssh command. 
 The **ID** of the slave instance is the same as the master instance. 
 
-CHECK is designed to run on the system without a parallel FS mounted, so the position of the slave instance must be specified in the setting file via *check_remote_source_path* parameter; if the parallel FS is mouted you can use the same installation of **CHECK** as master and slave, setting the configuration parameter as $CHECK_IM_REMOTE.
+CHECK is designed to run on the system without a parallel FS mounted. The position of the slave instance must be specified in the setting file via `check_remote_source_path` parameter. If the parallel FS is mounted,  the same installation of **CHECK** is usable both as master and slave, set the configuration parameter as $CHECK_IM_REMOTE.
 
-The cluster node must be present on hostlist passed to CHECK by *--hpc* flag.
+The cluster nodes to run **CHECK** in slave mode is  passed  by `--hpc` flag with the following  structure :
 
-The structure of the hostlist line is as follows:
+    architecture#setting:hostname1,GroupOfNodes1.../
 
-        architecture#setting:hostname1,GroupOfNodes1.../
-
-The **architecture** is the name of the architecture file (without extension) in **CHECKTEST** directory and for each architecture you can define many scheduler **setting**. After ':' we must put the list of hostname or group of nodes separated by comma. You can specify in the same hostline different architectures, for example in a heterogenous HPC cluster, simply repeat the line without space between them.
-    
+The **architecture** is the name of the architecture file (without extension) in **CHECKTEST**/hpc directory and for each architecture, it is possible to define many scheduler **settings** in the same JSON file. After ':'  the list of hostname or group of nodes separated by comma indicates the slave nodes. If the **setting** is not declared, the default is loaded. To specify in the same hostline different architectures,  simply repeat the line without space between them.
+ 
     arch#setting:hostname1,hostname2.../arch2:hostname3,hostname4/
 
-It is not necessary to specify a name of setting for each architecture, as in the example above for arch2 **CHECK** loads the *default* setting for that architecture.
-
-If your cluster is not scheduler equipped or you pre allocate the nodes, you can use directly ssh to submit **CHECK** remote commad, adding to command line the flag *--ssh*, in this case the architecture needs only to indentify a pool of nodes where ssh launch a slave command. When you add *--ssh* flag you implicitly use *--master --singleton* flag.
+If your cluster is not scheduler equipped or have pre-allocated the nodes, submit **CHECK** remote command use ssh, adding to command line the flag `--ssh`, in this case the architecture needs only to identify a pool of nodes where ssh launch a slave command.  Add *--ssh* flag implies use *--master --singleton* flag.
 
 
 
-### 4. CHECK OUTPUT
 
-With the flag `--report` CHECK shows the results of is operation, the results are searchable by:
+## 3. CHECK OUTPUT
+
+To print the result on **CHECKTEST**, operation and activity of **CHECK** use `--report` flag. The results are searchable by:
 
 - Id
-    - report id:id - return all results with specific ID and, in case of master_submission, the list of node without result
-    - report id:id#hostname - return one specific result of hostname selected by ID
+    - `--report id:id` - return all results with specific ID and, in case of master_submission, the list of node without result
+    - `--report id:id#hostname`  return one specific result of hostname selected by ID
 - Node
-    - report node:hostname - return all checktests and results selected by hostname
-    - report node:hostname#checktest - return a specific (linpack or Stream, ..) checktest and results selected by hostname
+    - `--report node:hostname`  return all checktests and results selected by hostname
+    - `--report node:hostname#checktest` - return a specific (linpack or Stream, ..) checktest and results selected by hostname
 - Checktest name 
-    - report checktest:checktest - return all partial of a specific checktest (id,hostname,checktest - (linpack or Stream, ..))
-    - report checktest:checktest#id - return all partial of a specific checktest (linpack or Stream, ..) selected by id(hostname,checktest)
+    - `--report checktest:checktest` - return all partial of a specific checktest (id,hostname,checktest - (linpack or Stream, ..))
+    - `--report checktest:checktest#id` - return all partial of a specific checktest (linpack or Stream, ..) selected by id(hostname,checktest)
 - Master 
-    - report master:n - print last n master_submission [if n=0 --> all, def n = 1] 
+    - `--report master:n` print last n master_submission, if n=0 print all master submission, the default value is 1
 
 
+### 3.1 CHECK OUT AND DB FILE
 
+**CHECK** have two types of output, the log and the resultfile. The log can be printed on the command line or file and in master mode, each job submitted via scheduler report its log in the job output file named *check_nodename*. In addition, the job results and submission operation are collected in *check_master_collecting_path* set in check_setting.json.
 
-
-### 5. CHECK OUT AND DB FILE
-
-**CHECK** have two type of output, the log and the resultfile. The log can be printed on command line or file and in master mode, each job sumbitted via scheduler report its log in the job output file named *check_nodename*, the job results and  submission operation  are collected in *check_master_collecting_path* set in check_setting.json.
-
-The most important output is the **checkresult file** that is the database of CHECK operation writed as collection of json objects, the position of this file is set through the parameter *resultfile* in check_setting.json. This file  s explorable with `--report` flag describe in the section 4. 
-You can find in the  file two type of json: master_submission or result; i.e. the command below produce 3 json object.
+The most important output is the **checkresult file**, which is the database of CHECK operation write as a collection of JSON objects. This file's position is set through the parameter *resultfile* in check_setting.json. This file s explorable with `--report` flag described above. 
+In the **checkresult file**, two types of JSON are defined: master_submission or result; i.e. the command below produces 3 JSON objects.
 
      check --check linpack@x86,stream@x86 --ssh --hpc x86:node1,node2
 
@@ -295,8 +295,7 @@ Master_submission json contains all information regards the submission:
         }
         }
 
-The result object contains partial results with measure, unit and the final mark of the node. If **CHECK** is used 
-in slave mode the information *slave_mode* is reported and the unique *ID* is the same as the master who submitted. it.
+The result object contains partial results with measure, unit and the final mark of the node. If **CHECK** is used in slave mode, the information *slave_mode* is reported, and the unique *ID* is the same as the master who submitted it.
 
         {
         "RESULT": "OK", 
@@ -348,7 +347,7 @@ in slave mode the information *slave_mode* is reported and the unique *ID* is th
         "slave_mode": true
         }
         
-The json above, to increase readability have been exploded over several lines, but in the real file each line contain a json about operation. It is not recommended to edit this file by hand. Trough the unique ID number it is possible to date back to and group all operation that **CHECK** done.    
+The JSON above, to increase readability have been exploded over several lines, but in the file each line contains a complete JSON. It is not recommended to edit this file by hand. Trough the unique ID number, it is possible to date back to and group all operations that **CHECK** done. 
 
 ***
 
