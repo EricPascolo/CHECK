@@ -58,7 +58,7 @@ If you choose *file* or *both*, you can specify the log file path in field `logf
 
 The file of results set by `resultfile` field; contains the database of CHECK; here will be written all submission and result operations. The results data is explorable via `report` flag.
 
-`checktest_directory` define the path of the directory of **CHECKTEST**.
+`checktest_directory` defines the path of the directory of **CHECKTEST**.
 
 `check_remote_source_path` is the path in the remote node where **CHECK** directory is located; this path is necessary to use the software without a parallel filesystem.
 
@@ -200,7 +200,7 @@ The flags `--master` / `--ssh` and `--hpc` are used to launch tests, via the sch
 
     check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
 
-You can also use predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file `map.hpc` in *hpc* directory in  **CHECKTEST**. When you specify more than one node, the default behavior is to launch a unique job on the all nodes selected with the same architecture; but with the flag `--singleton` **CHECK** launches one job for each node selected in hpc flag (including those defined by a group):
+**CHECK** allows predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file `map.hpc` in *hpc* directory in  **CHECKTEST**. When you specify more than one node, the default behavior is to launch only one job on the all nodes selected with the same architecture; but with the flag `--singleton` **CHECK** launches one job for each node selected in hpc flag (including those defined by a group):
 
     check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
 
@@ -238,7 +238,7 @@ In **CHECK**,  the parameter is organized by a hierarchical structure. If the pa
 |Config file in /etc/default   |
 
 
-## 2. *MASTER mode and Architectures*
+## 2. *MASTER/SLAVE AND ARCHITECTURES*
 
 **CHECK** can use a scheduler or ssh to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job containing an instance of **CHECK** in *slave* mode and submit to the scheduler or launch an ssh command. 
 The **ID** of the slave instance is the same as the master instance. 
@@ -357,52 +357,47 @@ CHECKTEST
 
 ## 1. Structure of directory
 
-The CHECKTEST directory must have this structure:
+The CHECKTEST directory must have the structure reported in the figure below. The `hpc` directory must exist and contains the architecture JSON file to describe the scheduler parameters and the `map.hpc` contains the shortcuts to groups of nodes. Each of other directory describes a **CHECKTEST**, to manage a cluster with different hardware partition each test can contain many architecture subdirectories where the test recipes are contained. The architectures directories must have a correspondent file descriptor in hpc directory.
 
                                  checktest
                                      |
-                    ----------------------------------------
+                    -----------------------------------------
                     |                |                      | 
-                architecture       test1                  test2
+                   hpc             test1                  test2
                 - map.hpc            |                      |
                 - x86.json           |                      |
-                - x512.json          |                 -----------------------
-                - GPU.json           |                 |            |        |
-                                     |             __init__.py     bin       tmp 
+                - x512.json          |            -----------------------
+                - GPU.json           |            |            |        |
+                                     |       __init__.py     bin       tmp 
                                      |
-                        --------------------------------
-                        |      |           |           |
-                        x86    x512_mem1   x512_mem2   GPU
+                        ------------------------------
+                        |         |          |       |    
+                        x86    x86_mpi   x512_mem1  GPU
                         |
                         |
                     -----------------------
                     |            |        |
                 __init__.py     bin       in 
 
-**CHECKTEST** is a python package so at each directory level there must exist a _ init_.py file. The **CHECKTEST**  recipes are contained in  _ init_.py file at the end of descriptor directory. 
-In the example structure reported above we have two **CHECKTEST** written explicity:
+**CHECKTEST** is a python package, so at each directory level there  a _ init_.py file is required. The **CHECKTEST** recipes are contained in _ init_.py file into the architecture directory under the test directory. In the example structure reported above, we have two **CHECKTEST** written explicitly:
   
   - test1/x86/__ init__.py this test is named *"test1"* and is designed to x86 target architecture
   - test2/__ init__.py this test is named *"test2"* and is designed to all architecture.
 
-Into `__init__.py` the name of the python class to import in **CHECK** must have the same name of **CHECKTEST**, so in the previous example test1 or test2.
+Into `__init__.py` is contained a python class, extended by a *check_test_template* provided by **CHECK**, named as **CHECKTEST** directory so in the example: test1 or test2.
 
-In **CHECK**, you select what **CHECKTEST** and the target architecture with the symbol `"@"`:
-    
+In **CHECK**, you select what **CHECKTEST** to use and the target architecture with the symbol `"@"`:
+
     check --check test1@x86
 
-For each architecture file it is allowed have different configurations, so in the **CHECKTEST** directory we can have for arch1 many configurations and it is possible define them through the symbol `"\_"`. In example above for the x512 architecture file we have two different memory configurations x512_mem1,x512_mem2; this means that in master mode on the node describe by x512 **CHECK** launch both x512_mem1,x512_mem2 **CHECKTEST**s; if you want to launch only x512_mem1 test on the nodes you must have an architecture file with the same name.
+For each architecture file, it is allowed to have different configurations, so in the **CHECKTEST** directory for arch1  it is possible to define different configurations through the symbol `"\_"`. In the example above for the x86 architecture file we have two different memory configurations x86,x86_mpi; this means that in master/slave mode on the node describe by x86 **CHECK** launch both x86,x86_mp **CHECKTEST**s; if you want to launch on the nodes only x86_mpi test an architecture file with the same name is required in `hpc` directory.
 
-In the test directory you can define **bin**,**in**,**out** and **tmp** directories and other but for this four cited before **CHECK** automatically generates and saves the path; if one of them is not used you don't need to created.
-
-
+In the test directory  **bin**,**in**,**out** and **tmp** directories can be defined and other, but for these four **CHECK** automatically generates and saves the path; if one of them is not used the creation is not needed.
 
 ## 2. Architecture
-**CHECK** needs to find the architecture files when it is run in master mode to know the specs of the cluster nodes. The name of file in **architecture** directory must be equal to the name of the **CHECKTEST**s architecture. 
+**CHECK** needs to find the architecture files when it is run in master mode to know the cluster nodes' specs. The name of the file in **architecture** directory must be equal to the name of the **CHECKTEST**s architecture. 
 
-An architecture file is write in *json* format and contains a json object for each **setting**, a setting is a subset of the parameters for each architeture and in all architerture files must have a setting named *default*. 
-
-Below an architecture file example:
+An architecture file is written in *JSON* format and contains an object for each **setting**,  a subset of each architecture's parameters that describe different scheduler partitions. A setting named *default* must exist in each file. 
 
     {
     "default":{
@@ -429,11 +424,10 @@ Below an architecture file example:
 
     }
 
-The symbol  `_ noqueue _` indicates that the scheduler has an automatic selection of the queue, while the other information are classical parameters that you write in HPC job file. 
+If the scheduler has an automatic selection of the queue, indicates in *queue* parameter the wildcard `_ noqueue _`. Other parameters that can be specified are: *ntasks-per-node*, *sockets-per-node*, *ntasks-per-socket*, *cpus-per-task*, *threads-per-core*.
 
 ### 3. HPC MAP
-A convenience can be to define a group of nodes accumulated by certain properties and this in **CHECK** can be done via file.
-In the same directory of architectures there is the file **map.hpc** where node groups can be specified, the file has a very simple format, for each line is specified the name of the group and after the space the list of hostnames separated by comma:
+Convenience can be to define a group of nodes united by certain properties.  In **CHECK**, the map of united nodes is provided by `map.hpc` file, where node groups can be specified in a very simple format: for each line is specified the group's name and separated by space the list of hostnames dived by comma:
 
     group1 hostname1,hostname2
     group2 hostname3,hostname4,hostname1,
@@ -443,13 +437,13 @@ In the same directory of architectures there is the file **map.hpc** where node 
 
 ## 4. Write a CHECKTEST
 
-**CHECK** provides a *template* to simplify the writing of **CHECKTEST** file, to write a compatible test with **CHECK** you must follow these rules:
+**CHECK** provides a *template* to simplify the writing of **CHECKTEST** file. To write a compatible test with **CHECK** you must follow these rules:
 
- 0) Import from **CHECK** the template to checktest class:
+ 0) Import from **CHECK** the template to **CHECKTEST** class:
 
         from checklib.test.check_test_template import *
 
- 1) Your test must be a python class, named as test directory and son of **CHECK**'s class **checktest** and specifies as global variable *exe* and *version*
+ 1) Your test must be a python class, named as test directory and extended by  **check_test_template** and specifies as global variable *exe* and *version*
 
         class linpack(checktest):
 
@@ -486,7 +480,9 @@ In the same directory of architectures there is the file **map.hpc** where node 
     - **out** to store output
     - **tmp** to place temporaney file
 
- 6) Before writing new code, check what is in **checktest** template and if you think your code could be usefull to the others add to the template.
+6) The check_core["module"] object contains, if present, the method to call Module Environment into **CHECK**, after check if the object is not  `Null`, is callable in this way: `self.check_core["module"]('load','openmpi')`
+
+7) Before writing new code, check what is in **checktest** template and if you think your code could be usefull to the others add to the template.
 
 ***
 
@@ -494,8 +490,8 @@ In the same directory of architectures there is the file **map.hpc** where node 
 
  CHECK VERSION rules
 --------------------------
-- +1.0.0 a major release increment means a big improvement of functionalities of CHECK
-- 0.+1.0 a minor release increment means an implementation of features 
+- +1.0.0 a major release increment means a significant improvement of functionalities of CHECK
+- 0.+1.0 a minor release increment implies implementation of features 
 - 0.0.+1 a minor minor release increment means a general bugfix
 
 ***
