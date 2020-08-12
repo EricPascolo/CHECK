@@ -25,7 +25,7 @@ __author__ = "Eric Pascolo, Roberto Da Via'"
 __copyright__ = "Copyright 2020"
 __credits__ = [""]
 __license__ = "GNU Affero GPL v.3"
-__version__ = "0.2.2"
+__version__ = "0.3.0"
 __email__ = "eric.pascolo@cineca.it"
 __status__ = "Development"
 
