@@ -39,15 +39,23 @@ def checkloggin(run_id,loglevel,logfile,logtype="both"):
 
 
     if logtype == "both":
-        logger.addHandler(fh)
+
         logger.addHandler(ch)
-    if logtype == "cl":
-        logger.addHandler(ch)
-    if logtype == "file":
         if logfile != "__nofile__":
             logger.addHandler(fh)
         else:
             print("ERROR NO LOGGER FILE SET")
+
+    elif logtype == "file":
+
+        if logfile != "__nofile__":
+            logger.addHandler(fh)
+        else:
+            print("ERROR NO LOGGER FILE SET")
+    else:
+        logger.addHandler(ch)   #cl is default
+        if logtype != "both" or logtype == "cl" or logtype == "file":
+            print("ERROR WRONG LOG TYPE: cl is set by default")
 
     logger.info("Logger type: "+logtype)
 

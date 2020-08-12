@@ -143,9 +143,8 @@
             "name":"--logtype",
             "param":{
                 "type":"str",
-                "choices":"cl,file,both",
                 "required":"False",
-                "help":"Log type"
+                "help":"Log type: cl (default), file, both"
             }
 
         },
