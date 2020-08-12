@@ -54,7 +54,7 @@ The `logtype` field allows you to choose where the log is printed:
  - file : print log on file
  - both : print log on terminal and file
 
-If you choose *file* or *both*, you can specify the log file path in field `logfile`.
+If you choose *file* or *both*, you can specify the log file path in field `logfile`, if is set to "__nofile__" prevent logging on file.
 
 The file of results set by `resultfile` field; contains the database of CHECK; here will be written all submission and result operations. The results data is explorable via `report` flag.
 
@@ -238,7 +238,9 @@ In **CHECK**,  the parameter is organized by a hierarchical structure. If the pa
 |Config file in /etc/default   |
 
 
-## 2. *MASTER/SLAVE AND ARCHITECTURES*
+
+
+## 2. *Master/Slave and Architectures*
 
 **CHECK** can use a scheduler or ssh to submit the **CHECKTEST** directly on cluster nodes. At the moment **CHECK** created a job containing an instance of **CHECK** in *slave* mode and submit to the scheduler or launch an ssh command. 
 The **ID** of the slave instance is the same as the master instance. 
@@ -258,7 +260,7 @@ If your cluster is not scheduler equipped or have pre-allocated the nodes, submi
 
 
 
-## 3. CHECK OUTPUT
+## 3. Check Output
 
 To print the result on **CHECKTEST**, operation and activity of **CHECK** use `--report` flag. The results are searchable by:
 
@@ -275,7 +277,7 @@ To print the result on **CHECKTEST**, operation and activity of **CHECK** use `-
     - `--report master:n` print last n master_submission, if n=0 print all master submission, the default value is 1
 
 
-### 3.1 OUTPUT FILES
+### 3.1 Output Files
 
 **CHECK** have two types of output, the log and the resultfile. The log can be printed on the command line or file and in master mode, each job submitted via scheduler report its log in the job output file named *check_nodename*. In addition, the job results and submission operation are collected in *check_master_collecting_path* set in check_setting.json.
 
@@ -426,7 +428,7 @@ An architecture file is written in *JSON* format and contains an object for each
 
 If the scheduler has an automatic selection of the queue, indicates in *queue* parameter the wildcard `_ noqueue _`. Other parameters that can be specified are: *ntasks-per-node*, *sockets-per-node*, *ntasks-per-socket*, *cpus-per-task*, *threads-per-core*.
 
-### 3. HPC MAP
+### 3. HPC map
 Convenience can be to define a group of nodes united by certain properties.  In **CHECK**, the map of united nodes is provided by `map.hpc` file, where node groups can be specified in a very simple format: for each line is specified the group's name and separated by space the list of hostnames dived by comma:
 
     group1 hostname1,hostname2
@@ -488,7 +490,7 @@ Convenience can be to define a group of nodes united by certain properties.  In 
 
 
 
- CHECK VERSION rules
+ CHECK VERSION RULES
 --------------------------
 - +1.0.0 a major release increment means a significant improvement of functionalities of CHECK
 - 0.+1.0 a minor release increment implies implementation of features 
