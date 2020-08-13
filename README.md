@@ -15,7 +15,7 @@ CHECK 0.3
 
     $ git clone https://github.com/EricPascolo/CHECK.git  check
 
-You find setup file in **check/bin** :
+You find setup file in **check/bin** (.sh for Bash and .zsh for Zeta shell):
 
     $ source check/bin/setup_check.sh
 
@@ -77,7 +77,9 @@ The file of results set by `resultfile` field; contains the database of CHECK; h
 
 **CHECK** is callable from the command line(CL):
 
-    **** CHECK 0.2.2 - r64s08u38 - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
+    $ check
+
+    **** CHECK 0.3.0 - r64s08u38 - 17/03/2020 09:26:30 - 21fce0631c554459b526c2f25bf8791b
     21fce0631c554459b526c2f25bf8791b 09:26 [INFO] (checkloggin) : logger: check_file_stream_log type:cl
     21fce0631c554459b526c2f25bf8791b 09:26 [DEBUG] (__init__) : check_file_stream_log
     21fce0631c554459b526c2f25bf8791b 09:26 [CRITICAL] (__init__) : Checktest list is empty
@@ -86,7 +88,8 @@ The file of results set by `resultfile` field; contains the database of CHECK; h
 Each run of **CHECK** is identified with a unique **ID** number reported in each line of output. The first and last line reports: the version, the hostname, the time and the run **ID**.
 
 To see all CL flags use `--help` flag:
-
+    
+    $ check --help
     usage: check [-h] [--master] [--check CHECK [CHECK ...]] [--checklist]
              [--checkparameters] [--configuration CONFIGURATION]
              [--cluster_scheduler CLUSTER_SCHEDULER] [--install] [--ssh]
@@ -135,30 +138,45 @@ To see all CL flags use `--help` flag:
 
 The **CHECKTEST**s to run are set by  `--check` flag:
 
-    check --check linpack@x86
+    $ check --check linpack@x86
 
 This command will be launched the linpack benchmark with the setting of x86 architecture defined in the HPC directory.
 
-To see which **CHECKTEST** are installed and on which architectures, use the flag `-checklist`:
+To see which **CHECKTEST** are installed and on which architectures and their description, use the flag `--checklist` , 
+the description reported is taken by `help.md` file for each **CHECKTESTS** and `help` JSON field for each architecture:
 
-    check --cheklist
-        
-    -ARCHITECTURES AVAILABLE:
-    --- arch1
-    ----- default
-    ----- queue1
-    --- arch2
-    ----- default
-    ----- queue2
-        
-    -CHECKTEST AVAILABLE:
+    $ check --cheklist
+    **** CHECK 0.3.0 - PolarBearCub - 13/08/2020 15:05:51 - a98587d601d24c63974b97b66049967e
+    a98587d601d24c63974b97b66049967e 15:05 [INFO] (checkloggin) : Logger type: both
+    a98587d601d24c63974b97b66049967e 15:05 [CRITICAL] (printchecklist) : 
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ARCHITECTURES AVAILABLE:
+    
+    ================================================ARCH x86
+    x86 architecture on x86 Cluster with Slurm 
+    Gpu settings is for k80 partition
 
-    --- test1@arch1
-    --- test2@arch1
-    --- test1@arch2
-    --- test2@arch2
+    ----- SETTING: default,gpu
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHECKTEST AVAILABLE:
+
+    ================================================ linpack@x86
+    Linpack x86
+    -----------
+
+    author: epascolo,rdavia
+
+    To install indicates the module that contains mkl
+
+            check  --check linpack@x86  --install mkl
+
+    To launch, use simply check command, this is multithreads version:
+
+            check  --check linpack@x86
+
   
 To see **CHECK** parameters on runtime, use the flags `--checkparameter`:
+
+    $ check --checkparameter
 
     -- check : ['test1@arch1,test2@arch1']
     -- check_master_collecting_path : $HOME/check_master_collection
@@ -175,7 +193,7 @@ To see **CHECK** parameters on runtime, use the flags `--checkparameter`:
 
 Some **CHECKTEST** needs an installation before the first use. To finalize it, specify the **CHECKTEST** and adding the flag `--install`:
 
-    check --check linpack@x86 --install
+    $ check --check linpack@x86 --install
 
 ### 1.2 Mark and Analisys
 
@@ -192,23 +210,23 @@ For each **CHECKTEST**, **CHECK** assigns a **mark** to the node or the nodes po
 
 You can add a personalized analysis in the **CHECK** and select with `--analysis` flag: 
 
-     check --check linpack@x86,stream@x86 --analysis simple
+     $ check --check linpack@x86,stream@x86 --analysis simple
 
 ### 1.3 Master/Slave submission
 
 The flags `--master` / `--ssh` and `--hpc` are used to launch tests, via the scheduler/ssh, on the HPC cluster node from login or master node. Through `--master` flag you enable master/slave mode (via scheduler as default) and with `--hpc` you specify the architecture and cluster nodes where **CHECK** launches the tests:
 
-    check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
+    $ check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/
 
 **CHECK** allows predefined groups of nodes, like "groupnode1" in the string above. These groups of nodes are defined in the file `map.hpc` in *hpc* directory in  **CHECKTEST**. When you specify more than one node, the default behavior is to launch only one job on the all nodes selected with the same architecture; but with the flag `--singleton` **CHECK** launches one job for each node selected in hpc flag (including those defined by a group):
 
-    check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
+    $ check --check linpack@x86,linpack@knl --master --hpc x86:node1,node2/knl:groupnode1/ --singleton
 
 The *--ssh* flag, allows the submission of the remote command via ssh following the same rules above. In this case, the singleton flag is implicit.
 
 **CHECK** allow to launch a job  a random set of nodes selected by the scheduler and this can be done by entering a `<job object>` in the nodes list:
 
-    check --check linpack@x86 --master --hpc x86#gpu:node2,'<"nnodes"=4;"queue"="system";"ncpus"=10>',node3
+    $ check --check linpack@x86 --master --hpc x86#gpu:node2,'<"nnodes"=4;"queue"="system";"ncpus"=10>',node3
 
 In this case, the basic parameters of the *x86* architecture with the *gpu* setting will be overwritten and a job will be launched without specifying the nodes list by hostname. In a **\<job object>** all the parameters defined in the architecture can be overridden, only *hostlist* will be ignored. 
 
@@ -218,15 +236,15 @@ In this case, the basic parameters of the *x86* architecture with the *gpu* sett
 
 To change the **CHECKTEST** directory use `--checktest_directory` flag:
 
- check --check my_linpack@x86 --checktest_directory $HOME/my_personal_checktest
+    $ check --check my_linpack@x86 --checktest_directory $HOME/my_personal_checktest
 
 To change log level and logfile use `--loglevel`and `--logfile`:
 
- check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
+    $ check --check linpack@x86 --loglevel INFO --logfile $HOME/log.check
 
 The `--configuration` flag takes a configuration file as input, this file must be written in JSON format and is an easy way to avoid writing long **CHECK** command lines:
 
- check --configuration myconffile.json
+    $ check --configuration myconffile.json
 
 In **CHECK**,  the parameter is organized by a hierarchical structure. If the parameter is not found, it is searched in the next setting layer:
         
@@ -265,7 +283,7 @@ If your cluster is not scheduler equipped or have pre-allocated the nodes, submi
 To print the result on **CHECKTEST**, operation and activity of **CHECK** use `--report` flag. The results are searchable by:
 
 - Id
-    - `--report id:id` - return all results with specific ID and, in case of master_submission, the list of node without result
+    - `--report id:id` - return all results with specific ID and, in case of master_submission,also the list of node without result
     - `--report id:id#hostname`  return one specific result of hostname selected by ID
 - Node
     - `--report node:hostname`  return all checktests and results selected by hostname
@@ -275,7 +293,6 @@ To print the result on **CHECKTEST**, operation and activity of **CHECK** use `-
     - `--report checktest:checktest#id` - return all partial of a specific checktest (linpack or Stream, ..) selected by id(hostname,checktest)
 - Master 
     - `--report master:n` print last n master_submission, if n=0 print all master submission, the default value is 1
-
 
 ### 3.1 Output Files
 
@@ -368,20 +385,22 @@ The CHECKTEST directory must have the structure reported in the figure below. Th
                    hpc             test1                  test2
                 - map.hpc            |                      |
                 - x86.json           |                      |
-                - x512.json          |            -----------------------
-                - GPU.json           |            |            |        |
-                                     |       __init__.py     bin       tmp 
+                - x512.json          |            ---------------------------------
+                - GPU.json           |            |            |          |       |
+                                     |       __init__.py    help.md      bin     tmp 
                                      |
                         ------------------------------
                         |         |          |       |    
                         x86    x86_mpi   x512_mem1  GPU
                         |
                         |
-                    -----------------------
-                    |            |        |
-                __init__.py     bin       in 
+                    ----------------------------------
+                    |            |          |        |
+                __init__.py     help.md    bin       in 
 
-**CHECKTEST** is a python package, so at each directory level there  a _ init_.py file is required. The **CHECKTEST** recipes are contained in _ init_.py file into the architecture directory under the test directory. In the example structure reported above, we have two **CHECKTEST** written explicitly:
+
+**CHECKTEST** is a python package, so at each directory level there a _ init_.py file is required; to recognize a **CHECKTEST**, in addition to __init__.py a `help.md` file must be present at the same directory level, that permits to define a **CHECKTEST** for all architectures (i.e test2 in the figure). The file `help.md` contains basic instruction to install and use the test, and its content will be printed by `--checklist`flag.
+The **CHECKTEST** recipes are contained in _ init_.py file into the architecture directory under the test directory. In the example structure reported above, we have two **CHECKTEST** written explicitly:
   
   - test1/x86/__ init__.py this test is named *"test1"* and is designed to x86 target architecture
   - test2/__ init__.py this test is named *"test2"* and is designed to all architecture.
@@ -422,11 +441,14 @@ An architecture file is written in *JSON* format and contains an object for each
         "queue":"debug",
         "account":"my_account"
     
-        }
+        },
+    
+    "help" : "insert here the description of arch file"
 
     }
 
 If the scheduler has an automatic selection of the queue, indicates in *queue* parameter the wildcard `_ noqueue _`. Other parameters that can be specified are: *ntasks-per-node*, *sockets-per-node*, *ntasks-per-socket*, *cpus-per-task*, *threads-per-core*.
+Always enter an accurate description in the `help` field, it will help users to better understand how to use the architecture file, this will be displayed via the `--checklist` flag.
 
 ### 3. HPC map
 Convenience can be to define a group of nodes united by certain properties.  In **CHECK**, the map of united nodes is provided by `map.hpc` file, where node groups can be specified in a very simple format: for each line is specified the group's name and separated by space the list of hostnames dived by comma:
@@ -484,7 +506,9 @@ Convenience can be to define a group of nodes united by certain properties.  In 
 
 6) The check_core["module"] object contains, if present, the method to call Module Environment into **CHECK**, after check if the object is not  `Null`, is callable in this way: `self.check_core["module"]('load','openmpi')`
 
-7) Before writing new code, check what is in **checktest** template and if you think your code could be usefull to the others add to the template.
+7) The file `help.md` must be present, otherwise **CHECK** don't recognize the test. In the help file, insert the instructions to install and use the test, specifying the input file and the parameters that can be changed; this will be displayed via the `--checklist` flag or with an MD file reader.
+
+8) Before writing new code, check what is in **checktest** template and if you think your code could be usefull to the others add to the template.
 
 ***
 
