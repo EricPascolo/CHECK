@@ -237,22 +237,29 @@ class check_core:
         subdir = os.listdir(self.setting["checktest_directory"])
 
         # check if architecture directory
-        if "architecture" in subdir:
-            checklist_string = "\n-ARCHITECTURES AVAILABLE:\n\n"
-            arch_dir = self.setting["checktest_directory"]+"/architecture/"
+        if "hpc" in subdir:
+            checklist_string = "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ARCHITECTURES AVAILABLE:\n\n"
+            arch_dir = self.setting["checktest_directory"]+"/hpc/"
             arch_list = os.listdir(arch_dir)
             for a in sorted(arch_list):
                 if a.endswith('.json'):
-                    checklist_string = checklist_string+ "--- "+a[:-5]+"\n"
+                    checklist_string = checklist_string+ "================================================ARCH "+a[:-5]+"\n"
 
                     try:
-                        jread = file_reader.json_reader(arch_dir+a).keys()
+                        jfile = file_reader.json_reader(arch_dir+a)
+                        jread = jfile.keys()
+                        
+                        if 'help' in jread:
+                            jread.remove('help')
+                            checklist_string = checklist_string+ jfile['help'] +"\n\n"
+
                         for jk in sorted(jread):
-                            checklist_string = checklist_string + "----- "+jk+"\n"
+                            checklist_string = checklist_string + "----- SETTING "+jk+"\n"
+                        checklist_string = checklist_string + "\n"
                     except:
                         pass
 
-        checklist_string = checklist_string+"\n-CHECKTEST AVAILABLE:\n\n"
+        checklist_string = checklist_string+"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHECKTEST AVAILABLE:\n\n"
 
         # check checktest available
         for dr in sorted(subdir):
@@ -265,7 +272,14 @@ class check_core:
                 else:
                     for d in sorted(sdr):
                         if os.path.exists(dr_path+d+"/__init__.py"):
-                            checklist_string = checklist_string+"--- "+dr+"@"+d+"\n"
+                            checklist_string = checklist_string+"================================================ "+dr+"@"+d+"\n"
+                            help_path = dr_path+d+"/help.md"
+                            if os.path.exists(help_path):
+                                helpfile = file_reader.generic_file_reader(help_path)
+                                for r in helpfile:
+                                    checklist_string = checklist_string+r
+                                
+                                checklist_string = checklist_string + "\n\n"
 
 
 
