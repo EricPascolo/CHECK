@@ -58,6 +58,21 @@ def hpc_map_file_reader(hpcmap_file):
     return hpcmap
 
 ####--------------------------------------------------------------------------------------------------------------
+def filetostring(filepath):
+    
+    onestring=""
+    
+    try:
+        multistringfile = generic_file_reader(filepath)
+        for r in multistringfile:
+            onestring = onestring+r
+    except:
+        print("ERROR file dosn't exist:"+filepath)
+    
+    return onestring
+
+
+####--------------------------------------------------------------------------------------------------------------
 
 def generic_file_reader(filename):
     """

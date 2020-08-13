@@ -177,7 +177,7 @@ class check_core:
 ####--------------------------------------------------------------------------------------------------------------
 
     def load_checktest(self,cklist):
-        """ Given check list import matching checktest module """
+        """ Return checktest py object given checktest list from CL"""
 
         logger = logging.getLogger(self.setting["logger_name"])
 
@@ -227,7 +227,7 @@ class check_core:
 ####--------------------------------------------------------------------------------------------------------------
 
     def printchecklist(self):
-        """ Print list of CHECKTEST installed """
+        """ Print CHECKTEST installed and archicetures lists"""
 
         logger = logging.getLogger(self.setting["logger_name"])
 
@@ -235,12 +235,15 @@ class check_core:
 
         sys.path.append(self.setting["checktest_directory"])
         subdir = os.listdir(self.setting["checktest_directory"])
-
-        # check if architecture directory
+        
+        #architectures string composer
         if "hpc" in subdir:
+            subdir.remove('hpc')
             checklist_string = "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ARCHITECTURES AVAILABLE:\n\n"
             arch_dir = self.setting["checktest_directory"]+"/hpc/"
             arch_list = os.listdir(arch_dir)
+            
+            
             for a in sorted(arch_list):
                 if a.endswith('.json'):
                     checklist_string = checklist_string+ "================================================ARCH "+a[:-5]+"\n"
@@ -249,43 +252,45 @@ class check_core:
                         jfile = file_reader.json_reader(arch_dir+a)
                         jread = jfile.keys()
                         
+                        #print help string if exist as field "help" in json
                         if 'help' in jread:
                             jread.remove('help')
                             checklist_string = checklist_string+ jfile['help'] +"\n\n"
-
+                        
+                        checklist_string = checklist_string + "----- SETTING: "
                         for jk in sorted(jread):
-                            checklist_string = checklist_string + "----- SETTING "+jk+"\n"
-                        checklist_string = checklist_string + "\n"
+                            checklist_string = checklist_string +jk+","
+                        checklist_string = checklist_string[:-1] + "\n\n"
                     except:
                         pass
-
-        checklist_string = checklist_string+"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHECKTEST AVAILABLE:\n\n"
+       
+        #checktests string composer
+        checklist_string = checklist_string+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHECKTEST AVAILABLE:\n\n"
 
         # check checktest available
         for dr in sorted(subdir):
-            dr_path = self.setting["checktest_directory"]+"/"+dr+"/"
+            help_path = ""
+            dr_path = self.setting["checktest_directory"]+dr+"/"
+            
+            # check if dir have python package structure
             if os.path.exists(dr_path+"__init__.py"):
                 sdr = os.listdir(dr_path)
-
-                if os.path.exists(dr_path+"/__init__.py") and os.path.exists(dr_path+"/bin"):
-                    checklist_string = checklist_string+"--- "+dr+"\n"
+                
+                # case 1) checktest/test/__init__.py               
+                if os.path.exists(dr_path+"/__init__.py") and os.path.exists(dr_path+"/help.md"):
+                    checklist_string = checklist_string+"================================================ "+dr+"\n"
+                    checklist_string = checklist_string+file_reader.filetostring(dr_path+"/help.md")
+                
+                # case 2) checktest/test/arch/__init__.py    
                 else:
                     for d in sorted(sdr):
                         if os.path.exists(dr_path+d+"/__init__.py"):
                             checklist_string = checklist_string+"================================================ "+dr+"@"+d+"\n"
-                            help_path = dr_path+d+"/help.md"
-                            if os.path.exists(help_path):
-                                helpfile = file_reader.generic_file_reader(help_path)
-                                for r in helpfile:
-                                    checklist_string = checklist_string+r
+                            checklist_string = checklist_string+file_reader.filetostring(dr_path+d+"/help.md")
                                 
-                                checklist_string = checklist_string + "\n\n"
-
-
-
+                checklist_string = checklist_string + "\n\n"
 
         logger.critical(checklist_string)
-
 
 ####--------------------------------------------------------------------------------------------------------------
 

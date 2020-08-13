@@ -128,7 +128,7 @@ def main(checkcore):
         #load descriptor of architecture
         arch_jsonfile = checkcore.setting["checktest_directory"]+"/hpc/"+arch+".json"
         arch_setting_global = file_reader.json_reader(arch_jsonfile)[arch_set]
-        print(utils.list_to_String(host_array,","))
+        
         json.dump({"master_submission":{"id":checkcore.setting["id"],\
                  "check":str(select_checktest_on_architercture(arch,checkcore)),\
                  "arch":arch+"#"+arch_set, \

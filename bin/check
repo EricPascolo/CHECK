@@ -9,16 +9,16 @@
 #
 
 from __future__ import print_function
+import sys
+import os
+import logging
+import uuid
 from checklib.inout import commandline
 from checklib.common import utils
 from checklib.inout import checklog
 from checklib.core import checkobj_core
 from datetime import datetime
-import sys
-import os
-import logging
 
-import uuid
 ####--------------------------------------------------------------------------------------------------------------
 
 __author__ = "Eric Pascolo, Roberto Da Via'"
@@ -55,15 +55,17 @@ logger.critical("**** CHECK "+__version__ +" - "+utils.get_name_of_nodes()+ \
 
 ##init check setting object
 checkcore = checkobj_core.check_core(cl_args,run_id)
+
+
 # if module interface is defined then set checkcore.module function
 if "module_env_py_interface" in checkcore.setting:
     try:
         exec(open(checkcore.setting["module_env_py_interface"]).read())
         module("-V", "list")    
         checkcore.set_module_function(module)
-        logger.info("Found python interface to modules")
+        logger.info("Modules Python interface: FOUND")
     except:
-        logger.info("Python interface to modules is not usable")
+        logger.info("Modules Python interface: NOT FOUND")
 
 
 ## master
