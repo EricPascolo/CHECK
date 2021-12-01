@@ -45,7 +45,7 @@ def id(reportjson,params,logger):
             cur_mst = cur["master_submission"]
             cur_id = cur_mst["id"]
             if cur_id == id:
-                hpc = cur_mst["hpc"].encode("utf8").split(",")
+                hpc = cur_mst["hpc"].split(",")
         #for each objcet "RESULT" that have the same input id parameter, 
         #the process save the object in all_res
         elif "RESULT"  in cur:
@@ -65,7 +65,7 @@ def id(reportjson,params,logger):
         loc_res=""
         for res_node in all_res:
             if res_node["hostname"]==node:
-                loc_res=res_node["RESULT"].encode("utf8")
+                loc_res=res_node["RESULT"]
                 map_res[node]=loc_res
                 continue
         if loc_res=="":
