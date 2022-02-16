@@ -120,7 +120,7 @@ def node(reportjson,params,logger):
             cur_node = cur_res["hostname"]
             if cur_node == hostname:
                 loc_res=cur_res
-                nameNode = cur_res["id"]+"_"+cur_res["hostname"]
+                nameNode = cur_res["id"]+" @ "+cur_res["hostname"]
                 all_res[nameNode]=loc_res
 
 
@@ -136,9 +136,10 @@ def node(reportjson,params,logger):
         outresult="\nId: "+str(x)+" - Date: "+str(t["date"])+" - Result: "+str(t["RESULT"])+"\n"
         outtest=""
         for p in t["PARTIAL"]:
-            if not(checktest) or p.keys()[0]== ctType:
-                outtest += "\t"+p.keys()[0]+"\n"
-                for s, sv in sorted(utils.get_iter_object_from_dictionary(p.values()[0])):
+            print(type(p))
+            if not(checktest) or list(p.keys())[0]== ctType:
+                outtest += "\t"+list(p.keys())[0]+"\n"
+                for s, sv in sorted(utils.get_iter_object_from_dictionary(list(p.values())[0])):
                     outtest += "\t\t"+s +" : "+str(sv)+"\n"
         if len(outtest)>0:
             output+=outresult+outtest
@@ -241,8 +242,8 @@ def checktest(reportjson,params,logger):
         outresult="\nId: "+str(t["id"])+" - hostname "+str(t["hostname"])+" - Date: "+str(t["date"])+"\n"
         outtest=""
         for p in t["PARTIAL"]:
-            if p.keys()[0]== ctType:
-                for s, sv in sorted(utils.get_iter_object_from_dictionary(p.values()[0])):
+            if list(p.keys())[0]== ctType:
+                for s, sv in sorted(utils.get_iter_object_from_dictionary(list(p.values())[0])):
                     outtest += "\t\t"+s +" : "+str(sv)+"\n"
                 outtest+="\n"
         if len(outtest)>0:
