@@ -143,10 +143,14 @@ The **CHECKTEST**s to run are set by  `--check` flag:
 
 This command will be launched the linpack benchmark with the setting of x86 architecture defined in the HPC directory.
 
+Some **CHECKTEST** needs an installation before the first use. To finalize it, specify the **CHECKTEST** and adding the flag `--install`:
+
+    $ check --check linpack@x86 --install
+
 To see which **CHECKTEST** are installed and on which architectures and their description, use the flag `--checklist` , 
 the description reported is taken by `help.md` file for each **CHECKTESTS** and `help` JSON field for each architecture:
 
-    $ check --cheklist
+    $ check --checklist
     **** CHECK 0.3.0 - PolarBearCub - 13/08/2020 15:05:51 - a98587d601d24c63974b97b66049967e
     a98587d601d24c63974b97b66049967e 15:05 [INFO] (checkloggin) : Logger type: both
     a98587d601d24c63974b97b66049967e 15:05 [CRITICAL] (printchecklist) : 
@@ -191,10 +195,6 @@ To see **CHECK** parameters on runtime, use the flags `--checkparameter`:
     -- logtype : cl
     -- master : True
     -- resultfile : $HOME/checkresult.txt
-
-Some **CHECKTEST** needs an installation before the first use. To finalize it, specify the **CHECKTEST** and adding the flag `--install`:
-
-    $ check --check linpack@x86 --install
 
 ### 1.2 Mark and Analisys
 

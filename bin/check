@@ -30,61 +30,65 @@ __email__ = "eric.pascolo@cineca.it"
 __status__ = "Development"
 
 
-if sys.version_info[:2] < (2,7):
+if sys.version_info[:2] < (2, 7):
     v_info = sys.version_info[:3]
     sys.exit("CHECK requires Python 2.7 or higher."
              "This is Python %d.%d.%d." % v_info)
 
-##read commandline flag
+# read commandline flag
 cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
 
-#generate uuid of this run if is son process take 
-#from CL and delete in any case master_id entry
+# generate uuid of this run if is son process take
+# from CL and delete in any case master_id entry
 if cl_args["master_id"] == "-999":
     run_id = uuid.uuid4().hex
     del cl_args["master_id"]
 else:
     run_id = uuid.UUID(cl_args["master_id"]).hex
-    
 
-#set basic logger
+# set basic logger
 logger = logging.getLogger("basic")
-logger.critical("**** CHECK "+__version__ +" - "+utils.get_name_of_nodes()+ \
-     " - "+datetime.now().strftime("%d/%m/%Y %H:%M:%S")+" - "+str(run_id))
+logger.critical("**** CHECK {} - {} - {} - {}".format(__version__, utils.get_name_of_nodes(),
+                                                      datetime.now().strftime("%d/%m/%Y %H:%M:%S"), str(run_id)))
 
+# init check setting object
+checkcore = checkobj_core.check_core(cl_args, run_id)
 
-##init check setting object
-checkcore = checkobj_core.check_core(cl_args,run_id)
-
-
-# if module interface is defined then set checkcore.module function
+# if module interface is defined and it is not empty then set checkcore.module function
 if "module_env_py_interface" in checkcore.setting:
-    try:
-        exec(open(checkcore.setting["module_env_py_interface"]).read())
-        module("-V", "list")    
-        checkcore.set_module_function(module)
-        logger.info("Modules Python interface: FOUND")
-    except:
+    if checkcore.setting['module_env_py_interface']:
+        try:
+            # TODO: check what happens if exec fails, which exceptions are thrown?
+            exec(open(checkcore.setting["module_env_py_interface"]).read())
+            module("-V", "list")
+            checkcore.set_module_function(module)
+            logger.info("Modules Python interface: FOUND")
+
+        except SyntaxError as se:
+            logger.critical("Modules Python interface: a syntax error occurred while loading the module: " + str(se))
+
+        except:
+            logger.critical("Modules Python interface: an error occurred while loading the module.")
+    else:
         logger.info("Modules Python interface: NOT FOUND")
 
-
-## master
+# master
 if "master" in checkcore.setting:
     from checklib.master import master_runner
     master_runner.main(checkcore)
 
-## daemon 
+# daemon
 elif "daemon" in checkcore.setting:
     from checklib.daemon import daemon_manager
     Dcheck = daemon_manager.deamon_manager(checkcore)
     Dcheck.command(cl_args)
 
-## slave
+# slave
 elif checkcore.setting["check"] != "-999":
     from checklib.slave import slave_runner
     slave_runner.main(checkcore)
 
-## report
+# report
 elif checkcore.setting["report"] != "-999":
     from checklib.report import reporter
     reporter.main(checkcore)
@@ -92,7 +96,7 @@ elif checkcore.setting["report"] != "-999":
 else:
     pass
 
-logger.critical("**** CHECK STOP - "+utils.get_name_of_nodes()+ \
-     " - "+datetime.now().strftime("%d/%m/%Y %H:%M:%S") +" - "+ str(run_id))
+logger.critical("**** CHECK STOP - {} - {} - {}".format(utils.get_name_of_nodes(),
+                                                        datetime.now().strftime("%d/%m/%Y %H:%M:%S"), str(run_id)))
 
 ####--------------------------------------------------------------------------------------------------------------

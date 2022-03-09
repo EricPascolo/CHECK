@@ -13,39 +13,34 @@ from checklib.core.checkobj_result import check_result
 from checklib.common.archive import *
 from checklib.scheduler import whatscheduler
 
-class checktest():
 
+class checktest:
     """ Checktest template class """
-
  
 ################################################################################################ CHECK TETS METHOD
 
-
-    def __init__(self,core,arch,vers):
-
-        
-        self.test_dir = {'bin_dir': 'bin', 'in_dir': 'in', 'out_dir': 'out','tmp_dir': 'tmp',}
-        #test description
+    def __init__(self, core, arch, vers):
+        self.test_dir = {'bin_dir': 'bin', 'in_dir': 'in', 'out_dir': 'out', 'tmp_dir': 'tmp'}
+        # test description
         self.name = ""
         self.version = ""
         self.url = ""
-        self.target_arch = ""
-        self.test_vers = ""
+        self.target_arch = arch
+        self.test_vers = vers
 
         # check object
         self.check_log = None
-        self.check_core = None
         self.std_out = None
         self.std_err = None
 
         # test parameter
+        self.exe = ''
         self.exe_argument = ""
-        self.check_core = core 
-        self.target_arch = arch
-        self.test_vers = vers
+        self.check_core = core
         self.set_test_logger()
         self.check_path_builder()
-        self.check_log.debug("CHECK TEST INIT : "+self.get_name())
+        self.name = self.get_name()
+        self.check_log.debug("CHECK TEST INIT: " + self.name)
 
         # result object
         self.result = check_result()
@@ -73,11 +68,11 @@ class checktest():
 
     def comparison(self):
         pass
-        
+
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def install(self,setting="default"):
+    def install(self, setting="default"):
         self.check_log.debug("call empty install")
         pass
 
@@ -91,24 +86,25 @@ class checktest():
 ####--------------------------------------------------------------------------------------------------------------
 
     def set_test_logger(self):
-        self.check_log =  logging.getLogger(self.check_core["logger_name"])
+        self.check_log = logging.getLogger(self.check_core["logger_name"])
 
 ####--------------------------------------------------------------------------------------------------------------
 
     def check_path_builder(self):
-         
         for k in self.test_dir:
-            if self.target_arch =="__all__":
+            if self.target_arch == "__all__":
                 if not os.path.isabs(self.test_dir[k]):
-                       self.test_dir[k] = self.check_core["checktest_directory"]+"/"+self.get_name()+"/"+"/"+self.test_dir[k]
-                       #self.check_log.debug(self.test_dir[k])
+                    self.test_dir[k] = "/".join([self.check_core["checktest_directory"].rstrip('/'), self.get_name(),
+                                                self.test_dir[k]])
+                    # self.check_log.debug(self.test_dir[k])
             else:
                 if not os.path.isabs(self.test_dir[k]):
-                       self.test_dir[k] = self.check_core["checktest_directory"]+"/"+self.get_name()+"/"+self.target_arch+"/"+self.test_dir[k]
-                       #self.check_log.debug(self.test_dir[k])
+                    self.test_dir[k] = "/".join([self.check_core["checktest_directory"].rstrip('/'), self.get_name(),
+                                                self.target_arch, self.test_dir[k]])
+                    # self.check_log.debug(self.test_dir[k])
         
         if not os.path.isabs(self.exe):
-            self.exe = self.test_dir['bin_dir'] +"/"+ self.exe
+            self.exe = "/".join([self.test_dir['bin_dir'], self.exe])
             self.check_log.debug(self.exe)
 
 
@@ -128,9 +124,12 @@ class checktest():
 
     def get_allocated_resources(self):
 
-        resources = {}
+        resources = None
         scheduler = whatscheduler.check_installed_scheduler(self.check_core)
-        resources = scheduler.get_job_resources()
+
+        if scheduler:
+            resources = scheduler.get_job_resources()
+
         return resources
 
 

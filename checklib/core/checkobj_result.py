@@ -12,9 +12,9 @@ class check_result:
 
 ####--------------------------------------------------------------------------------------------------------------   
     
-    def __init__(self,name=None,status=None):
+    def __init__(self, name=None, status=None):
         
-        if status is "FAIL":
+        if status == "FAIL":
             self._benchmark = name
             self.status = "FAIL"
             self.measure = -999.0

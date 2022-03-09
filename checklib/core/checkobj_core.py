@@ -28,38 +28,39 @@ class check_core:
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def __init__(self,cl_arg,run_id):
-        
-        #set run id
-        self.setting.update({"id":run_id})
+    def __init__(self, cl_arg, run_id):
 
-        #set an empty module instance
+        # set run id
+        self.setting.update({"id": run_id})
+
+        # set an empty module instance
         self.module = None
         self.setting["module"] = self.module
 
         # set setting file path
         check_setting_path = utils.get_setting_file_path("check_setting.json")
 
-        ## extract setting information from json file
+        # extract setting information from json file
         json_setting = []
         for p in check_setting_path:
             json_setting.append(file_reader.json_reader(p))
 
-        ## extract check setting and put it in core object
-        self.extract_merge_setting(cl_arg,json_setting)
-         
-        ## enable log with user setting
+        # extract check setting and put it in core object
+        self.extract_merge_setting(cl_arg, json_setting)
+
+        # enable log with user setting
         try:
-            lgnm = checklog.checkloggin(run_id,self.setting["loglevel"], \
-                             self.setting["logfile"],self.setting["logtype"])
-            self.setting.update({"logger_name":lgnm})
+            lgnm = checklog.checkloggin(run_id, self.setting["loglevel"],
+                                        self.setting["logfile"], self.setting["logtype"])
+            self.setting.update({"logger_name": lgnm})
+
         except KeyError:
             pass
-        
-        #set logger for this subroutine
+
+        # set logger for this subroutine
         logger = logging.getLogger(self.setting["logger_name"])
         logger.debug(self.setting["logger_name"])
-        
+
         # ssh enable master singleton mode
         if "ssh" in self.setting:
             if "master" not in self.setting:
@@ -69,7 +70,7 @@ class check_core:
 
         if "checkparameters" in self.setting:
             self.printparameters()
-        
+
         if "checklist" in self.setting:
             self.printchecklist()
             return
@@ -80,7 +81,7 @@ class check_core:
             logger.debug(names_of_check_test)
 
             if "master" in self.setting:
-                #check existence of checktest
+                # check existence of checktest
                 self.checktests = self.checktests_existence(names_of_check_test)
             else:
                 # load checktest object list
@@ -101,9 +102,8 @@ class check_core:
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def extract_merge_setting(self,cl,json_basic):
-
-        '''
+    def extract_merge_setting(self, cl, json_basic):
+        """
         Extract and merge  all setting information from command line, json conf file and json
         basic conf file. The priority order is:
             - configuration file passed by cl flag
@@ -111,27 +111,30 @@ class check_core:
             - check_setting.json in etc/
             - check_setting.json in etc/default
         The merged dictionary update the global setting dict in class
-        '''
-        #dict where to merge setting
-        json_setting ={}
+        """
+        # dict where to merge setting
+        json_setting = dict()
 
         # merge json file setting
         for j in json_basic:
             utils.resolve_env_path(j)
             json_setting.update(j)
 
-        #merge cl file setting
+        # merge cl file setting
         utils.resolve_env_path(cl)
         json_setting.update(cl)
 
-        #if present read and merge configuration file setting
+        # if present read and merge configuration file setting
         if "configuration" in cl:
-                json_config_setting = {}
-                json_config_setting = file_reader.json_reader(cl["configuration"])
-                utils.resolve_env_path(json_config_setting)
-                json_setting.update(json_config_setting)
- 
-        #update global setting with merged dict
+            json_config_setting = file_reader.json_reader(cl["configuration"])
+            utils.resolve_env_path(json_config_setting)
+            json_setting.update(json_config_setting)
+
+        # if $MODULESHOME is not defined the default path is replaced with an empty string
+        if json_setting['module_env_py_interface'] == '$MODULESHOME/init/python.py':
+            json_setting['module_env_py_interface'] = ''
+
+        # update global setting with merged dict
         self.setting.update(json_setting)
 
 
@@ -181,46 +184,43 @@ class check_core:
 
         logger = logging.getLogger(self.setting["logger_name"])
 
-        ctarray = []
+        ctarray = list()
         sys.path.append(self.setting["checktest_directory"])
 
         for ct in cklist:
-
-            #split check test name in name,version,architecture and build correct path
-            ct_sfw,ct_arch,ct_vers,ct_num_par = utils.split_name_version(ct)
-            logger.debug("CT split : "+ct+" name "+ct_sfw+" arch "+ct_arch+" version "+ct_vers)
-
+            # split check test name in name,version,architecture and build correct path
+            ct_sfw, ct_arch, ct_vers, ct_num_par = utils.split_name_version(ct)
+            logger.debug("CT split ==> {} = name: {}, arch: {}, version: {}".format(ct, ct_sfw, ct_arch, ct_vers))
 
             if ct_arch != "__all__":
-                path_test_dir = self.setting["checktest_directory"]+"/"+ct_sfw+"/"+ct_arch
-                module_name = ct_sfw+"."+ct_arch
+                path_test_dir = os.path.join(self.setting["checktest_directory"], ct_sfw, ct_arch)
+                module_name = ct_sfw + "." + ct_arch
             else:
-                path_test_dir = self.setting["checktest_directory"]+"/"+ct_sfw
+                path_test_dir = os.path.join(self.setting["checktest_directory"], ct_sfw)
                 module_name = ct_sfw
 
+            logger.debug(path_test_dir + " --- " + module_name)
 
-            logger.debug(path_test_dir + "---" + module_name)
+            # build check test module init
+            path_test_init = path_test_dir + "/__init__.py"
 
-            #build check test module init
-            path_test_init = path_test_dir+"/__init__.py"
-
-            #check if path exiist
+            # check if path exiist
             if os.path.exists(path_test_init):
 
-                logger.debug("CHECK TEST FOUND IN:"+path_test_dir)
-                #load dynamicaly check test class
+                logger.debug("CHECK TEST FOUND IN:" + path_test_dir)
+                # load dynamicaly check test class
                 dynamic_class = importlib.import_module(module_name)
 
-                #get name of class to call
+                # get name of class to call
                 method_to_call = getattr(dynamic_class, ct_sfw)
 
-                #init check test dynamically
-                obj = method_to_call(self.setting,ct_arch,ct_vers)
+                # init check test dynamically
+                obj = method_to_call(self.setting, ct_arch, ct_vers)
 
-                #append obj test to list
+                # append obj test to list
                 ctarray.append(obj)
             else:
-                logger.critical("CHECK TEST NOT FOUND : "+ct)
+                logger.critical("CHECK TEST NOT FOUND : " + ct)
 
         return ctarray
 

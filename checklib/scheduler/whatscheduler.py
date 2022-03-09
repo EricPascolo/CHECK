@@ -4,9 +4,11 @@ from checklib.common import utils
 ####--------------------------------------------------------------------------------------------------------------
 
 def check_installed_scheduler(setting):
-    
-    ''' This function select scheduler interface, at the momemt the scheduler is selected by parameter  '''
+    """ This function selects scheduler interface, at the moment the scheduler is selected by parameter  """
+
     logger = logging.getLogger(setting["logger_name"])
+
+    scheduler_object = None
     
     if "ssh" in setting:
         from checklib.scheduler import ssh
@@ -25,7 +27,6 @@ def check_installed_scheduler(setting):
 
     else:
         logger.critical("NO SCHEDULER FOUND")
-
 
     return scheduler_object
 

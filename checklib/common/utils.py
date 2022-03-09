@@ -10,29 +10,31 @@ import re
 import sys
 import json
 import platform
-import datetime
 from checklib.common.archive import *
 
 ####--------------------------------------------------------------------------------------------------------------
 
 def resolve_env_path(dictionary):
-    '''Given dictionary substitute into path env var'''
-    for key, value in get_iter_object_from_dictionary(dictionary):
+    """Given dictionary substitute into path env var"""
 
+    for key, value in get_iter_object_from_dictionary(dictionary):
+        # TODO: is this try-except necessary? expandvars does not throw exceptions as it seems
         try:
+            # os.path.expandvars() does not expand an environment variable if it is not set!
             path = os.path.expandvars(value)
             if is_valid(path):
                 dictionary[key] = path
+
         except:
             pass
 
 ####--------------------------------------------------------------------------------------------------------------
 
 def is_valid(path):
-    '''Check if path is linux path'''
+    """Check if path is linux path"""
 
-    #re to check path
-    prog = re.compile(re_path)#(r"^(/)([^/\0]+(/)?)+$")
+    # re to check path
+    prog = re.compile(re_path)  # (r"^(/)([^/\0]+(/)?)+$")
     valid = prog.match(path)
     if valid is None:
         return False
@@ -42,24 +44,24 @@ def is_valid(path):
 ####--------------------------------------------------------------------------------------------------------------
 
 def split_name_version(software_string):
-    '''
+    """
     Given the software split name version and architecture
     Use @ symbol to architecture and # symbol for the version   
-    '''
+    """
     prog = re.compile(re_splitsoftware)
-    software_list = re.split(re_splitsoftware,software_string)
+    software_list = re.split(re_splitsoftware, software_string)
 
     software_hardware = "__all__"
-    software_version  = ""
+    software_version = ""
     software_name = software_list[0]
     num_parameter = len(software_list)
     
     if num_parameter >= 2:
         software_hardware = software_list[1]
     if num_parameter == 3:
-        software_version  = software_list[2]
+        software_version = software_list[2]
     
-    return software_name,software_hardware,software_version,num_parameter
+    return software_name, software_hardware, software_version, num_parameter
 
 ####--------------------------------------------------------------------------------------------------------------
 
