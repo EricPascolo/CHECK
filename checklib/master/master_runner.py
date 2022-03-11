@@ -15,59 +15,108 @@ from checklib.inout import file_reader
 from checklib.common import utils
 from checklib.scheduler import whatscheduler
 
+
 ####--------------------------------------------------------------------------------------------------------------
 
-def check_collectiong_master_directory(checkcore,logger):
-    ''' Check if master collection result directory exist, if not create it.
-    if return FS error, the function set $HOME ad collect dir    '''
+def check_collection_master_directory(checkcore, logger):
+    """
+    Check if master collection result directory exist, if not create it.
+    if return FS error, the function set $HOME and collect dir
+    """
 
-    if not os.path.exists(checkcore.setting["check_master_collecting_path"]):       
+    if not os.path.exists(checkcore.setting["check_master_collecting_path"]):
         logger.critical("CHECK MASTER COLLECTING PATH NOT EXIST")
+
         try:
-            os.mkdir(checkcore.setting["check_master_collecting_path"])
             logger.critical("CHECK MASTER COLLECTING PATH CREATE")
-        except:
-            logger.critical("FS ERROR: check permission on check_master_collecting_path")
-            checkcore.setting["check_master_collecting_path"]=os.environ['HOME']
+            os.mkdir(checkcore.setting["check_master_collecting_path"])
+
+        except PermissionError as pe:
+            logger.critical("FS ERROR: check permission on check_master_collecting_path.")
+            checkcore.setting["check_master_collecting_path"] = os.environ['HOME']
+
+        except FileExistsError as fee:
+            pass  # ignore and continue
+
+    logger.debug("check_master_collecting_path: " + checkcore.setting["check_master_collecting_path"])
 
 
-    logger.debug("check_master_collecting_path : "+checkcore.setting["check_master_collecting_path"])
+####--------------------------------------------------------------------------------------------------------------
 
-####--------------------------------------------------------------------------------------------------------------    
+def select_checktest_on_architercture(arch, checkcore):
+    """ Check if checktest for targer architecture exist and create string for job submission """
 
-def select_checktest_on_architercture(arch,checkcore):
-    ''' Check if checktest for targer architecture exist and create string for job submission '''
-    
     string = ""
-    
+
     for ct in checkcore.checktests:
-        
         if "_" in arch:
-            if ct["arch"] == arch or ct["arch"]== "__all__":
-                string =string+ ct["name"]+"@"+ct["arch"]+","
-            
+            if ct["arch"] == arch or ct["arch"] == "__all__":
+                string = string + ct["name"] + "@" + ct["arch"] + ","
+
         else:
-            if ct["arch"].split("_")[0]== arch or ct["arch"]== "__all__":
-                string =string+ ct["name"]+"@"+ct["arch"]+","
-    
-    if string.endswith(","): 
+            if ct["arch"].split("_")[0] == arch or ct["arch"] == "__all__":
+                string = string + ct["name"] + "@" + ct["arch"] + ","
+
+    if string.endswith(","):
         return string[:-1]
     else:
         return string
 
+
 ####--------------------------------------------------------------------------------------------------------------
 
-def create_slave_cmd_string(arch,checkcore):
-    """Compose slave command string with software name logleve and checktest list"""
+def create_slave_cmd_string(arch, checkcore):
+    """Compose slave command string with software name loglevel and checktest list"""
 
-    remote_source_path = "source "+checkcore.setting["check_remote_source_path"]+"/check/bin/setup_check.sh; "
+    ending_slash = True if checkcore.setting["check_remote_source_path"].endswith('/') else False
+    remote_source_path = ''
+
+    if checkcore.setting["check_remote_source_path"].endswith('/'):
+        ending_slash = True
+
+    if ending_slash:
+        check_folder = checkcore.setting["check_remote_source_path"] + "CHECK"
+    else:
+        check_folder = checkcore.setting["check_remote_source_path"] + "/CHECK"
+
+    if os.path.exists(check_folder) and os.path.isdir(check_folder):
+        if ending_slash:
+            remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
+                                 "CHECK/bin/setup_check.sh; "
+        else:
+            remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
+                                 "/CHECK/bin/setup_check.sh; "
+
+    else:
+        if ending_slash:
+            check_folder = checkcore.setting["check_remote_source_path"] + "check"
+        else:
+            check_folder = checkcore.setting["check_remote_source_path"] + "/check"
+
+        if os.path.exists(check_folder) and os.path.isdir(check_folder):
+            if ending_slash:
+                remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
+                                     "check/bin/setup_check.sh; "
+            else:
+                remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
+                                     "/check/bin/setup_check.sh; "
+
+        else:
+            print('Could not find a folder named "CHECK" or "check" in path {}.'
+                  .format(checkcore.setting["check_remote_source_path"]))
+            exit(2)
+
+    if not remote_source_path:
+        print("Something went wrong while forming the command for the slave jobs. Interrupting.")
+        exit(3)
 
     cmd_check_string = "check"
     cmd_check_string = cmd_check_string + " --loglevel " + checkcore.setting["loglevel"]
     cmd_check_string = cmd_check_string + " --master_id " + checkcore.setting["id"]
     cmd_check_string = cmd_check_string + " --check " + select_checktest_on_architercture(arch, checkcore)
-    
+
     return remote_source_path + cmd_check_string
+
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -95,7 +144,7 @@ def main(checkcore):
     logger.debug("Start Master")
 
     # check collecting path and create subdir
-    check_collectiong_master_directory(checkcore, logger)
+    check_collection_master_directory(checkcore, logger)
 
     # load scheduler object
     scheduler = whatscheduler.check_installed_scheduler(checkcore.setting)
@@ -104,10 +153,14 @@ def main(checkcore):
         logger.critical("Cannot start CHECK in master mode without a scheduler.")
         return
 
+    if "hpc" not in checkcore.setting:
+        print("To run CHECK in master mode a --hpc option is necessary, specifying architecture and nodes.")
+        return
+
     arch_array = utils.split_hostline(checkcore.setting["hpc"])
 
     # load hpc cluster file
-    hpc_map = {}
+    hpc_map = dict()
     if "hpc_cluster_map" in checkcore.setting:
         hpc_mapfile = checkcore.setting["hpc_cluster_map"]
     else:
@@ -159,7 +212,6 @@ def main(checkcore):
 
             # node or group of nodes, separated by comma
             else:
-
                 host_list = []
                 # groups of nodes
                 if h in hpc_map:
@@ -171,7 +223,7 @@ def main(checkcore):
                 arch_setting["jobname"] = "check_" + h
 
             # set up path for job output file
-            arch_setting["jobcollectiongpath"] = checkcore.setting["check_master_collecting_path"]
+            arch_setting["jobcollectionpath"] = checkcore.setting["check_master_collecting_path"]
 
             # wtime(min) -> walltime(hh:mm:ss)
             if "wtime" in arch_setting:
@@ -205,5 +257,5 @@ def main(checkcore):
                 traceback.print_exc()
 
     # close last result in checkresult file
-    out_file.close()           
-####--------------------------------------------------------------------------------------------------------------
+    out_file.close()
+    ####--------------------------------------------------------------------------------------------------------------

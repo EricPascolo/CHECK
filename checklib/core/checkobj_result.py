@@ -4,16 +4,14 @@ class check_result:
     Class that describe checktest results
     """
 
-
-    _benchmark = " "
-    measure = 0.0
-    udm = " "
-    status = "FAIL"
-
 ####--------------------------------------------------------------------------------------------------------------   
     
     def __init__(self, name=None, status=None):
-        
+        self._benchmark = " "
+        self.measure = 0.0
+        self.udm = " "
+        self.status = "FAIL"
+
         if status == "FAIL":
             self._benchmark = name
             self.status = "FAIL"

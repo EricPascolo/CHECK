@@ -62,7 +62,7 @@ class slurm(scheduler):
         submission_string = submission_string +" -t 0-"+arch_setting["walltime"]
         submission_string = submission_string +" --partition "+arch_setting["queue"]
         submission_string = submission_string +" --job-name "+arch_setting["jobname"]
-        submission_string = submission_string +" -o "+arch_setting["jobcollectiongpath"]+"/"+arch_setting["jobname"]
+        submission_string = submission_string +" -o "+arch_setting["jobcollectionpath"]+"/"+arch_setting["jobname"]
         submission_string = submission_string +" --account="+arch_setting["account"]
         submission_string = submission_string +" --wrap "
 
