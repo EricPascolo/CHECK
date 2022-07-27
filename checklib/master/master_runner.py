@@ -71,13 +71,7 @@ def create_slave_cmd_string(arch, checkcore):
     ending_slash = True if checkcore.setting["check_remote_source_path"].endswith('/') else False
     remote_source_path = ''
 
-    if checkcore.setting["check_remote_source_path"].endswith('/'):
-        ending_slash = True
-
-    if ending_slash:
-        check_folder = checkcore.setting["check_remote_source_path"] + "CHECK"
-    else:
-        check_folder = checkcore.setting["check_remote_source_path"] + "/CHECK"
+    check_folder = checkcore.setting["check_remote_source_path"]
 
     if os.path.exists(check_folder) and os.path.isdir(check_folder):
         if ending_slash:
@@ -88,10 +82,6 @@ def create_slave_cmd_string(arch, checkcore):
                                  "/CHECK/bin/setup_check.sh; "
 
     else:
-        if ending_slash:
-            check_folder = checkcore.setting["check_remote_source_path"] + "check"
-        else:
-            check_folder = checkcore.setting["check_remote_source_path"] + "/check"
 
         if os.path.exists(check_folder) and os.path.isdir(check_folder):
             if ending_slash:
