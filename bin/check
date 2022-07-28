@@ -35,7 +35,7 @@ if sys.version_info[:2] < (2, 7):
     sys.exit("CHECK requires Python 2.7 or higher."
              "This is Python %d.%d.%d." % v_info)
 
-print("CHECK: Using ", sys.version)
+print("CHECK: Using Python ", sys.version)
 
 # read commandline flag
 cl_args = commandline.cl_convert_to_dict(commandline.cl_parser())
