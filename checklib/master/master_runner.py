@@ -76,29 +76,19 @@ def create_slave_cmd_string(arch, checkcore):
     if os.path.exists(check_folder) and os.path.isdir(check_folder):
         if ending_slash:
             remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
-                                 "CHECK/bin/setup_check.sh; "
+                                 "bin/setup_check.sh; "
         else:
             remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
-                                 "/CHECK/bin/setup_check.sh; "
+                                 "/bin/setup_check.sh; "
 
     else:
-
-        if os.path.exists(check_folder) and os.path.isdir(check_folder):
-            if ending_slash:
-                remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
-                                     "check/bin/setup_check.sh; "
-            else:
-                remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
-                                     "/check/bin/setup_check.sh; "
-
-        else:
-            print('Could not find a folder named "CHECK" or "check" in path {}.'
+        logger.critical('Could not find a folder named "CHECK" or "check" in path {}.'
                   .format(checkcore.setting["check_remote_source_path"]))
-            exit(2)
+        exit(1)
 
     if not remote_source_path:
-        print("Something went wrong while forming the command for the slave jobs. Interrupting.")
-        exit(3)
+        logger.critical("Something went wrong while forming the command for the slave jobs. Interrupting.")
+        exit(2)
 
     cmd_check_string = "check"
     cmd_check_string = cmd_check_string + " --loglevel " + checkcore.setting["loglevel"]
@@ -144,7 +134,7 @@ def main(checkcore):
         return
 
     if "hpc" not in checkcore.setting:
-        print("To run CHECK in master mode a --hpc option is necessary, specifying architecture and nodes.")
+        logger.critical("To run CHECK in master mode a --hpc option is necessary, specifying architecture and nodes.")
         return
 
     arch_array = utils.split_hostline(checkcore.setting["hpc"])
