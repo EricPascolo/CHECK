@@ -17,6 +17,7 @@ from checklib.scheduler import whatscheduler
 
 ####--------------------------------------------------------------------------------------------------------------
 
+
 def installator(check_core):
     """
     CHECK's installator function, provide the launch of installation function to all checktest selected.
@@ -36,10 +37,11 @@ def installator(check_core):
 
 ####--------------------------------------------------------------------------------------------------------------
 
+
 def worker(check_core):
     """
-    CHECK's worker function, this main launch all checkstest and after collect the resutls for single node
-    and provide to call Multibenchmark node analysis.
+    CHECK's worker function, it launches all checktests and collects the results for a single node, then
+    calls the Multibenchmark node analysis.
     """
 
     logger = logging.getLogger(check_core.setting["logger_name"])
@@ -76,7 +78,7 @@ def worker(check_core):
         nameofnode = utils.get_name_of_nodes(resources)  # platform.node()
 
     # multibenchmark analysis call
-    nodemark = multibenchmark.analisys(check_core)
+    nodemark = multibenchmark.analysis(check_core)
 
     # log partial result of single benchmark
     res_file_json = {"id": check_core.setting["id"], "hostname": str(nameofnode)}
@@ -86,19 +88,24 @@ def worker(check_core):
     res_partial_list = []
     # partial log on logger and json file
     for cs in check_core.checktests:
-        logger.info(str(nameofnode) + " - " \
-                    + str(cs.get_name()) + " @ " \
-                    + cs.target_arch \
-                    + " --> " \
-                    + str(cs.result.measure) + " " \
-                    + cs.result.udm + " " \
-                    + cs.result.status)
+        if type(cs.result) is list:
+            for result in cs.result:
+                logger.info(f"{nameofnode} - {cs.get_name()}@{cs.target_arch} --> "
+                            f"{result.measure} {result.udm} \t {result.status}")
 
-        res_partial_list.append({cs.get_name(): {"arch": cs.target_arch,
-                                                 "value": str(cs.result.measure),
-                                                 "unit": cs.result.udm,
-                                                 "status": cs.result.status}})
+                res_partial_list.append({cs.get_name(): {"arch": cs.target_arch,
+                                                             "value": str(result.measure),
+                                                             "unit": result.udm,
+                                                             "status": result.status}})
 
+        else:
+            logger.info(f"{nameofnode} - {cs.get_name()}@{cs.target_arch} --> "
+                        f"{cs.result.measure} {cs.result.udm} \t {cs.result.status}")
+
+            res_partial_list.append({cs.get_name(): {"arch": cs.target_arch,
+                                                     "value": str(cs.result.measure),
+                                                     "unit": cs.result.udm,
+                                                     "status": cs.result.status}})
     # log multibenchmark analysis result
     logger.critical(str(nameofnode) + "  " + nodemark)
     res_file_json.update({"PARTIAL": res_partial_list})
@@ -112,6 +119,7 @@ def worker(check_core):
     out_file.close()
 
 ####--------------------------------------------------------------------------------------------------------------
+
 
 def main(check_core):
     """

@@ -8,7 +8,8 @@ import logging
 
 ####--------------------------------------------------------------------------------------------------------------
 
-def simple_mb_analisys(result_array):
+
+def simple_mb_analisys(checktests):
     """
     Simpler multibenchmark analyssis, the node result is computed using this schema:
 
@@ -20,43 +21,48 @@ def simple_mb_analisys(result_array):
 
     """
     
-    check_status_dictionary = {"DOWN":3.14,"WARNING":5,"OK":6,"FAIL":0}
+    check_status_dictionary = {"DOWN": 3.14, "WARNING": 5, "OK": 6, "FAIL": 0}
 
     final_mark = 1
 
-    for m in result_array:
-        partial = float(check_status_dictionary[m.result.status])
-        final_mark = partial * final_mark
+    for checktest in checktests:
+        if type(checktest.result) is list:
+            for result in checktest.result:
+                partial = float(check_status_dictionary[result.status])
+                final_mark = partial * final_mark
+
+        else:
+            partial = float(check_status_dictionary[checktest.result.status])
+            final_mark = partial * final_mark
 
     if final_mark == 0:
-        mark = "FAIL"
-    elif final_mark%1 != 0:
-        mark = "DOWN"
-    elif final_mark == check_status_dictionary["OK"]**len(result_array):
-        mark = "OK"
-    elif 1 < final_mark < check_status_dictionary["OK"]**len(result_array):
-        if (final_mark % 2 == 0): #even 
-            mark = "WARNING"
-        else: 
-            mark = "DEEP WARNING"
-
-    return mark
+        return "FAIL"
+    elif final_mark % 1 != 0:
+        return "DOWN"
+    elif final_mark == check_status_dictionary["OK"] ** len(checktests):
+        return "OK"
+    elif 1 < final_mark < check_status_dictionary["OK"] ** len(checktests):
+        if (final_mark % 2) == 0:  # even
+            return "WARNING"
+        else:
+            return "DEEP WARNING"
 
 ####--------------------------------------------------------------------------------------------------------------
 
-def  analisys(check_core):
+
+def analysis(check_core):
 
     logger = logging.getLogger(check_core.setting["logger_name"])
     
     mark = "empty"
+
+    analysis_setting = check_core.setting.get('analysis', None)
     
-    if "analysis" not in check_core.setting:
+    if not analysis_setting or analysis_setting == 'simple':
         mark = simple_mb_analisys(check_core.checktests)
 
-    elif  check_core.setting["analysis"] == "simple":
-        mark = simple_mb_analisys(check_core.checktests)
     else:
-        logger.info("NOT MULTIBENCHMARK ANALYSIS FOUND")
+        logger.info("MULTIBENCHMARK ANALYSIS NOT FOUND")
 
     return mark
 
