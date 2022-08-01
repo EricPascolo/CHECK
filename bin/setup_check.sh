@@ -27,7 +27,7 @@ fi
 
 if $CHECK_FOLDER_EXISTS;
 then
-        #set bin path to system path and package path to python path
+        # set bin path to system path and package path to python path
         export PATH=$BINDIR:$PATH
         export PYTHONPATH=$CHECK_PATH:$PYTHONPATH
         alias pyccleandir="find . -name '*.pyc' -delete"
