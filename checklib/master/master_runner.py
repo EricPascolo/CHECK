@@ -83,7 +83,7 @@ def create_slave_cmd_string(arch, checkcore):
 
     else:
         logger.critical('Could not find a folder named "CHECK" or "check" in path {}.'
-                  .format(checkcore.setting["check_remote_source_path"]))
+                        .format(checkcore.setting["check_remote_source_path"]))
         exit(1)
 
     if not remote_source_path:

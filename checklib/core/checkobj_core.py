@@ -18,16 +18,15 @@ from checklib.test.check_test_template import checktest
 
 ####################################################################################################### CORE CLASS
 
-class check_core:
-    '''
-    This object contain all setting that the software
-    '''
-    setting = {}  # check core setting object
-    checktests = [] # list of checktest object
 
+class check_core:
+    """
+    This object contain all the settings that the software sets during launch.
+    """
+    setting = {}  # check core setting object
+    checktests = []  # list of checktest object
 
 ####--------------------------------------------------------------------------------------------------------------
-
     def __init__(self, cl_arg, run_id):
 
         # set run id
@@ -95,7 +94,7 @@ class check_core:
     def set_module_function(self, module):
         '''
         Set the module function as check_core method. The function is used to load
-        software modules from hpc environment 
+        software modules from the HPC environment
         '''
         self.module = module
         self.setting["module"] = self.module
@@ -104,10 +103,10 @@ class check_core:
 
     def extract_merge_setting(self, cl, json_basic):
         """
-        Extract and merge  all setting information from command line, json conf file and json
+        Extract and merge all settings information from command line, json conf file and json
         basic conf file. The priority order is:
             - configuration file passed by cl flag
-            - other parameter setting in cl
+            - other parameter settings in cl
             - check_setting.json in etc/
             - check_setting.json in etc/default
         The merged dictionary update the global setting dict in class
@@ -137,11 +136,10 @@ class check_core:
         # update global setting with merged dict
         self.setting.update(json_setting)
 
-
 ####--------------------------------------------------------------------------------------------------------------
 
-    def checktests_existence(self,cklist):
-        """ Given check list check if checktest exist or not """
+    def checktests_existence(self, cklist):
+        """ Given a check list, this method checks if the checktests in the list exist or not """
 
         logger = logging.getLogger(self.setting["logger_name"])
 
@@ -150,27 +148,26 @@ class check_core:
 
         for ct in cklist:
 
-            #split check test name in name,version,architecture and build correct path
-            ct_sfw,ct_arch,ct_vers,ct_num_par = utils.split_name_version(ct)
-            logger.debug("CT split : "+ct+" name "+ct_sfw+" arch "+ct_arch+" version "+ct_vers)
+            # split check test name in name,version,architecture and build correct path
+            ct_sfw, ct_arch, ct_vers, ct_num_par = utils.split_name_version(ct)
+            logger.debug(f"CT split: {ct} name {ct_sfw} arch {ct_arch} version {ct_vers}")
 
             if ct_arch != "__all__":
-                path_test_dir = self.setting["checktest_directory"]+"/"+ct_sfw+"/"+ct_arch
-                module_name = ct_sfw+"."+ct_arch
+                path_test_dir = self.setting["checktest_directory"] + "/" + ct_sfw + "/" + ct_arch
+                module_name = ct_sfw + "." + ct_arch
             else:
-                path_test_dir = self.setting["checktest_directory"]+"/"+ct_sfw
+                path_test_dir = self.setting["checktest_directory"] + "/" + ct_sfw
                 module_name = ct_sfw
-
 
             logger.debug(path_test_dir + "---" + module_name)
 
-            #build check test module init
-            path_test_init = path_test_dir+"/__init__.py"
+            # build check test module init
+            path_test_init = path_test_dir + "/__init__.py"
 
-            #check if path exiist
+            # check if path exists
             if os.path.exists(path_test_init):
 
-                ctarray.append({"name":ct_sfw,"arch":ct_arch})
+                ctarray.append({"name": ct_sfw, "arch": ct_arch})
 
             else:
                 logger.critical("CHECK TEST NOT FOUND : "+ct)
@@ -179,7 +176,7 @@ class check_core:
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def load_checktest(self,cklist):
+    def load_checktest(self, cklist):
         """ Return checktest py object given checktest list from CL"""
 
         logger = logging.getLogger(self.setting["logger_name"])
@@ -204,11 +201,11 @@ class check_core:
             # build check test module init
             path_test_init = path_test_dir + "/__init__.py"
 
-            # check if path exiist
+            # check if path exist
             if os.path.exists(path_test_init):
 
                 logger.debug("CHECK TEST FOUND IN:" + path_test_dir)
-                # load dynamicaly check test class
+                # load check test class dynamically
                 dynamic_class = importlib.import_module(module_name)
 
                 # get name of class to call
