@@ -1,7 +1,7 @@
 
 class scheduler:
     
-    '''   Virtual class that provide structure to scheduler interface '''
+    """   Virtual class that provide structure to scheduler interface """
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -12,23 +12,23 @@ class scheduler:
 
     def scheduler_string_generator(self,arch_setting):
         
-        ''' 
+        """
         
             Virtual function that generate scheduler interface string given architecture setting.
             The string is composed by:
 
                     scheduler_exe   scheduler_paramenter   scheduler_inline_anchor_to_slave_command 
             
-        '''
+        """
         
         return "generic scheduler"
 
 ####--------------------------------------------------------------------------------------------------------------
 
     def get_job_resources(self):
-        '''
+        """
         Return job requested resources in a dictionary
-        '''
+        """
 
         return {}
 

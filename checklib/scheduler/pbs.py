@@ -4,22 +4,23 @@ import os
 
 class pbs(scheduler):
 
-    '''  PBS Pro check interface
+    """  PBS Pro check interface
 
             Scheduler cmd        : "qsub" 
             Anchor to slave cmd  : " -- /usr/bin/bash -c "
 
         This scheduler allow user to submit to automatic router queue, so the interfece accept the __noqueue__ parameter.
             
-    '''
+    """
 ####--------------------------------------------------------------------------------------------------------------
 
     def __init__(self):
+        super().__init__()
         self.name = "pbs"
 
 ####--------------------------------------------------------------------------------------------------------------
 
-    def scheduler_string_generator(self,arch_setting):
+    def scheduler_string_generator(self, arch_setting):
 
         submission_string = "qsub"
         if arch_setting["nnodes"] != "":
