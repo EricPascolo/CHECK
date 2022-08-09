@@ -1,6 +1,6 @@
 {
     "loglevel":"DEBUG",
-    "logfile":"$HOME/checklog.txt",
+    "logfile":"__nofile__",
     "resultfile":"$HOME/checkresult.txt",
     "logtype":"cl",
     "checktest_directory":"$HOME/checktest/",
