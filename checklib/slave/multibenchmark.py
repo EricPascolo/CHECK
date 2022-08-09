@@ -26,26 +26,24 @@ def simple_mb_analisys(checktests):
     final_mark = 1
 
     for checktest in checktests:
-        if type(checktest.result) is list:
-            for result in checktest.result:
-                partial = float(check_status_dictionary[result.status])
-                final_mark = partial * final_mark
+        partial = float(check_status_dictionary[checktest.result.status])
+        final_mark = partial * final_mark
 
-        else:
-            partial = float(check_status_dictionary[checktest.result.status])
-            final_mark = partial * final_mark
+    mark = "UNKNOWN"
 
     if final_mark == 0:
-        return "FAIL"
+        mark = "FAIL"
     elif final_mark % 1 != 0:
-        return "DOWN"
+        mark = "DOWN"
     elif final_mark == check_status_dictionary["OK"] ** len(checktests):
-        return "OK"
+        mark = "OK"
     elif 1 < final_mark < check_status_dictionary["OK"] ** len(checktests):
         if (final_mark % 2) == 0:  # even
-            return "WARNING"
+            mark = "WARNING"
         else:
-            return "DEEP WARNING"
+            mark = "DEEP WARNING"
+
+    return mark
 
 ####--------------------------------------------------------------------------------------------------------------
 
