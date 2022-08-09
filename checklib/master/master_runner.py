@@ -35,7 +35,7 @@ def check_collection_master_directory(checkcore, logger):
             logger.critical("FS ERROR: check permission on check_master_collecting_path.")
             checkcore.setting["check_master_collecting_path"] = os.environ['HOME']
 
-        except FileExistsError as fee:
+        except FileExistsError:
             pass  # ignore and continue
 
     logger.debug("check_master_collecting_path: " + checkcore.setting["check_master_collecting_path"])
@@ -43,8 +43,8 @@ def check_collection_master_directory(checkcore, logger):
 
 ####--------------------------------------------------------------------------------------------------------------
 
-def select_checktest_on_architercture(arch, checkcore):
-    """ Check if checktest for targer architecture exist and create string for job submission """
+def select_checktest_on_architecture(arch, checkcore):
+    """ Check if the checktest for the  architecture exists and create the string for the job's submission """
 
     string = ""
 
@@ -52,7 +52,6 @@ def select_checktest_on_architercture(arch, checkcore):
         if "_" in arch:
             if ct["arch"] == arch or ct["arch"] == "__all__":
                 string = string + ct["name"] + "@" + ct["arch"] + ","
-
         else:
             if ct["arch"].split("_")[0] == arch or ct["arch"] == "__all__":
                 string = string + ct["name"] + "@" + ct["arch"] + ","
@@ -90,10 +89,11 @@ def create_slave_cmd_string(arch, checkcore):
         logger.critical("Something went wrong while forming the command for the slave jobs. Interrupting.")
         exit(2)
 
-    cmd_check_string = "check"
-    cmd_check_string = cmd_check_string + " --loglevel " + checkcore.setting["loglevel"]
-    cmd_check_string = cmd_check_string + " --master_id " + checkcore.setting["id"]
-    cmd_check_string = cmd_check_string + " --check " + select_checktest_on_architercture(arch, checkcore)
+    cmd_check_string = f"check " \
+                       f"--loglevel {checkcore.setting['loglevel']} " \
+                       f"--master_id {checkcore.setting['id']} " \
+                       f"--check {select_checktest_on_architecture(arch, checkcore)} " \
+                       f"--checktest_directory {checkcore.setting['checktest_directory']}"
 
     return remote_source_path + cmd_check_string
 
@@ -169,14 +169,8 @@ def main(checkcore):
         arch_jsonfile = checkcore.setting["checktest_directory"] + "/hpc/" + arch + ".json"
         arch_setting_global = file_reader.json_reader(arch_jsonfile)[arch_set]
 
-        json.dump({"master_submission": {"id": checkcore.setting["id"],
-                                         "check": str(select_checktest_on_architercture(arch, checkcore)),
-                                         "arch": arch + "#" + arch_set,
-                                         "date": str(datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")),
-                                         "hpc": utils.list_to_String(host_array, ",")}},
-                  out_file, sort_keys=True)
-
-        out_file.write("\n")
+        submission_errors = 0
+        submission_error_nodes = list()
 
         for h in host_array:
 
@@ -215,8 +209,6 @@ def main(checkcore):
             # get slave string
             slave_string = create_slave_cmd_string(arch, checkcore)
 
-            slave_submit_string = ""
-
             # create submit string, different for scheduler and ssh
             if "ssh" in checkcore.setting:
                 slave_submit_string = scheduler_string + " \"(" + slave_string + " )&>/dev/null & \""
@@ -227,14 +219,48 @@ def main(checkcore):
 
             # submit via scheduler
             try:
-                process = subprocess.call(slave_submit_string, shell=True,
-                                          cwd=checkcore.setting["check_master_collecting_path"], executable='/bin/bash',
-                                          env=os.environ)
+                completed_process = subprocess.run(slave_submit_string, shell=True,
+                                                   cwd=checkcore.setting["check_master_collecting_path"],
+                                                   executable='/bin/bash', env=os.environ, capture_output=True,
+                                                   universal_newlines=True)
+
+                if completed_process.stdout:
+                    logger.info(completed_process.stdout)
+
+                if completed_process.stderr and "error" in completed_process.stderr.lower():
+                    submission_errors += 1
+                    submission_error_nodes.append(h)
+
+                    if type(h) is list:
+                        logger.critical("Submission Error on nodes {}: {}".format(
+                            ", ".join(h).rstrip(", "), completed_process.stderr.rstrip('\n')))
+
+                    else:
+                        logger.critical("Submission Error on node {}: {}".format(
+                            h, completed_process.stderr.rstrip('\n')))
 
             # SubprocessError is the superclass exception for every other exception from the subprocess library
             except SubprocessError:
                 logger.critical("SUBMISSION ERROR")
                 traceback.print_exc()
+
+        total_nodes = set(host_array)
+        error_nodes = set(submission_error_nodes)
+        working_nodes = list(total_nodes - error_nodes)
+
+        if submission_errors != 0:
+            logger.critical("{} submission errors. Jobs weren't scheduled on {}".format(
+                submission_errors, ", ".join(error_nodes).rstrip(", ")))
+
+        json.dump({"master_submission": {"id": checkcore.setting["id"],
+                                         "check": str(select_checktest_on_architecture(arch, checkcore)),
+                                         "arch": arch + "#" + arch_set,
+                                         "date": str(datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")),
+                                         "hpc": utils.list_to_String(
+                                             working_nodes if working_nodes else ["None"], ",")}},
+                  out_file, sort_keys=True)
+
+        out_file.write("\n")
 
     # close last result in checkresult file
     out_file.close()
