@@ -48,7 +48,7 @@ class slurm(scheduler):
                               "threads-per-core"]
         for setting in settings_to_search:
             if setting in arch_setting and arch_setting[setting] != "":
-                submission_string = f"{submission_string} -- {setting}={str(arch_setting[setting])}"
+                submission_string = f"{submission_string} --{setting}={str(arch_setting[setting])}"
 
         # automatic select number of node resources: explicit in setting or exclusive(all node taken)
         if "exclusive" in arch_setting:
@@ -59,6 +59,9 @@ class slurm(scheduler):
 
         if 'gres' in arch_setting:
             submission_string += "--gres=" + arch_setting['gres']
+
+        if 'qos' in arch_setting:
+            submission_string += "--qos=" + arch_setting['qos']
 
         if "hostname" in arch_setting:
             submission_string += " --nodelist " + utils.list_to_String(arch_setting["hostname"], ',')
