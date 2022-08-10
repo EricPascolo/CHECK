@@ -79,7 +79,7 @@ def create_slave_cmd_string(arch, checkcore):
 
     if os.path.exists(check_folder) and os.path.isdir(check_folder):
         remote_source_path = "source " + os.path.join(checkcore.setting["check_remote_source_path"],
-                                                      check_folder_name, "/bin/setup_check.sh; ")
+                                                      check_folder_name, "bin/setup_check.sh; ")
 
     else:
         logger.critical("Could not find CHECK's folder in path {}."
