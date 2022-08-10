@@ -67,27 +67,24 @@ def select_checktest_on_architecture(arch, checkcore):
 def create_slave_cmd_string(arch, checkcore):
     """Compose slave command string with software name loglevel and checktest list"""
 
-    ending_slash = True if checkcore.setting["check_remote_source_path"].endswith('/') else False
-    remote_source_path = ''
+    import sys
+
+    # ending_slash = True if checkcore.setting["check_remote_source_path"].endswith('/') else False
+    # remote_source_path = ''
 
     check_folder = checkcore.setting["check_remote_source_path"]
 
+    check_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+    check_folder_name = check_path.split('/')[-2]
+
     if os.path.exists(check_folder) and os.path.isdir(check_folder):
-        if ending_slash:
-            remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
-                                 "bin/setup_check.sh; "
-        else:
-            remote_source_path = "source " + checkcore.setting["check_remote_source_path"] + \
-                                 "/bin/setup_check.sh; "
+        remote_source_path = "source " + os.path.join(checkcore.setting["check_remote_source_path"],
+                                                      check_folder_name, "/bin/setup_check.sh; ")
 
     else:
-        logger.critical('Could not find a folder named "CHECK" or "check" in path {}.'
+        logger.critical("Could not find CHECK's folder in path {}."
                         .format(checkcore.setting["check_remote_source_path"]))
-        exit(1)
-
-    if not remote_source_path:
-        logger.critical("Something went wrong while forming the command for the slave jobs. Interrupting.")
-        exit(2)
+        raise FileNotFoundError("Could not find CHECK's folder")
 
     cmd_check_string = f"check " \
                        f"--loglevel {checkcore.setting['loglevel']} " \
