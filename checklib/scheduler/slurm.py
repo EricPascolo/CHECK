@@ -52,16 +52,16 @@ class slurm(scheduler):
 
         # automatic select number of node resources: explicit in setting or exclusive(all node taken)
         if "exclusive" in arch_setting:
-            submission_string += " --exclusive "
+            submission_string += " --exclusive"
         else:
             submission_string += " -n " + arch_setting["ncpus"]
             submission_string += " --mem=" + arch_setting["memory"]
 
         if 'gres' in arch_setting:
-            submission_string += "--gres=" + arch_setting['gres']
+            submission_string += " --gres=" + arch_setting['gres']
 
         if 'qos' in arch_setting:
-            submission_string += "--qos=" + arch_setting['qos']
+            submission_string += " --qos=" + arch_setting['qos']
 
         if "hostname" in arch_setting:
             submission_string += " --nodelist " + utils.list_to_String(arch_setting["hostname"], ',')
