@@ -15,6 +15,7 @@ from checklib.inout import file_reader
 from checklib.common import utils
 from checklib.scheduler import whatscheduler
 
+logger = None
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ def check_collection_master_directory(checkcore, logger):
             logger.critical("CHECK MASTER COLLECTING PATH CREATE")
             os.mkdir(checkcore.setting["check_master_collecting_path"])
 
-        except PermissionError as pe:
+        except PermissionError:
             logger.critical("FS ERROR: check permission on check_master_collecting_path.")
             checkcore.setting["check_master_collecting_path"] = os.environ['HOME']
 
@@ -44,22 +45,20 @@ def check_collection_master_directory(checkcore, logger):
 ####--------------------------------------------------------------------------------------------------------------
 
 def select_checktest_on_architecture(arch, checkcore):
-    """ Check if the checktest for the  architecture exists and create the string for the job's submission """
+    """ Check if the checktest for the architecture exists and create the string for the job's submission """
 
-    string = ""
+    ct_list = ""
 
     for ct in checkcore.checktests:
-        if "_" in arch:
-            if ct["arch"] == arch or ct["arch"] == "__all__":
-                string = string + ct["name"] + "@" + ct["arch"] + ","
-        else:
-            if ct["arch"].split("_")[0] == arch or ct["arch"] == "__all__":
-                string = string + ct["name"] + "@" + ct["arch"] + ","
+        if arch not in ct['arch'] and 'fs_' not in ct['arch'] and ct['arch'] != "__all__":
+            logger.critical(f"CheckTest {ct['name']}@{ct['arch']} not scheduled as "
+                            f"it is not for this architecture.")
+            continue
 
-    if string.endswith(","):
-        return string[:-1]
-    else:
-        return string
+        ct_string = f"{ct['name']}@{ct['arch']}"
+        ct_list = f"{ct_list},{ct_string}" if ct_list else ct_string
+
+    return ct_list
 
 
 ####--------------------------------------------------------------------------------------------------------------
@@ -117,6 +116,7 @@ def main(checkcore):
     """
 
     # enable logger
+    global logger
     logger = logging.getLogger(checkcore.setting["logger_name"])
     logger.debug("Start Master")
 
@@ -151,7 +151,6 @@ def main(checkcore):
 
     # loop on architecture
     for a in arch_array:
-
         # extract arch
         arch = a["arch"]
         arch_set = a["setting"]
@@ -190,6 +189,7 @@ def main(checkcore):
                 # single nodes
                 else:
                     host_list.append(h)
+
                 arch_setting["hostname"] = host_list
                 arch_setting["jobname"] = "check_" + h
 
@@ -205,6 +205,13 @@ def main(checkcore):
 
             # get slave string
             slave_string = create_slave_cmd_string(arch, checkcore)
+
+            # when asking for an exclusive node in a jobscript SLURM ignores the gres option and takes all 4 GPUs
+            # to force the correct behaviour the CUDA_VISIBLE_DEVICES environment variable is set accordingly
+            if 'gres' in arch_setting and ('exclusive' in arch_setting and arch_setting['exclusive'] == 'yes'):
+                n_gpus = int(arch_setting['gres'].split('gpu:')[1])
+                cuda_visible_devices = ','.join([str(gpu_id) for gpu_id in range(n_gpus)])
+                slave_string = f'CUDA_VISIBLE_DEVICES={cuda_visible_devices} ' + slave_string
 
             # create submit string, different for scheduler and ssh
             if "ssh" in checkcore.setting:
@@ -229,11 +236,11 @@ def main(checkcore):
                     submission_error_nodes.append(h)
 
                     if type(h) is list:
-                        logger.critical("Submission Error on nodes {}: {}".format(
+                        logger.critical("Submission Error on {}: {}".format(
                             ", ".join(h).rstrip(", "), completed_process.stderr.rstrip('\n')))
 
                     else:
-                        logger.critical("Submission Error on node {}: {}".format(
+                        logger.critical("Submission Error on {}: {}".format(
                             h, completed_process.stderr.rstrip('\n')))
 
             # SubprocessError is the superclass exception for every other exception from the subprocess library
