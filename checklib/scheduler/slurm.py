@@ -34,12 +34,13 @@ class slurm(scheduler):
             - jobname
             - account
             - gres
+            - qos
 
         """
         submission_string = "sbatch"
 
         # automatic select number of nodes: explicit in setting or number of element of hostlist
-        if arch_setting["nnodes"] != "":
+        if arch_setting["nnodes"]:  # not empty string
             submission_string = submission_string + " -N " + str(arch_setting["nnodes"])
         else:
             submission_string = submission_string + " -N " + str(len(arch_setting["hostname"]))
@@ -47,7 +48,7 @@ class slurm(scheduler):
         settings_to_search = ["ntasks-per-node", "sockets-per-node", "ntasks-per-socket", "cpus-per-task",
                               "threads-per-core"]
         for setting in settings_to_search:
-            if setting in arch_setting and arch_setting[setting] != "":
+            if setting in arch_setting and arch_setting[setting]:
                 submission_string = f"{submission_string} --{setting}={str(arch_setting[setting])}"
 
         # automatic select number of node resources: explicit in setting or exclusive(all node taken)
