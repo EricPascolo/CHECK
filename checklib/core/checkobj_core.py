@@ -139,7 +139,7 @@ class check_core:
 ####--------------------------------------------------------------------------------------------------------------
 
     def checktests_existence(self, cklist):
-        """ Given a check list, this method checks if the checktests in the list exist or not """
+        """ Given a checklist, this method checks if the checktests in the list exist or not """
 
         logger = logging.getLogger(self.setting["logger_name"])
 
@@ -150,7 +150,7 @@ class check_core:
 
             # split check test name in name,version,architecture and build correct path
             ct_sfw, ct_arch, ct_vers, ct_num_par = utils.split_name_version(ct)
-            logger.debug(f"CT split: {ct} name {ct_sfw} arch {ct_arch} version {ct_vers}")
+            logger.debug(f"CT split: {ct}, name: {ct_sfw}, arch: {ct_arch}, version: {ct_vers}")
 
             if ct_arch != "__all__":
                 path_test_dir = self.setting["checktest_directory"] + "/" + ct_sfw + "/" + ct_arch
