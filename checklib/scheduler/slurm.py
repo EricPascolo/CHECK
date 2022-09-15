@@ -35,6 +35,7 @@ class slurm(scheduler):
             - account
             - gres
             - qos
+            - reservation
 
         """
         submission_string = "sbatch"
@@ -63,6 +64,9 @@ class slurm(scheduler):
 
         if 'qos' in arch_setting:
             submission_string += " --qos=" + arch_setting['qos']
+
+        if 'reservation' in arch_setting:
+            submission_string += " --reservation=" + arch_setting['reservation']
 
         if "hostname" in arch_setting:
             submission_string += " --nodelist " + utils.list_to_String(arch_setting["hostname"], ',')
