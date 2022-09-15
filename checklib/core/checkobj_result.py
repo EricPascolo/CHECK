@@ -24,4 +24,8 @@ class check_result:
         if name is not None:
             self.name = name
 
+    def __str__(self):
+        return f"{self.measure} {self.udm} \t {self.status}"
+
 ####--------------------------------------------------------------------------------------------------------------
+
