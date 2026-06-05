@@ -20,7 +20,7 @@ logger.addHandler(ch)
 
 class WrapFormatter(logging.Formatter):
     """Custom formatter to wrap log messages to a specified width."""
-    
+
     def __init__(self, fmt, datefmt=None, width=80):
         super().__init__(fmt, datefmt)
         self.width = 60
@@ -52,7 +52,7 @@ def checkloggin(run_id, loglevel, logfile, logtype="both"):
     logger.setLevel(loglevel)
     # create formatter and add it to the handlers
     if loglevel == "DEBUG":
-        formatter = WrapFormatter(str(run_id[:8])+' %(asctime)-6s [%(levelname)-8s] (%(module)-20s -> %(funcName)-10s ) : %(message)s', "%H:%M")
+        formatter = WrapFormatter(str(run_id[:8])+' %(asctime)-6s [%(levelname)-8s] (%(module)-20s -> %(funcName)-20s ) : %(message)s', "%H:%M")
     else:
         formatter = WrapFormatter(str(run_id[:8])+' %(asctime)-6s [%(levelname)-8s] : %(message)s', "%H:%M")
 

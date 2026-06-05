@@ -7,6 +7,7 @@
 import traceback
 import logging
 import os
+import io
 import sys
 import importlib
 import subprocess
@@ -60,9 +61,8 @@ class check_core:
         logger = logging.getLogger(self.setting["logger_name"])
         logger.debug(self.setting["logger_name"])
 
-        #load module interface if is defined and it is not empty then set checkcore.module function
+        #load module interface 
         self.set_module_function()
-
 
         # ssh enable master singleton mode
         if "ssh" in self.setting:
@@ -104,6 +104,8 @@ class check_core:
         logger = logging.getLogger(self.setting["logger_name"])
 
         path = self.setting.get("module_env_py_interface")
+
+        
         
         if not path:
             logger.info("Modules Python interface: NOT FOUND")
@@ -120,8 +122,10 @@ class check_core:
             local_ns = {
                 "sys": sys,
                 "subprocess": subprocess,
-                "sys": sys,
                 }
+            
+
+            
 
             exec(code, local_ns)
         
@@ -247,7 +251,6 @@ class check_core:
                 path_test_dir = os.path.join(self.setting["checktest_directory"], ct_sfw)
                 module_name = ct_sfw
 
-            logger.debug(path_test_dir + " --- " + module_name)
 
             # build check test module init
             path_test_init = path_test_dir + "/__init__.py"
@@ -255,7 +258,7 @@ class check_core:
             # check if path exist
             if os.path.exists(path_test_init):
 
-                logger.debug("CHECK TEST FOUND IN:" + path_test_dir)
+                logger.debug(module_name + " --- " + "CHECK TEST FOUND IN:" + path_test_dir)
                 # load check test class dynamically
                 dynamic_class = importlib.import_module(module_name)
 
@@ -268,7 +271,7 @@ class check_core:
                 # append obj test to list
                 ctarray.append(obj)
             else:
-                logger.critical("CHECK TEST NOT FOUND : " + ct)
+                logger.critical(module_name + " --- " + "CHECK TEST NOT FOUND : " + path_test_dir)
 
         return ctarray
 

@@ -206,13 +206,6 @@ def main(checkcore):
             # get slave string
             slave_string = create_slave_cmd_string(arch, checkcore)
 
-#             # when asking for an exclusive node in a jobscript SLURM ignores the gres option and takes all 4 GPUs
-#             # to force the correct behaviour the CUDA_VISIBLE_DEVICES environment variable is set accordingly
-#             if 'gres' in arch_setting and ('exclusive' in arch_setting and arch_setting['exclusive'] == 'yes'):
-#                 n_gpus = int(arch_setting['gres'].split('gpu:')[1])
-#                 cuda_visible_devices = ','.join([str(gpu_id) for gpu_id in range(n_gpus)])
-#                 slave_string = f'CUDA_VISIBLE_DEVICES={cuda_visible_devices} ' + slave_string
-
             # create submit string, different for scheduler and ssh
             if "ssh" in checkcore.setting:
                 slave_submit_string = scheduler_string + " \"(" + slave_string + " )&>/dev/null & \""
