@@ -60,6 +60,10 @@ class check_core:
         logger = logging.getLogger(self.setting["logger_name"])
         logger.debug(self.setting["logger_name"])
 
+        #load module interface if is defined and it is not empty then set checkcore.module function
+        self.set_module_function()
+
+
         # ssh enable master singleton mode
         if "ssh" in self.setting:
             if "master" not in self.setting:
@@ -91,13 +95,60 @@ class check_core:
         
 ####--------------------------------------------------------------------------------------------------------------
 
-    def set_module_function(self, module):
+    def set_module_function(self):
         '''
         Set the module function as check_core method. The function is used to load
         software modules from the HPC environment
         '''
-        self.module = module
-        self.setting["module"] = self.module
+
+        logger = logging.getLogger(self.setting["logger_name"])
+
+        path = self.setting.get("module_env_py_interface")
+        
+        if not path:
+            logger.info("Modules Python interface: NOT FOUND")
+            return
+        
+        try:
+            logger.info(f"Loading module interface from: {path}")
+        
+            # Controllo esistenza file
+            with open(path, "r") as f:
+                code = f.read()
+        
+            # Namespace isolato
+            local_ns = {
+                "sys": sys,
+                "subprocess": subprocess,
+                "sys": sys,
+                }
+
+            exec(code, local_ns)
+        
+            if "module" not in local_ns or not callable(local_ns["module"]):
+                raise ValueError("Function 'module' not defined or not callable")
+        
+            module_func = local_ns["module"]
+        
+            # Test
+            module_func("-V", "list")
+
+            self.module = module_func
+            self.setting["module"] = self.module
+        
+            logger.info("Modules Python interface: FOUND")
+        
+        except SyntaxError as se:
+            logger.critical(f"Syntax error while loading module: {se}")
+        
+        except FileNotFoundError:
+            logger.critical(f"Module interface file not found: {path}")
+        
+        except Exception as e:
+            logger.critical(f"Error loading module interface: {e}", exc_info=True)
+        
+                
+        
 
 ####--------------------------------------------------------------------------------------------------------------
 

@@ -25,7 +25,7 @@ __author__ = "Eric Pascolo, Roberto Da Via'"
 __copyright__ = "Copyright 2020"
 __credits__ = [""]
 __license__ = "GNU Affero GPL v.3"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __email__ = "eric.pascolo@cineca.it"
 __status__ = "Development"
 
@@ -50,29 +50,11 @@ else:
 
 # set basic logger
 logger = logging.getLogger("basic")
-logger.critical("**** CHECK {} - {} - {} - {}".format(__version__, utils.get_name_of_nodes(),
+logger.critical("\n>>>> CHECK {} - {} - {} - {} \n".format(__version__, utils.get_name_of_nodes(),
                                                       datetime.now().strftime("%d/%m/%Y %H:%M:%S"), str(run_id)))
 
 # init check setting object
 checkcore = checkobj_core.check_core(cl_args, run_id)
-
-# if module interface is defined and it is not empty then set checkcore.module function
-if "module_env_py_interface" in checkcore.setting:
-    if checkcore.setting['module_env_py_interface']:
-        try:
-            # TODO: check what happens if exec fails, which exceptions are thrown?
-            exec(open(checkcore.setting["module_env_py_interface"]).read())
-            module("-V", "list")
-            checkcore.set_module_function(module)
-            logger.info("Modules Python interface: FOUND")
-
-        except SyntaxError as se:
-            logger.critical("Modules Python interface: a syntax error occurred while loading the module: " + str(se))
-
-        except:
-            logger.critical("Modules Python interface: an error occurred while loading the module.")
-    else:
-        logger.info("Modules Python interface: NOT FOUND")
 
 # master
 if "master" in checkcore.setting:
@@ -98,7 +80,7 @@ elif checkcore.setting["report"] != "-999":
 else:
     pass
 
-logger.critical("**** CHECK STOP - {} - {} - {}".format(utils.get_name_of_nodes(),
+logger.critical("\n>>>> CHECK STOP - {} - {} - {} \n".format(utils.get_name_of_nodes(),
                                                         datetime.now().strftime("%d/%m/%Y %H:%M:%S"), str(run_id)))
 
 ####--------------------------------------------------------------------------------------------------------------

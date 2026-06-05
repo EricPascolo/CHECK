@@ -6,6 +6,8 @@
 
 
 import logging
+import textwrap
+
 
 logger_name = 'basic'
 logger = logging.getLogger(logger_name)
@@ -14,6 +16,29 @@ ch = logging.StreamHandler()
 logger.addHandler(ch)
 
 ####--------------------------------------------------------------------------------------------------------------
+
+
+class WrapFormatter(logging.Formatter):
+    """Custom formatter to wrap log messages to a specified width."""
+    
+    def __init__(self, fmt, datefmt=None, width=80):
+        super().__init__(fmt, datefmt)
+        self.width = 60
+
+    def format(self, record):
+        base = super().format(record)
+        
+        if len(base) <= self.width:
+            return base
+        
+        prefix, message = base.split(" : ", 1)
+        wrapped_lines = textwrap.wrap(message, self.width)
+        
+        return "\n".join(
+            [f"{prefix} : {wrapped_lines[0]}"] +
+            [f"{' ' * (len(prefix) + 3)}{line}" for line in wrapped_lines[1:]]
+        )
+
 
 
 def checkloggin(run_id, loglevel, logfile, logtype="both"):
@@ -26,7 +51,10 @@ def checkloggin(run_id, loglevel, logfile, logtype="both"):
     logger = logging.getLogger(logger_name)
     logger.setLevel(loglevel)
     # create formatter and add it to the handlers
-    formatter = logging.Formatter(str(run_id)+' %(asctime)s [%(levelname)s] (%(funcName)s) : %(message)s', "%H:%M")
+    if loglevel == "DEBUG":
+        formatter = WrapFormatter(str(run_id[:8])+' %(asctime)-6s [%(levelname)-8s] (%(module)-20s -> %(funcName)-10s ) : %(message)s', "%H:%M")
+    else:
+        formatter = WrapFormatter(str(run_id[:8])+' %(asctime)-6s [%(levelname)-8s] : %(message)s', "%H:%M")
 
     # create file handler which logs even debug messages
     if logfile != "__nofile__":
