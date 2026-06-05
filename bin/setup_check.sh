@@ -34,4 +34,7 @@ fi
 alias pyccleandir="find . -name '*.pyc' -delete"
 alias checkcleandir='cd $CHECK_HOME ; pyccleandir ; cd $OLDPWD'
 
+echo "CHECK environment loaded successfully"
+
+
 
